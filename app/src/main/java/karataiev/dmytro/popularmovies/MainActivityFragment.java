@@ -46,9 +46,6 @@ public class MainActivityFragment extends Fragment {
             GridView gridView = (GridView) rootview.findViewById(R.id.movies_grid);
             gridView.setAdapter(movieAdapter);
         }
-        else {
-            movieAdapter = null;
-        }
 
         return rootview;
     }
