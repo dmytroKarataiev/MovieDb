@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
 
-    private String LOG_TAG = DetailFragment.class.getSimpleName();
+    private final String LOG_TAG = DetailFragment.class.getSimpleName();
     private ViewHolder viewHolder;
 
     /**
@@ -28,26 +28,20 @@ public class DetailFragment extends Fragment {
 
     public static class ViewHolder {
 
-        public final ImageView iconView;
-        public final TextView friendlyDateView;
-        public final TextView dateView;
-        public final TextView descriptionView;
-        public final TextView highTempView;
-        public final TextView lowTempView;
-        public final TextView humidityView;
-        public final TextView windView;
-        public final TextView pressureView;
+        public final ImageView posterView;
+        public final TextView movieName;
+        public final TextView movieReleaseDate;
+        public final TextView movieRating;
+        public final TextView movieDescription;
+
 
         public ViewHolder(View view) {
-            iconView = (ImageView) view.findViewById(R.id.detail_icon);
-            friendlyDateView = (TextView) view.findViewById(R.id.detail_day_textview);
-            dateView = (TextView) view.findViewById(R.id.detail_date_textview);
-            descriptionView = (TextView) view.findViewById(R.id.detail_forecast_textview);
-            highTempView = (TextView) view.findViewById(R.id.detail_high_textview);
-            lowTempView = (TextView) view.findViewById(R.id.detail_low_textview);
-            humidityView = (TextView) view.findViewById(R.id.detail_humidity_textview);
-            windView = (TextView) view.findViewById(R.id.detail_wind_textview);
-            pressureView = (TextView) view.findViewById(R.id.detail_pressure_textview);
+            posterView = (ImageView) view.findViewById(R.id.poster_imageview);
+            movieName = (TextView) view.findViewById(R.id.movie_name);
+            movieReleaseDate = (TextView) view.findViewById(R.id.detail_releasedate_textview);
+            movieRating = (TextView) view.findViewById(R.id.detail_rating_textview);
+            movieDescription = (TextView) view.findViewById(R.id.detail_description_textview);
+
         }
     }
 
@@ -64,13 +58,20 @@ public class DetailFragment extends Fragment {
         viewHolder = new ViewHolder(rootView);
 
         Intent intent = this.getActivity().getIntent();
+        MovieObject fromIntent = intent.getParcelableExtra("movie");
+        /*
         String name = intent.getStringExtra("name");
         String path = intent.getStringExtra("path");
+        String description = intent.getStringExtra("description");
+        String rating = intent.getStringExtra("rating");
+        String year = intent.getStringExtra("release_date");
+        */
+        viewHolder.movieName.setText(fromIntent.name);
+        viewHolder.movieDescription.setText(fromIntent.description);
+        viewHolder.movieRating.setText(fromIntent.rating);
+        viewHolder.movieReleaseDate.setText(fromIntent.year);
 
-        viewHolder.descriptionView.setText(name);
-        viewHolder.dateView.setText(path);
-
-        Picasso.with(getContext()).load(path).into(viewHolder.iconView);
+        Picasso.with(getContext()).load(fromIntent.pathToDetailImage).into(viewHolder.posterView);
 
         return rootView;
 
@@ -80,7 +81,6 @@ public class DetailFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_main, menu);
 
         // Retrieve the share menu item
         //MenuItem item = menu.findItem(R.id.share);
@@ -144,7 +144,7 @@ public class DetailFragment extends Fragment {
 
         // Use placeholder image for now
         int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
-        viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+        viewHolder.posterView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
         // Description
         String description = data.getString(COL_WEATHER_DESC);
@@ -154,7 +154,7 @@ public class DetailFragment extends Fragment {
         long date = data.getLong(COL_WEATHER_DATE);
         String friendlyDateText = Utility.getFriendlyDayString(getActivity(), date);
         String dateText = Utility.getFormattedMonthDay(getActivity(), date);
-        viewHolder.friendlyDateView.setText(friendlyDateText);
+        viewHolder.movieName.setText(friendlyDateText);
         viewHolder.dateView.setText(dateText);
 
         // High temp + min temp
@@ -162,15 +162,15 @@ public class DetailFragment extends Fragment {
 
         double maxTemperature = data.getDouble(COL_WEATHER_MAX_TEMP);
         String high = Utility.formatTemperature(getActivity(), maxTemperature, isMetric);
-        viewHolder.highTempView.setText(high);
+        viewHolder.movieReleaseDate.setText(high);
 
         double minTemperature = data.getDouble(COL_WEATHER_MIN_TEMP);
         String low = Utility.formatTemperature(getActivity(), minTemperature, isMetric);
-        viewHolder.lowTempView.setText(low);
+        viewHolder.movieRating.setText(low);
 
         // Humidity
         float humidity = data.getFloat(COL_WEATHER_HUMIDITY);
-        viewHolder.humidityView.setText(getActivity().getString(R.string.format_humidity, humidity));
+        viewHolder.movieDescription.setText(getActivity().getString(R.string.format_humidity, humidity));
 
         // Wind speed and direction
         float windSpeed = data.getFloat(COL_WEATHER_WIND);

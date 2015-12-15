@@ -55,7 +55,16 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         final String RESULTS = "results";
         final String MOVIE_POSTER = "poster_path";
         final String MOVIE_NAME = "original_title";
-        final String FULL_PATH = "http://image.tmdb.org/t/p/w185/";
+        final String MOVIE_DESCRIPTION = "overview";
+        final String MOVIE_RELEASE_DATE = "release_date";
+        final String MOVIE_RATING = "vote_average";
+
+        final String[] POSTER_SIZE = Utility.posterSize(mContext);
+
+        final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
+        final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
+
+        Log.v(LOG_TAG, " " + POSTER_SIZE[0] + " " + POSTER_SIZE[1]);
 
         try {
 
@@ -65,7 +74,17 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
 
             for (int i = 0, n = movieArray.length(); i < n; i++)
             {
-                movieObjects[i] = new MovieObject(movieArray.getJSONObject(i).getString(MOVIE_NAME), FULL_PATH + movieArray.getJSONObject(i).getString(MOVIE_POSTER));
+                JSONObject current = movieArray.getJSONObject(i);
+
+                movieObjects[i] = new MovieObject(
+                        current.getString(MOVIE_NAME),
+                        FULL_PATH + current.getString(MOVIE_POSTER),
+                        FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
+                        current.getString(MOVIE_DESCRIPTION),
+                        current.getString(MOVIE_RATING),
+                        current.getString(MOVIE_RELEASE_DATE)
+                );
+
                 Log.v(LOG_TAG, movieArray.getJSONObject(i).getString(MOVIE_NAME) + " " + movieArray.getJSONObject(i).getString(MOVIE_POSTER));
             }
 

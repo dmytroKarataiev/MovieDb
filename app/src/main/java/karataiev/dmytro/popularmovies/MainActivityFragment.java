@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
@@ -18,8 +19,12 @@ import java.util.concurrent.ExecutionException;
  */
 public class MainActivityFragment extends Fragment {
 
-    private MovieObjectAdapter movieAdapter;
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+
+    private MovieObject[] movies;
+    private MovieObjectAdapter movieAdapter;
+    private ArrayList<MovieObject> movieList;
+
 
     public MainActivityFragment() {
     }
@@ -29,45 +34,58 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
-        FetchMovie fetchMovie = new FetchMovie(getContext());
-        MovieObject[] movies = null;
 
-        try
-        {
-            movies = fetchMovie.execute().get();
-        }
-        catch (ExecutionException e) {
-            Log.v(LOG_TAG, "error");
-        }
-        catch (InterruptedException e2) {
-            Log.v(LOG_TAG, "error" + e2);
-        }
+        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+        GridView gridView = (GridView) rootview.findViewById(R.id.movies_grid);
 
-        if (movies != null) {
-            movieAdapter = new MovieObjectAdapter(getActivity(), Arrays.asList(movies));
-            GridView gridView = (GridView) rootview.findViewById(R.id.movies_grid);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                MovieObject currentPoster = (MovieObject) adapterView.getItemAtPosition(position);
+                Log.v(LOG_TAG, currentPoster.pathToImage + " " + currentPoster.name);
 
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView adapterView, View view, int position, long l) {
-                    // CursorAdapter returns a cursor at the correct position for getItem(), or null
-                    // if it cannot seek to that position.
-                    MovieObject cursor = (MovieObject) adapterView.getItemAtPosition(position);
-                    Log.v(LOG_TAG, cursor.pathToImage + " " + cursor.name);
-
-                    if (cursor != null) {
-
-                        Intent intent = new Intent(getActivity(), DetailActivity.class)
-                                .putExtra("path", cursor.pathToImage)
-                                .putExtra("name", cursor.name);
-                        startActivity(intent);
-                    }
+                if (currentPoster != null) {
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra("movie", currentPoster);
+                    startActivity(intent);
                 }
-            });
+            }
+        });
 
-            gridView.setAdapter(movieAdapter);
-        }
+        gridView.setAdapter(movieAdapter);
 
         return rootview;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+
+            FetchMovie fetchMovie = new FetchMovie(getContext());
+            try
+            {
+                movies = fetchMovie.execute().get();
+            }
+            catch (ExecutionException e) {
+                Log.v(LOG_TAG, "error");
+            }
+            catch (InterruptedException e2) {
+                Log.v(LOG_TAG, "error" + e2);
+            }
+            movieList = new ArrayList<>(Arrays.asList(movies));
+        }
+        else {
+            movieList = savedInstanceState.getParcelableArrayList("movies");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movies", movieList);
+        super.onSaveInstanceState(outState);
     }
 }

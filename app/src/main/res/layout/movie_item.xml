@@ -8,10 +8,8 @@
         android:layout_width="@dimen/poster_width"
         android:layout_height="@dimen/poster_height"
         android:scaleType="centerCrop"
-        android:id="@+id/movie_poster"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/movie_name"/>
+        android:id="@+id/movie_poster"
+        android:contentDescription=""/>
+
 
 </FrameLayout>
