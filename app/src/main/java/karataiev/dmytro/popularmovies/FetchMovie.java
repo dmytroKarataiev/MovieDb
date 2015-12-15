@@ -106,6 +106,7 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
                     .build();
 
             URL url = new URL(builtUri.toString());
+            Log.v(LOG_TAG, url.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
