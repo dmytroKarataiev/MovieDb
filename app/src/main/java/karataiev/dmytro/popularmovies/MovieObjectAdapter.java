@@ -13,11 +13,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 /**
+ * Adapter with MovieObjects
  * Created by karataev on 12/14/15.
  */
-public class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
-
-    private static final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
+class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
@@ -35,13 +34,13 @@ public class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         ImageView poster = (ImageView) view.findViewById(R.id.movie_poster);
         Picasso.with(getContext()).load(movieObject.pathToImage).into(poster);
 
+        // If movie doesn't have an image - uses text instead
         if (movieObject.pathToImage.contains("null"))
         {
             TextView imageText = (TextView) view.findViewById(R.id.movie_poster_text);
             imageText.setText(movieObject.name);
         }
         poster.setContentDescription(movieObject.name);
-
 
         return view;
     }

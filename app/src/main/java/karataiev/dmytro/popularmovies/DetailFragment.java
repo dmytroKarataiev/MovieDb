@@ -18,21 +18,20 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 /**
+ * Detailed Movie Fragment with poster, rating, description.
  * Created by karataev on 12/15/15.
  */
-
 public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
-    private ViewHolder viewHolder;
-    private ShareActionProvider mShareActionProvider;
+
+    // String which is used in share intent
     private String mMovie;
 
-
     /**
-     * Cache of the children views for a forecast list item.
+     * Cache of the children views
+     * Little optimization to access views faster (not sure if it's applicable in this particular case)
      */
-
     public static class ViewHolder {
 
         public final ImageView posterView;
@@ -41,7 +40,6 @@ public class DetailFragment extends Fragment {
         public final TextView movieRating;
         public final TextView movieDescription;
         public final TextView movieVotes;
-
 
         public ViewHolder(View view) {
             posterView = (ImageView) view.findViewById(R.id.poster_imageview);
@@ -58,13 +56,13 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        viewHolder = new ViewHolder(rootView);
+        ViewHolder viewHolder = new ViewHolder(rootView);
 
+        // Gets data from intent (using parcelable) and populates views
         Intent intent = this.getActivity().getIntent();
         MovieObject fromIntent = intent.getParcelableExtra("movie");
 
@@ -76,6 +74,7 @@ public class DetailFragment extends Fragment {
 
         Picasso.with(getContext()).load(fromIntent.pathToDetailImage).into(viewHolder.posterView);
 
+        // Initializes mMovie with info about a movie
         mMovie = fromIntent.name + "\n" + fromIntent.year + "\n" + fromIntent.rating + "\n" + fromIntent.description;
 
         return rootView;
@@ -92,17 +91,20 @@ public class DetailFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(movieIntent());
         }
-        else
-        {
+        else {
             Log.v(LOG_TAG, "fail");
         }
     }
 
+    /**
+     * Method to populate Intent with data
+     * @return Intent with data to external apps
+     */
     private Intent movieIntent() {
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -111,6 +113,4 @@ public class DetailFragment extends Fragment {
 
         return sendIntent;
     }
-
-
 }

@@ -6,11 +6,10 @@ import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 /**
+ * Class with additional helper functions
  * Created by karataev on 12/15/15.
  */
-public class Utility {
-
-    public final String LOG_TAG = Utility.class.getSimpleName();
+class Utility {
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
@@ -56,49 +55,56 @@ public class Utility {
         return new String[] { POSTER_SIZE, POSTER_SIZE_DETAIL };
     }
 
+    /**
+     * Method to get sort settings from SharedPreferences
+     * @param context from which call was made
+     * @return current sort preference
+     */
     public static String getSort(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_sort_key),
                 context.getString(R.string.pref_sort_default));
     }
 
+    /**
+     * Formats date (cuts everything except the year)
+     * @param date with month and day
+     * @return year only
+     */
     public static String formatDate(String date) {
 
-        String formattedDate = "";
-
         if (date.length() > 3) {
-            formattedDate = date.substring(0, 4);
+            return date.substring(0, 4);
         }
         else {
             return date;
         }
-
-        return formattedDate;
     }
 
+    /**
+     * Adds "/10" to the end of the fetched rating
+     * @param rating from JSON
+     * @return String rating + "/10"
+     */
     public static String formatRating(String rating) {
 
-        String formattedRating = "";
-
         if (rating.length() > 2) {
-            formattedRating = rating.substring(0, 3) + "/10";
+            return rating.substring(0, 3) + "/10";
         }
         else {
             return rating + "/10";
         }
-
-        return formattedRating;
     }
 
+    /**
+     * Formats votes -> adds "," thousands separator
+     * @param votes as a String
+     * @return formatted String with thousands separator
+     */
     public static String formatVotes(String votes) {
-
-        String formattedVotes = "";
 
         int votesInt = Integer.parseInt(votes);
 
-        formattedVotes = String.format("%,d", votesInt);
-
-        return formattedVotes;
-
+        return String.format("%,d", votesInt);
     }
 }

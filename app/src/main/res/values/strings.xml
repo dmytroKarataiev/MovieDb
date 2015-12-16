@@ -4,6 +4,9 @@
     <string name="title_activity_detail">Details</string>
     <string name="action_sort">Sort</string>
 
+    <string name="movie_poster">Poster</string>
+    <string name="star_votes">*</string>
+
     <!-- Preference screen -->
     <string name="pref_sort">Sort</string>
     <string name="pref_sort_key" translatable="false">sort</string>

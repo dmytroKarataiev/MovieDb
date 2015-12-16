@@ -5,32 +5,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <!-- Header: Day, Date -->
+        <!-- Header: Movie Title -->
         <TextView
             android:id="@+id/movie_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/colorLighter"
             android:padding="@dimen/fab_margin"
-            android:text="movie"
             android:textColor="@color/white"
-            android:textSize="@dimen/movie_name"
-            android:background="@color/colorLighter"/>
+            android:textSize="@dimen/movie_name" />
 
 
-        <!-- Main content: high, low, art, weather state -->
+        <!-- Main content: rating, votes, year -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/fab_margin"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/fab_margin">
 
             <ImageView
                 android:id="@+id/poster_imageview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@string/movie_poster"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -42,21 +42,22 @@
                     android:id="@+id/detail_releasedate_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2015"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/year_text"/>
+                    android:textSize="@dimen/year_text" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:src="@drawable/star"
                         android:layout_width="@dimen/star_width"
                         android:layout_height="@dimen/star_height"
-                        android:layout_marginRight="4dp"/>
+                        android:layout_marginEnd="@dimen/star_margin"
+                        android:layout_marginRight="@dimen/star_margin"
+                        android:src="@drawable/star"
+                        android:contentDescription="@string/star_votes"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -67,14 +68,13 @@
                             android:id="@+id/detail_rating_textview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="8/10"
-                            android:textSize="@dimen/rating_text"/>
+                            android:textSize="@dimen/rating_text" />
+
                         <TextView
                             android:id="@+id/detail_votecount_textview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10,100"
-                            android:textSize="@dimen/votes"/>
+                            android:textSize="@dimen/votes" />
 
                     </LinearLayout>
 
@@ -85,19 +85,16 @@
             </LinearLayout>
 
 
-
         </LinearLayout>
 
-        <!-- Humidity, wind, pressure -->
+        <!-- Movie Description -->
         <TextView
             android:id="@+id/detail_description_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/fab_margin"
-            android:paddingRight="@dimen/fab_margin"
             android:paddingBottom="@dimen/fab_margin"
-            android:text="Description" />
-
+            android:paddingLeft="@dimen/fab_margin"
+            android:paddingRight="@dimen/fab_margin" />
 
 
     </LinearLayout>

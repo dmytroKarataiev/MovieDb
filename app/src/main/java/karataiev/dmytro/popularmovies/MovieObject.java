@@ -8,13 +8,13 @@ import android.os.Parcelable;
  * Created by karataev on 12/14/15.
  */
 public class MovieObject implements Parcelable {
-    String name;
-    String pathToImage;
-    String pathToDetailImage;
-    String description;
-    String rating;
-    String year;
-    String voteCount;
+    final String name;
+    final String pathToImage;
+    final String pathToDetailImage;
+    final String description;
+    final String rating;
+    final String year;
+    final String voteCount;
 
     public MovieObject(String name, String pathToImage, String pathToDetailImage, String description, String rating, String year, String voteCount) {
         this.name = name;

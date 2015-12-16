@@ -1,23 +1,23 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- Poster sizes -->
     <dimen name="poster_width">185dp</dimen>
     <dimen name="poster_height">278dp</dimen>
 
-    <!-- Column width in GridView-->
+    <!-- Column width in GridView -->
     <dimen name="column_width">150dp</dimen>
 
+    <!-- Text sizes -->
     <dimen name="movie_name">24sp</dimen>
     <dimen name="year_text">36sp</dimen>
     <dimen name="rating_text">24sp</dimen>
     <dimen name="votes">16sp</dimen>
 
+    <!-- Star sizes -->
     <dimen name="star_width">20dp</dimen>
     <dimen name="star_height">20dp</dimen>
-
+    <dimen name="star_margin">4dp</dimen>
 
 </resources>

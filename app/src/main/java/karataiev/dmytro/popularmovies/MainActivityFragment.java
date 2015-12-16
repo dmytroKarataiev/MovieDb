@@ -21,7 +21,7 @@ public class MainActivityFragment extends Fragment {
 
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
-    private MovieObject[] movies;
+    // Couldn't find more efficient way to use following variable then to make them global
     private MovieObjectAdapter movieAdapter;
     private ArrayList<MovieObject> movieList;
     private String mSort;
@@ -31,20 +31,21 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
 
+        // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 
+        // onClick activity which launches detailed view
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView adapterView, View view, int position, long l) {
-                // CursorAdapter returns a cursor at the correct position for getItem(), or null
-                // if it cannot seek to that position.
+
                 MovieObject currentPoster = (MovieObject) adapterView.getItemAtPosition(position);
 
                 if (currentPoster != null) {
@@ -63,10 +64,12 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        // Initializes global mSort with SharedPreferences of sort
         mSort = Utility.getSort(getContext());
 
+        // If movies were fetched - re-uses data
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-
             updateSort();
         }
         else {
@@ -76,6 +79,8 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+
+        // Saves movies so we don't need to re-download them
         outState.putParcelableArrayList("movies", movieList);
         super.onSaveInstanceState(outState);
     }
@@ -83,9 +88,10 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to update UI when settings changed
      */
-    public void updateSort()
+    private void updateSort()
     {
         String sort = Utility.getSort(getActivity());
+        MovieObject[] movies;
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
@@ -130,9 +136,4 @@ public class MainActivityFragment extends Fragment {
         super.onResume();
         updateSort();
     }
-
-
-
-
-
 }

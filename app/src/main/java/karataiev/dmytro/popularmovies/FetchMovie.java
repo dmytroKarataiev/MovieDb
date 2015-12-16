@@ -31,7 +31,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
+class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
 
     private final String LOG_TAG = FetchMovie.class.getSimpleName();
 
@@ -42,16 +42,12 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
     }
 
     /**
-     * Take the String representing the complete forecast in JSON Format and
+     * Take the String representing movie info in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
-     *
-     * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-     * into an Object hierarchy for us.
      */
-    public MovieObject[] getWeatherDataFromJson(String movieJsonStr)
-            throws JSONException {
+    private MovieObject[] getWeatherDataFromJson(String movieJsonStr) {
 
-
+        // Attributes to parse in JSON
         final String RESULTS = "results";
         final String MOVIE_POSTER = "poster_path";
         final String MOVIE_NAME = "original_title";
@@ -60,8 +56,10 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         final String MOVIE_RATING = "vote_average";
         final String MOVIE_VOTE = "vote_count";
 
+        // Depending on the dpi of the phone adds correct address to the link
         final String[] POSTER_SIZE = Utility.posterSize(mContext);
 
+        // Creates to links to the posters: one for main window, one for the detailed view
         final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
         final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
 
@@ -84,9 +82,7 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
                         current.getString(MOVIE_RELEASE_DATE),
                         current.getString(MOVIE_VOTE)
                 );
-
             }
-
             return movieObjects;
 
         } catch (JSONException e) {
@@ -97,8 +93,12 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         return null;
     }
 
+    /**
+     * AsyncTask to fetch data on background thread
+     * @param params doesn't take any parameters yet, gets sort from SharedPreferences
+     * @return array of MovieObjects
+     */
     protected MovieObject[] doInBackground(String... params) {
-
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -110,19 +110,37 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
 
         try {
             // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are available at OWM's forecast API page, at
-            // http://openweathermap.org/API#forecast
+            // Possible parameters are available at Movie DB API page, at
+            // http://docs.themoviedb.apiary.io/
             final String FORECAST_BASE_URL =
                     "http://api.themoviedb.org/3/discover/movie?";
             final String QUERY_PARAM = "sort_by";
-            final String SORT = Utility.getSort(mContext);
 
+            // Gets preferred sort, by default: popularity.desc
+            final String SORT = Utility.getSort(mContext);
+            Log.v(LOG_TAG, "SORT" + SORT);
+
+            final String VOTERS = "vote_count.gte";
+            final String VOTERS_MIN = "100";
+            // Don't forget to add API key to the gradle.properties file
             final String API_KEY = "api_key";
 
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, SORT)
-                    .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
-                    .build();
+            Uri builtUri;
+
+            // When sort on vote_average - gets movies with at least VOTERS_MIN votes
+            if (SORT.contains("vote_average")) {
+                builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, SORT)
+                        .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                        .appendQueryParameter(VOTERS, VOTERS_MIN)
+                        .build();
+                Log.v(LOG_TAG, "URL " + builtUri.toString());
+            } else {
+                builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, SORT)
+                        .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                        .build();
+            }
 
             URL url = new URL(builtUri.toString());
 
@@ -133,7 +151,7 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             if (inputStream == null) {
                 // Nothing to do.
                 return null;
@@ -164,9 +182,6 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
             return null;
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -180,9 +195,5 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
             }
         }
 
-        // This will only happen if there was an error getting or parsing the forecast.
-        return null;
     }
-
-
 }

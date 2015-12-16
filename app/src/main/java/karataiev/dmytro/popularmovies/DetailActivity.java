@@ -1,15 +1,15 @@
 package karataiev.dmytro.popularmovies;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 /**
+ * Class to start DetailActivityFragment
  * Created by karataev on 12/15/15.
  */
-
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +22,6 @@ public class DetailActivity extends ActionBarActivity {
                     .add(R.id.container, new DetailFragment())
                     .commit();
         }
-
     }
 
     @Override
@@ -48,5 +47,4 @@ public class DetailActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }
