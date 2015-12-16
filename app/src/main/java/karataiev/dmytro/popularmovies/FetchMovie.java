@@ -50,7 +50,7 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         // Attributes to parse in JSON
         final String RESULTS = "results";
         final String MOVIE_POSTER = "poster_path";
-        final String MOVIE_NAME = "original_title";
+        final String MOVIE_NAME = "title";
         final String MOVIE_DESCRIPTION = "overview";
         final String MOVIE_RELEASE_DATE = "release_date";
         final String MOVIE_RATING = "vote_average";
