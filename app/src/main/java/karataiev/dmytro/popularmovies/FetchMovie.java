@@ -45,7 +45,7 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
      * Take the String representing movie info in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
      */
-    private MovieObject[] getWeatherDataFromJson(String movieJsonStr) {
+    private MovieObject[] getMovieDataFromJSON(String movieJsonStr) {
 
         // Attributes to parse in JSON
         final String RESULTS = "results";
@@ -175,7 +175,7 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
 
             Log.v(LOG_TAG, movieJsonStr);
 
-            return getWeatherDataFromJson(movieJsonStr);
+            return getMovieDataFromJSON(movieJsonStr);
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);

@@ -26,6 +26,8 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private GridView gridView;
+    private MovieObject[] movies;
+
 
     public MainActivityFragment() {
     }
@@ -62,7 +64,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Initializes global mSort with SharedPreferences of sort
@@ -71,8 +73,7 @@ public class MainActivityFragment extends Fragment {
         // If movies were fetched - re-uses data
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             updateSort();
-        }
-        else {
+        } else {
             movieList = savedInstanceState.getParcelableArrayList("movies");
         }
     }
@@ -88,46 +89,28 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to update UI when settings changed
      */
-    private void updateSort()
-    {
+    private void updateSort() {
         String sort = Utility.getSort(getActivity());
-        MovieObject[] movies;
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
-            try
-            {
-                // fetches new data
-                FetchMovie fetchMovie = new FetchMovie(getContext());
-                movies = fetchMovie.execute(sort).get();
-                movieList = new ArrayList<>(Arrays.asList(movies));
 
-                // clears adapter, updates data, notifies and sets to grid view
-                movieAdapter.clear();
-                movieAdapter.addAll(movieList);
-                movieAdapter.notifyDataSetChanged();
-                gridView.invalidateViews();
-                gridView.setAdapter(movieAdapter);
+            // fetches new data
+            fetchMovies(sort);
 
-                // updates global settings variable
-                mSort = sort;
-            } catch (ExecutionException e) {
-                Log.v(LOG_TAG, "error");
-            } catch (InterruptedException e2) {
-                Log.v(LOG_TAG, "error" + e2);
-            }
-        }
-        else if (movieList == null) {
-            try {
-                // fetches new data
-                FetchMovie fetchMovie = new FetchMovie(getContext());
-                movies = fetchMovie.execute(sort).get();
-                movieList = new ArrayList<>(Arrays.asList(movies));
-            } catch (ExecutionException e) {
-                Log.v(LOG_TAG, "error");
-            } catch (InterruptedException e2) {
-                Log.v(LOG_TAG, "error" + e2);
-            }
+            // clears adapter, updates data, notifies and sets to grid view
+            movieAdapter.clear();
+            movieAdapter.addAll(movieList);
+            movieAdapter.notifyDataSetChanged();
+            gridView.invalidateViews();
+            gridView.setAdapter(movieAdapter);
+
+            // updates global settings variable
+            mSort = sort;
+
+        } else if (movieList == null) {
+            // fetches new data
+            fetchMovies(sort);
         }
     }
 
@@ -135,5 +118,29 @@ public class MainActivityFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateSort();
+    }
+
+    /**
+     * Method to fetch movies and if there is no network to provide empty MovieObject[] list
+     * so the App won't crash
+     * @param sort to fetch data sorted with the parameter
+     */
+    private void fetchMovies(String sort) {
+
+        try {
+            FetchMovie fetchMovie = new FetchMovie(getContext());
+
+            movies = fetchMovie.execute(sort).get();
+            if (movies == null) {
+                movieList = new ArrayList<>();
+            } else {
+                movieList = new ArrayList<>(Arrays.asList(movies));
+            }
+        } catch (ExecutionException e) {
+            Log.v(LOG_TAG, "error");
+        } catch (InterruptedException e2) {
+            Log.v(LOG_TAG, "error" + e2);
+        }
+
     }
 }
