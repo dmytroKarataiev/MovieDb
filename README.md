@@ -16,7 +16,8 @@ movieDbApiKey = "**YOUR API KEY**"
 ## Content from the internet and other sources
 * Star in the app: http://cliparts.co/cliparts/6Tp/opb/6Tpopbaac.png
 * App icon: http://www.veryicon.com/icon/png/System/Agua/Movies.png
-* 
+* Some technics and ideas were taken from Udacity Course [Developing Android Apps](https://www.udacity.com/course/viewer#!/c-ud853-nd)
+* And useful WebCasts from Android NanoDegree: https://plus.google.com/u/0/107950612876685287140/posts 
 
 ## Additional Info
 App uses great image library: http://square.github.io/picasso/
