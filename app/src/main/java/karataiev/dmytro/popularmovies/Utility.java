@@ -61,4 +61,44 @@ public class Utility {
         return prefs.getString(context.getString(R.string.pref_sort_key),
                 context.getString(R.string.pref_sort_default));
     }
+
+    public static String formatDate(String date) {
+
+        String formattedDate = "";
+
+        if (date.length() > 3) {
+            formattedDate = date.substring(0, 4);
+        }
+        else {
+            return date;
+        }
+
+        return formattedDate;
+    }
+
+    public static String formatRating(String rating) {
+
+        String formattedRating = "";
+
+        if (rating.length() > 2) {
+            formattedRating = rating.substring(0, 3) + "/10";
+        }
+        else {
+            return rating + "/10";
+        }
+
+        return formattedRating;
+    }
+
+    public static String formatVotes(String votes) {
+
+        String formattedVotes = "";
+
+        int votesInt = Integer.parseInt(votes);
+
+        formattedVotes = String.format("%,d", votesInt);
+
+        return formattedVotes;
+
+    }
 }

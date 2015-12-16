@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">Details</string>
@@ -37,5 +37,11 @@
         <item>vote_count.asc</item>
         <item>vote_count.desc</item>
     </string-array>
+
+    <string name="votes_text">
+        <xliff:g id="voters">%s</xliff:g> voters
+    </string>
+
+    <string name="share">Share</string>
 
 </resources>

@@ -3,9 +3,13 @@ package karataiev.dmytro.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +25,9 @@ public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
     private ViewHolder viewHolder;
+    private ShareActionProvider mShareActionProvider;
+    private String mMovie;
+
 
     /**
      * Cache of the children views for a forecast list item.
@@ -33,6 +40,7 @@ public class DetailFragment extends Fragment {
         public final TextView movieReleaseDate;
         public final TextView movieRating;
         public final TextView movieDescription;
+        public final TextView movieVotes;
 
 
         public ViewHolder(View view) {
@@ -41,7 +49,7 @@ public class DetailFragment extends Fragment {
             movieReleaseDate = (TextView) view.findViewById(R.id.detail_releasedate_textview);
             movieRating = (TextView) view.findViewById(R.id.detail_rating_textview);
             movieDescription = (TextView) view.findViewById(R.id.detail_description_textview);
-
+            movieVotes = (TextView) view.findViewById(R.id.detail_votecount_textview);
         }
     }
 
@@ -59,19 +67,16 @@ public class DetailFragment extends Fragment {
 
         Intent intent = this.getActivity().getIntent();
         MovieObject fromIntent = intent.getParcelableExtra("movie");
-        /*
-        String name = intent.getStringExtra("name");
-        String path = intent.getStringExtra("path");
-        String description = intent.getStringExtra("description");
-        String rating = intent.getStringExtra("rating");
-        String year = intent.getStringExtra("release_date");
-        */
+
         viewHolder.movieName.setText(fromIntent.name);
         viewHolder.movieDescription.setText(fromIntent.description);
         viewHolder.movieRating.setText(fromIntent.rating);
         viewHolder.movieReleaseDate.setText(fromIntent.year);
+        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.voteCount));
 
         Picasso.with(getContext()).load(fromIntent.pathToDetailImage).into(viewHolder.posterView);
+
+        mMovie = fromIntent.name + "\n" + fromIntent.year + "\n" + fromIntent.rating + "\n" + fromIntent.description;
 
         return rootView;
 
@@ -81,124 +86,31 @@ public class DetailFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.detail_fragment, menu);
 
         // Retrieve the share menu item
-        //MenuItem item = menu.findItem(R.id.share);
+        MenuItem item = menu.findItem(R.id.share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        //mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
-
-        //if (mShareActionProvider != null) {
-        //    mShareActionProvider.setShareIntent(weatherIntent());
-        //}
-        //else
-        //{
-        //    Log.v(LOG_TAG, "fail");
-        //}
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(movieIntent());
+        }
+        else
+        {
+            Log.v(LOG_TAG, "fail");
+        }
     }
-/*
-    private Intent weatherIntent() {
+
+    private Intent movieIntent() {
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         sendIntent.setType("text/plain");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mForecast + " #Sunshine");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, mMovie + "\n#Pop Movie App");
 
         return sendIntent;
-    } */
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        //getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-        super.onActivityCreated(savedInstanceState);
-    }
-/*
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        Log.v(LOG_TAG, "In onCreateLoader");
-
-        Intent intent = getActivity().getIntent();
-
-        if (intent == null) {
-            return null;
-        }
-
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(
-                getActivity(),
-                intent.getData(),
-                FORECAST_COLUMNS,
-                null,
-                null,
-                null
-        );
-
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        Log.v(LOG_TAG, "In onLoadFinished");
-        if (!data.moveToFirst()) { return; }
-
-        // Use placeholder image for now
-        int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
-        viewHolder.posterView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
-
-        // Description
-        String description = data.getString(COL_WEATHER_DESC);
-        viewHolder.descriptionView.setText(description);
-
-        // Nicely formatted date
-        long date = data.getLong(COL_WEATHER_DATE);
-        String friendlyDateText = Utility.getFriendlyDayString(getActivity(), date);
-        String dateText = Utility.getFormattedMonthDay(getActivity(), date);
-        viewHolder.movieName.setText(friendlyDateText);
-        viewHolder.dateView.setText(dateText);
-
-        // High temp + min temp
-        boolean isMetric = Utility.isMetric(getActivity());
-
-        double maxTemperature = data.getDouble(COL_WEATHER_MAX_TEMP);
-        String high = Utility.formatTemperature(getActivity(), maxTemperature, isMetric);
-        viewHolder.movieReleaseDate.setText(high);
-
-        double minTemperature = data.getDouble(COL_WEATHER_MIN_TEMP);
-        String low = Utility.formatTemperature(getActivity(), minTemperature, isMetric);
-        viewHolder.movieRating.setText(low);
-
-        // Humidity
-        float humidity = data.getFloat(COL_WEATHER_HUMIDITY);
-        viewHolder.movieDescription.setText(getActivity().getString(R.string.format_humidity, humidity));
-
-        // Wind speed and direction
-        float windSpeed = data.getFloat(COL_WEATHER_WIND);
-        float degrees = data.getFloat(COL_WEATHER_DEGREES);
-        viewHolder.windView.setText(Utility.getFormattedWind(getActivity(), windSpeed, degrees));
-
-        // Pressure
-        float pressure = data.getFloat(COL_WEATHER_PRESSURE);
-        viewHolder.pressureView.setText(getActivity().getString(R.string.format_pressure, pressure));
-
-        // Share Intent
-        mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
-
-        // If onCreateOptionsMenu has already happened, we need to update the share intent now.
-        if ( mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(weatherIntent());
-        }
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        Toast.makeText(getActivity(), "onLoaderReset", Toast.LENGTH_SHORT).show();
-    }
-
-*/
 
 }

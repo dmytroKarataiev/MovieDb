@@ -14,14 +14,16 @@ public class MovieObject implements Parcelable {
     String description;
     String rating;
     String year;
+    String voteCount;
 
-    public MovieObject(String name, String pathToImage, String pathToDetailImage, String description, String rating, String year) {
+    public MovieObject(String name, String pathToImage, String pathToDetailImage, String description, String rating, String year, String voteCount) {
         this.name = name;
         this.pathToImage = pathToImage;
         this.pathToDetailImage = pathToDetailImage;
         this.description = description;
-        this.rating = rating + "/10";
-        this.year = year.substring(0, 4);
+        this.rating = Utility.formatRating(rating);
+        this.year = Utility.formatDate(year);
+        this.voteCount = Utility.formatVotes(voteCount);
     }
 
     private MovieObject(Parcel in) {
@@ -31,6 +33,7 @@ public class MovieObject implements Parcelable {
         description = in.readString();
         rating = in.readString();
         year = in.readString();
+        voteCount = in.readString();
     }
 
     @Override
@@ -46,6 +49,7 @@ public class MovieObject implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(rating);
         parcel.writeString(year);
+        parcel.writeString(voteCount);
     }
 
     public static final Parcelable.Creator<MovieObject> CREATOR = new Parcelable.Creator<MovieObject>() {

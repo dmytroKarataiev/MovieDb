@@ -58,6 +58,7 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         final String MOVIE_DESCRIPTION = "overview";
         final String MOVIE_RELEASE_DATE = "release_date";
         final String MOVIE_RATING = "vote_average";
+        final String MOVIE_VOTE = "vote_count";
 
         final String[] POSTER_SIZE = Utility.posterSize(mContext);
 
@@ -80,7 +81,8 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
                         FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
                         current.getString(MOVIE_DESCRIPTION),
                         current.getString(MOVIE_RATING),
-                        current.getString(MOVIE_RELEASE_DATE)
+                        current.getString(MOVIE_RELEASE_DATE),
+                        current.getString(MOVIE_VOTE)
                 );
 
             }

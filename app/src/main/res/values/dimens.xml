@@ -11,4 +11,13 @@
     <!-- Column width in GridView-->
     <dimen name="column_width">150dp</dimen>
 
+    <dimen name="movie_name">24sp</dimen>
+    <dimen name="year_text">36sp</dimen>
+    <dimen name="rating_text">24sp</dimen>
+    <dimen name="votes">16sp</dimen>
+
+    <dimen name="star_width">20dp</dimen>
+    <dimen name="star_height">20dp</dimen>
+
+
 </resources>
