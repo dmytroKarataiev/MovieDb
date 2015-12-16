@@ -42,7 +42,7 @@
     </string-array>
 
     <string name="votes_text">
-        <xliff:g id="voters">%s</xliff:g> voters
+        <xliff:g id="voters">%s</xliff:g> votes
     </string>
 
     <string name="share">Share</string>
