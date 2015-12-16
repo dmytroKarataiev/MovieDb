@@ -64,8 +64,6 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
         final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
 
-        Log.v(LOG_TAG, " " + POSTER_SIZE[0] + " " + POSTER_SIZE[1]);
-
         try {
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
@@ -85,7 +83,6 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
                         current.getString(MOVIE_RELEASE_DATE)
                 );
 
-                Log.v(LOG_TAG, movieArray.getJSONObject(i).getString(MOVIE_NAME) + " " + movieArray.getJSONObject(i).getString(MOVIE_POSTER));
             }
 
             return movieObjects;
@@ -116,16 +113,16 @@ public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
             final String FORECAST_BASE_URL =
                     "http://api.themoviedb.org/3/discover/movie?";
             final String QUERY_PARAM = "sort_by";
-            final String POP = "popularity.desc";
+            final String SORT = Utility.getSort(mContext);
+
             final String API_KEY = "api_key";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, POP)
+                    .appendQueryParameter(QUERY_PARAM, SORT)
                     .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
-            Log.v(LOG_TAG, url.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();

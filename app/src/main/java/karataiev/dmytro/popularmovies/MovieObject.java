@@ -20,8 +20,8 @@ public class MovieObject implements Parcelable {
         this.pathToImage = pathToImage;
         this.pathToDetailImage = pathToDetailImage;
         this.description = description;
-        this.rating = rating;
-        this.year = year;
+        this.rating = rating + "/10";
+        this.year = year.substring(0, 4);
     }
 
     private MovieObject(Parcel in) {

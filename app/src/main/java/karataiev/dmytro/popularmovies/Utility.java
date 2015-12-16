@@ -1,6 +1,8 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 /**
@@ -52,5 +54,11 @@ public class Utility {
         }
 
         return new String[] { POSTER_SIZE, POSTER_SIZE_DETAIL };
+    }
+
+    public static String getSort(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_sort_key),
+                context.getString(R.string.pref_sort_default));
     }
 }

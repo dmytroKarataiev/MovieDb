@@ -3,4 +3,39 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">Details</string>
     <string name="action_sort">Sort</string>
+
+    <!-- Preference screen -->
+    <string name="pref_sort">Sort</string>
+    <string name="pref_sort_key" translatable="false">sort</string>
+    <string name="pref_sort_default">popularity.desc</string>
+    <string-array name="pref_sort_entries">
+        <item>Popularity Asc</item>
+        <item>Popularity Desc</item>
+        <item>Release Date Asc</item>
+        <item>Release Date Desc</item>
+        <item>Revenue Asc</item>
+        <item>Revenue Desc</item>
+        <item>Original Title Asc</item>
+        <item>Original Title Desc</item>
+        <item>Vote Average Asc</item>
+        <item>Vote Average Desc</item>
+        <item>Vote Count Asc</item>
+        <item>Vote Count Desc</item>
+    </string-array>
+
+    <string-array name="pref_sort_values">
+        <item>popularity.asc</item>
+        <item>popularity.desc</item>
+        <item>release_date.asc</item>
+        <item>release_date.desc</item>
+        <item>revenue.asc</item>
+        <item>revenue.desc</item>
+        <item>original_title.asc</item>
+        <item>original_title.desc</item>
+        <item>vote_average.asc</item>
+        <item>vote_average.desc</item>
+        <item>vote_count.asc</item>
+        <item>vote_count.desc</item>
+    </string-array>
+
 </resources>
