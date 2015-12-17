@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Class with additional helper functions
  * Created by karataev on 12/15/15.
@@ -119,7 +121,7 @@ class Utility {
      * Take the String representing movie info in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
      */
-    public static MovieObject[] getMovieDataFromJSON(Context context, String movieJsonStr) {
+    public static ArrayList<MovieObject> getMovieDataFromJSON(Context context, String movieJsonStr) {
 
         // Attributes to parse in JSON
         final String RESULTS = "results";
@@ -141,20 +143,20 @@ class Utility {
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(RESULTS);
-            MovieObject[] movieObjects = new MovieObject[movieArray.length()];
+            ArrayList<MovieObject> movieObjects = new ArrayList<>();
 
             for (int i = 0, n = movieArray.length(); i < n; i++)
             {
                 JSONObject current = movieArray.getJSONObject(i);
 
-                movieObjects[i] = new MovieObject(
+                movieObjects.add(new MovieObject(
                         current.getString(MOVIE_NAME),
                         FULL_PATH + current.getString(MOVIE_POSTER),
                         FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
                         current.getString(MOVIE_DESCRIPTION),
                         current.getString(MOVIE_RATING),
                         current.getString(MOVIE_RELEASE_DATE),
-                        current.getString(MOVIE_VOTE)
+                        current.getString(MOVIE_VOTE))
                 );
             }
             return movieObjects;

@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -184,7 +183,7 @@ public class MainActivityFragment extends Fragment {
      */
     private void fetchMovies(String sort) {
 
-        MovieObject[] movies;
+        ArrayList<MovieObject> movies;
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
@@ -193,7 +192,7 @@ public class MainActivityFragment extends Fragment {
             if (movies == null) {
                 movieList = new ArrayList<>();
             } else {
-                movieList = new ArrayList<>(Arrays.asList(movies));
+                movieList = movies;
             }
         } catch (ExecutionException e) {
             Log.v(LOG_TAG, "error");
@@ -214,7 +213,7 @@ public class MainActivityFragment extends Fragment {
         gridView.setAdapter(movieAdapter);
     }
 
-    public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
+    public class FetchMovie extends AsyncTask<String, Void, ArrayList<MovieObject>> {
 
         private final String LOG_TAG = FetchMovie.class.getSimpleName();
 
@@ -223,13 +222,13 @@ public class MainActivityFragment extends Fragment {
         public FetchMovie(Context context) {
             mContext = context;
         }
-        
+
         /**
          * AsyncTask to fetch data on background thread
          * @param params doesn't take any parameters yet, gets sort from SharedPreferences
          * @return array of MovieObjects
          */
-        protected MovieObject[] doInBackground(String... params) {
+        protected ArrayList<MovieObject> doInBackground(String... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -326,7 +325,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(MovieObject[] movieObjects) {
+        protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
             linlaProgressBar.setVisibility(View.GONE);
         }
