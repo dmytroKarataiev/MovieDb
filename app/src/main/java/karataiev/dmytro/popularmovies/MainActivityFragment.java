@@ -1,6 +1,11 @@
 package karataiev.dmytro.popularmovies;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +32,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private GridView gridView;
-    private MovieObject[] movies;
-
-
-    public MainActivityFragment() {
-    }
+    BroadcastReceiver networStateReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,6 +78,32 @@ public class MainActivityFragment extends Fragment {
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movies");
         }
+
+        // BroadcastReceiver to get info about network connection
+        networStateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
+                // Updates screen on network connection if nothing was on the screen
+                if (activeNetInfo != null) {
+                    Toast.makeText(context, "Active Network Type : " + activeNetInfo.getTypeName(), Toast.LENGTH_SHORT).show();
+                    updateSort();
+                }
+            }
+        };
+        startListening();
+
+    }
+
+    /**
+     * Method to register BroadcastReceiver
+     */
+    public void startListening() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        getActivity().registerReceiver(networStateReceiver, filter);
     }
 
     @Override
@@ -89,21 +117,17 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to update UI when settings changed
      */
-    private void updateSort() {
+    public void updateSort() {
         String sort = Utility.getSort(getActivity());
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
-
+            Log.v(LOG_TAG, "new sort");
             // fetches new data
             fetchMovies(sort);
 
             // clears adapter, updates data, notifies and sets to grid view
-            movieAdapter.clear();
-            movieAdapter.addAll(movieList);
-            movieAdapter.notifyDataSetChanged();
-            gridView.invalidateViews();
-            gridView.setAdapter(movieAdapter);
+            redraw();
 
             // updates global settings variable
             mSort = sort;
@@ -111,12 +135,17 @@ public class MainActivityFragment extends Fragment {
         } else if (movieList == null) {
             // fetches new data
             fetchMovies(sort);
+        } else if (movieList.isEmpty()) {
+            fetchMovies(sort);
+            redraw();
+            Log.v(LOG_TAG, "no data " + Boolean.toString(movieList == null) + " " + Boolean.toString(movieList.isEmpty()) + " " + movieList.size());
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.v(LOG_TAG, "resume");
         updateSort();
     }
 
@@ -126,6 +155,8 @@ public class MainActivityFragment extends Fragment {
      * @param sort to fetch data sorted with the parameter
      */
     private void fetchMovies(String sort) {
+
+        MovieObject[] movies;
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
@@ -143,4 +174,16 @@ public class MainActivityFragment extends Fragment {
         }
 
     }
+
+    /**
+     * Method to redraw GridView, invoked from updateSort() when movieList is empty or settings were changed
+     */
+    private void redraw() {
+        movieAdapter.clear();
+        movieAdapter.addAll(movieList);
+        movieAdapter.notifyDataSetChanged();
+        gridView.invalidateViews();
+        gridView.setAdapter(movieAdapter);
+    }
+
 }
