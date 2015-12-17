@@ -42,7 +42,11 @@ public class MainActivityFragment extends Fragment {
     private String mSort;
     private GridView gridView;
     BroadcastReceiver networkStateReceiver;
+
+    // Continuous viewing and progress bar variables
     private ProgressBar linlaProgressBar;
+    private boolean loadingMore;
+    private int currentPage = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,19 +79,20 @@ public class MainActivityFragment extends Fragment {
 
         gridView.setAdapter(movieAdapter);
 
-        // ONSCROLLLISTENER
+        // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
+            public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
-                Log.v(LOG_TAG, " " + lastInScreen);
+                if (lastInScreen == totalItemCount && !loadingMore) {
+                    currentPage++;
+                    Log.v(LOG_TAG, "PAGE " + currentPage);
+                    fetchMovies(Utility.getSort(getContext()));
+                }
 
             }
         });
@@ -153,6 +158,7 @@ public class MainActivityFragment extends Fragment {
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
             // fetches new data
+            currentPage = 1;
             fetchMovies(sort);
 
             // clears adapter, updates data, notifies and sets to grid view
@@ -177,7 +183,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     /**
-     * Method to fetch movies and if there is no network to provide empty MovieObject[] list
+     * Method to fetch movies and if there is no network to provide empty MovieObject ArrayList
      * so the App won't crash
      * @param sort to fetch data sorted with the parameter
      */
@@ -191,6 +197,8 @@ public class MainActivityFragment extends Fragment {
             movies = fetchMovie.execute(sort).get();
             if (movies == null) {
                 movieList = new ArrayList<>();
+            } else if (currentPage != 1) {
+                movieList.addAll(movies);
             } else {
                 movieList = movies;
             }
@@ -199,7 +207,6 @@ public class MainActivityFragment extends Fragment {
         } catch (InterruptedException e2) {
             Log.v(LOG_TAG, "error" + e2);
         }
-
     }
 
     /**
@@ -230,6 +237,7 @@ public class MainActivityFragment extends Fragment {
          */
         protected ArrayList<MovieObject> doInBackground(String... params) {
 
+            loadingMore = true;
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
 
@@ -248,7 +256,7 @@ public class MainActivityFragment extends Fragment {
                 final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
                 final String QUERY_PARAM = "sort_by";
                 final String PAGE_QUERY = "page";
-                String PAGE = "1";
+                String PAGE = Integer.toString(currentPage);
 
                 // Gets preferred sort, by default: popularity.desc
                 final String SORT = Utility.getSort(mContext);
@@ -328,6 +336,7 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
             linlaProgressBar.setVisibility(View.GONE);
+            loadingMore = false;
         }
     }
 

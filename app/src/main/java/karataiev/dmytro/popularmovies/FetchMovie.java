@@ -15,6 +15,8 @@
  */
 package karataiev.dmytro.popularmovies;
 
+// WORK IN PROGRESS - I'm trying to make progress bar work in MainActivityFragment
+
 /*
 public class FetchMovie2 extends AsyncTask<String, Void, MovieObject[]> {
 
