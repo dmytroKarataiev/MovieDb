@@ -4,12 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class with additional helper functions
  * Created by karataev on 12/15/15.
  */
 class Utility {
+
+    private final String LOG_TAG = Utility.class.getSimpleName();
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
@@ -106,5 +113,57 @@ class Utility {
         int votesInt = Integer.parseInt(votes);
 
         return String.format("%,d", votesInt);
+    }
+
+    /**
+     * Take the String representing movie info in JSON Format and
+     * pull out the data we need to construct the Strings needed for the wireframes.
+     */
+    public static MovieObject[] getMovieDataFromJSON(Context context, String movieJsonStr) {
+
+        // Attributes to parse in JSON
+        final String RESULTS = "results";
+        final String MOVIE_POSTER = "poster_path";
+        final String MOVIE_NAME = "title";
+        final String MOVIE_DESCRIPTION = "overview";
+        final String MOVIE_RELEASE_DATE = "release_date";
+        final String MOVIE_RATING = "vote_average";
+        final String MOVIE_VOTE = "vote_count";
+
+        // Depending on the dpi of the phone adds correct address to the link
+        final String[] POSTER_SIZE = Utility.posterSize(context);
+
+        // Creates to links to the posters: one for main window, one for the detailed view
+        final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
+        final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
+
+        try {
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(RESULTS);
+            MovieObject[] movieObjects = new MovieObject[movieArray.length()];
+
+            for (int i = 0, n = movieArray.length(); i < n; i++)
+            {
+                JSONObject current = movieArray.getJSONObject(i);
+
+                movieObjects[i] = new MovieObject(
+                        current.getString(MOVIE_NAME),
+                        FULL_PATH + current.getString(MOVIE_POSTER),
+                        FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
+                        current.getString(MOVIE_DESCRIPTION),
+                        current.getString(MOVIE_RATING),
+                        current.getString(MOVIE_RELEASE_DATE),
+                        current.getString(MOVIE_VOTE)
+                );
+            }
+            return movieObjects;
+
+        } catch (JSONException e) {
+            Log.e("LOG_TAG", e.getMessage(), e);
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

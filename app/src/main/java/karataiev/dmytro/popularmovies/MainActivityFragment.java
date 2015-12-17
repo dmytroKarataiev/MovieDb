@@ -14,14 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -78,6 +75,23 @@ public class MainActivityFragment extends Fragment {
         });
 
         gridView.setAdapter(movieAdapter);
+
+        // ONSCROLLLISTENER
+        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                int lastInScreen = firstVisibleItem + visibleItemCount;
+                Log.v(LOG_TAG, " " + lastInScreen);
+
+            }
+        });
 
         return rootview;
     }
@@ -209,59 +223,7 @@ public class MainActivityFragment extends Fragment {
         public FetchMovie(Context context) {
             mContext = context;
         }
-
-        /**
-         * Take the String representing movie info in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         */
-        private MovieObject[] getMovieDataFromJSON(String movieJsonStr) {
-
-            // Attributes to parse in JSON
-            final String RESULTS = "results";
-            final String MOVIE_POSTER = "poster_path";
-            final String MOVIE_NAME = "title";
-            final String MOVIE_DESCRIPTION = "overview";
-            final String MOVIE_RELEASE_DATE = "release_date";
-            final String MOVIE_RATING = "vote_average";
-            final String MOVIE_VOTE = "vote_count";
-
-            // Depending on the dpi of the phone adds correct address to the link
-            final String[] POSTER_SIZE = Utility.posterSize(mContext);
-
-            // Creates to links to the posters: one for main window, one for the detailed view
-            final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
-            final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
-
-            try {
-
-                JSONObject movieJson = new JSONObject(movieJsonStr);
-                JSONArray movieArray = movieJson.getJSONArray(RESULTS);
-                MovieObject[] movieObjects = new MovieObject[movieArray.length()];
-
-                for (int i = 0, n = movieArray.length(); i < n; i++)
-                {
-                    JSONObject current = movieArray.getJSONObject(i);
-
-                    movieObjects[i] = new MovieObject(
-                            current.getString(MOVIE_NAME),
-                            FULL_PATH + current.getString(MOVIE_POSTER),
-                            FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
-                            current.getString(MOVIE_DESCRIPTION),
-                            current.getString(MOVIE_RATING),
-                            current.getString(MOVIE_RELEASE_DATE),
-                            current.getString(MOVIE_VOTE)
-                    );
-                }
-                return movieObjects;
-
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
+        
         /**
          * AsyncTask to fetch data on background thread
          * @param params doesn't take any parameters yet, gets sort from SharedPreferences
@@ -271,6 +233,9 @@ public class MainActivityFragment extends Fragment {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
+
+            Log.v(LOG_TAG, "PARAMS " + params.length + " ");
+
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -281,33 +246,30 @@ public class MainActivityFragment extends Fragment {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are available at Movie DB API page, at
                 // http://docs.themoviedb.apiary.io/
-                final String FORECAST_BASE_URL =
-                        "http://api.themoviedb.org/3/discover/movie?";
+                final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
                 final String QUERY_PARAM = "sort_by";
+                final String PAGE_QUERY = "page";
+                String PAGE = "1";
 
                 // Gets preferred sort, by default: popularity.desc
                 final String SORT = Utility.getSort(mContext);
-                Log.v(LOG_TAG, "SORT" + SORT);
 
                 final String VOTERS = "vote_count.gte";
                 final String VOTERS_MIN = "100";
+
                 // Don't forget to add API key to the gradle.properties file
                 final String API_KEY = "api_key";
 
-                Uri builtUri;
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, SORT)
+                        .appendQueryParameter(PAGE_QUERY, PAGE)
+                        .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                        .build();
 
                 // When sort on vote_average - gets movies with at least VOTERS_MIN votes
                 if (SORT.contains("vote_average")) {
-                    builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                            .appendQueryParameter(QUERY_PARAM, SORT)
-                            .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                    builtUri = builtUri.buildUpon()
                             .appendQueryParameter(VOTERS, VOTERS_MIN)
-                            .build();
-                    Log.v(LOG_TAG, "URL " + builtUri.toString());
-                } else {
-                    builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                            .appendQueryParameter(QUERY_PARAM, SORT)
-                            .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
                             .build();
                 }
 
@@ -342,9 +304,7 @@ public class MainActivityFragment extends Fragment {
                 }
                 movieJsonStr = buffer.toString();
 
-                Log.v(LOG_TAG, movieJsonStr);
-
-                return getMovieDataFromJSON(movieJsonStr);
+                return Utility.getMovieDataFromJSON(mContext, movieJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
