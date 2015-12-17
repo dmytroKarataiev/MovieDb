@@ -18,14 +18,12 @@ import java.util.ArrayList;
  */
 class Utility {
 
-    private final String LOG_TAG = Utility.class.getSimpleName();
-
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
      * @param context to get metrics data
      * @return String name which should be used in path to image
      */
-    public static String[] posterSize(Context context) {
+    private static String[] posterSize(Context context) {
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 

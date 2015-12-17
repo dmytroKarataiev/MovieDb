@@ -41,7 +41,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private GridView gridView;
-    BroadcastReceiver networkStateReceiver;
+    private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
     private ProgressBar linlaProgressBar;
@@ -82,7 +82,8 @@ public class MainActivityFragment extends Fragment {
         // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) { }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
@@ -90,8 +91,7 @@ public class MainActivityFragment extends Fragment {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
                 if (lastInScreen == totalItemCount && !loadingMore) {
                     currentPage++;
-                    Log.v(LOG_TAG, "PAGE " + currentPage);
-                    fetchMovies(Utility.getSort(getContext()));
+                    updateSort();
                 }
 
             }
@@ -135,7 +135,7 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to register BroadcastReceiver
      */
-    public void startListening() {
+    private void startListening() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         getActivity().registerReceiver(networkStateReceiver, filter);
@@ -143,7 +143,6 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
         // Saves movies so we don't need to re-download them
         outState.putParcelableArrayList("movies", movieList);
         super.onSaveInstanceState(outState);
@@ -173,6 +172,9 @@ public class MainActivityFragment extends Fragment {
         } else if (movieList.isEmpty()) {
             fetchMovies(sort);
             redraw();
+        } else {
+            fetchMovies(sort);
+            redraw();
         }
     }
 
@@ -180,6 +182,7 @@ public class MainActivityFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateSort();
+        Log.v(LOG_TAG, "Current page " + currentPage);
     }
 
     /**
@@ -213,11 +216,21 @@ public class MainActivityFragment extends Fragment {
      * Method to redraw GridView, invoked from updateSort() when movieList is empty or settings were changed
      */
     private void redraw() {
+
+        int currentPosition;
+
+        if (currentPage > 1) {
+            currentPosition = gridView.getFirstVisiblePosition();
+        } else {
+            currentPosition = 1;
+        }
+
         movieAdapter.clear();
         movieAdapter.addAll(movieList);
         movieAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
         gridView.setAdapter(movieAdapter);
+        gridView.setSelection(currentPosition);
     }
 
     public class FetchMovie extends AsyncTask<String, Void, ArrayList<MovieObject>> {
@@ -240,8 +253,6 @@ public class MainActivityFragment extends Fragment {
             loadingMore = true;
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
-
-            Log.v(LOG_TAG, "PARAMS " + params.length + " ");
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
