@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,8 +16,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -32,7 +45,8 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private GridView gridView;
-    BroadcastReceiver networStateReceiver;
+    BroadcastReceiver networkStateReceiver;
+    private ProgressBar linlaProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +55,9 @@ public class MainActivityFragment extends Fragment {
 
         // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
+
+        linlaProgressBar = (ProgressBar) rootview.findViewById(R.id.linlaProgressBar);
+        linlaProgressBar.setVisibility(View.VISIBLE);
 
         // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
@@ -80,7 +97,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         // BroadcastReceiver to get info about network connection
-        networStateReceiver = new BroadcastReceiver() {
+        networkStateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -93,8 +110,8 @@ public class MainActivityFragment extends Fragment {
                 }
             }
         };
+        // Starts receiver
         startListening();
-
     }
 
     /**
@@ -103,7 +120,7 @@ public class MainActivityFragment extends Fragment {
     public void startListening() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver(networStateReceiver, filter);
+        getActivity().registerReceiver(networkStateReceiver, filter);
     }
 
     @Override
@@ -122,7 +139,6 @@ public class MainActivityFragment extends Fragment {
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
-            Log.v(LOG_TAG, "new sort");
             // fetches new data
             fetchMovies(sort);
 
@@ -138,14 +154,12 @@ public class MainActivityFragment extends Fragment {
         } else if (movieList.isEmpty()) {
             fetchMovies(sort);
             redraw();
-            Log.v(LOG_TAG, "no data " + Boolean.toString(movieList == null) + " " + Boolean.toString(movieList.isEmpty()) + " " + movieList.size());
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.v(LOG_TAG, "resume");
         updateSort();
     }
 
@@ -184,6 +198,178 @@ public class MainActivityFragment extends Fragment {
         movieAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
         gridView.setAdapter(movieAdapter);
+    }
+
+    public class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
+
+        private final String LOG_TAG = FetchMovie.class.getSimpleName();
+
+        private final Context mContext;
+
+        public FetchMovie(Context context) {
+            mContext = context;
+        }
+
+        /**
+         * Take the String representing movie info in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         */
+        private MovieObject[] getMovieDataFromJSON(String movieJsonStr) {
+
+            // Attributes to parse in JSON
+            final String RESULTS = "results";
+            final String MOVIE_POSTER = "poster_path";
+            final String MOVIE_NAME = "title";
+            final String MOVIE_DESCRIPTION = "overview";
+            final String MOVIE_RELEASE_DATE = "release_date";
+            final String MOVIE_RATING = "vote_average";
+            final String MOVIE_VOTE = "vote_count";
+
+            // Depending on the dpi of the phone adds correct address to the link
+            final String[] POSTER_SIZE = Utility.posterSize(mContext);
+
+            // Creates to links to the posters: one for main window, one for the detailed view
+            final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
+            final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
+
+            try {
+
+                JSONObject movieJson = new JSONObject(movieJsonStr);
+                JSONArray movieArray = movieJson.getJSONArray(RESULTS);
+                MovieObject[] movieObjects = new MovieObject[movieArray.length()];
+
+                for (int i = 0, n = movieArray.length(); i < n; i++)
+                {
+                    JSONObject current = movieArray.getJSONObject(i);
+
+                    movieObjects[i] = new MovieObject(
+                            current.getString(MOVIE_NAME),
+                            FULL_PATH + current.getString(MOVIE_POSTER),
+                            FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
+                            current.getString(MOVIE_DESCRIPTION),
+                            current.getString(MOVIE_RATING),
+                            current.getString(MOVIE_RELEASE_DATE),
+                            current.getString(MOVIE_VOTE)
+                    );
+                }
+                return movieObjects;
+
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * AsyncTask to fetch data on background thread
+         * @param params doesn't take any parameters yet, gets sort from SharedPreferences
+         * @return array of MovieObjects
+         */
+        protected MovieObject[] doInBackground(String... params) {
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr;
+
+            try {
+                // Construct the URL for the OpenWeatherMap query
+                // Possible parameters are available at Movie DB API page, at
+                // http://docs.themoviedb.apiary.io/
+                final String FORECAST_BASE_URL =
+                        "http://api.themoviedb.org/3/discover/movie?";
+                final String QUERY_PARAM = "sort_by";
+
+                // Gets preferred sort, by default: popularity.desc
+                final String SORT = Utility.getSort(mContext);
+                Log.v(LOG_TAG, "SORT" + SORT);
+
+                final String VOTERS = "vote_count.gte";
+                final String VOTERS_MIN = "100";
+                // Don't forget to add API key to the gradle.properties file
+                final String API_KEY = "api_key";
+
+                Uri builtUri;
+
+                // When sort on vote_average - gets movies with at least VOTERS_MIN votes
+                if (SORT.contains("vote_average")) {
+                    builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                            .appendQueryParameter(QUERY_PARAM, SORT)
+                            .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                            .appendQueryParameter(VOTERS, VOTERS_MIN)
+                            .build();
+                    Log.v(LOG_TAG, "URL " + builtUri.toString());
+                } else {
+                    builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                            .appendQueryParameter(QUERY_PARAM, SORT)
+                            .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                            .build();
+                }
+
+                URL url = new URL(builtUri.toString());
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    line += "\n";
+                    buffer.append(line);
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                movieJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, movieJsonStr);
+
+                return getMovieDataFromJSON(movieJsonStr);
+
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attempting
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(MovieObject[] movieObjects) {
+            // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
+            linlaProgressBar.setVisibility(View.GONE);
+        }
     }
 
 }

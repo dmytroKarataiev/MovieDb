@@ -15,23 +15,8 @@
  */
 package karataiev.dmytro.popularmovies;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
+/*
+public class FetchMovie2 extends AsyncTask<String, Void, MovieObject[]> {
 
     private final String LOG_TAG = FetchMovie.class.getSimpleName();
 
@@ -41,10 +26,12 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         mContext = context;
     }
 
-    /**
+    */
+/**
      * Take the String representing movie info in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
-     */
+     *//*
+
     private MovieObject[] getMovieDataFromJSON(String movieJsonStr) {
 
         // Attributes to parse in JSON
@@ -93,11 +80,13 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
         return null;
     }
 
-    /**
+    */
+/**
      * AsyncTask to fetch data on background thread
      * @param params doesn't take any parameters yet, gets sort from SharedPreferences
      * @return array of MovieObjects
-     */
+     *//*
+
     protected MovieObject[] doInBackground(String... params) {
 
         // These two need to be declared outside the try/catch
@@ -194,6 +183,5 @@ class FetchMovie extends AsyncTask<String, Void, MovieObject[]> {
                 }
             }
         }
-
     }
-}
+}*/
