@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class MainActivityFragment extends Fragment {
     private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
-    //private ProgressBar linlaProgressBar;
+    private LinearLayout linlaProgressBar;
     private boolean loadingMore;
     private int currentPage = 1;
     private int currentPosition = 0;
@@ -56,8 +57,8 @@ public class MainActivityFragment extends Fragment {
         // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
 
-        //linlaProgressBar = (ProgressBar) rootview.findViewById(R.id.linlaProgressBar);
-        //linlaProgressBar.setVisibility(View.VISIBLE);
+        linlaProgressBar = (LinearLayout) rootview.findViewById(R.id.linlaProgressBar);
+        linlaProgressBar.setVisibility(View.VISIBLE);
 
         // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
@@ -78,7 +79,6 @@ public class MainActivityFragment extends Fragment {
         });
 
         gridView.setAdapter(movieAdapter);
-        //Log.v(LOG_TAG, "Current position " + currentPosition + " PAGE " + currentPage + " MOVIE LIST " + movieList.size());
 
         // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -94,11 +94,12 @@ public class MainActivityFragment extends Fragment {
                     currentPage++;
                     addMovies = true;
                     updateMovieList();
-                    //Log.v(LOG_TAG, "Page: " + currentPage);
                 }
 
             }
         });
+
+
 
         return rootview;
     }
@@ -112,17 +113,11 @@ public class MainActivityFragment extends Fragment {
 
         // If movies were fetched - re-uses data
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            //Log.v(LOG_TAG, "Not saved inst");
             updateMovieList();
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movies");
-            int page = savedInstanceState.getInt("page");
-            int position = savedInstanceState.getInt("position");
-
-            currentPosition = position;
-            currentPage = page;
-            ////Log.v(LOG_TAG, "Saved inst");
-
+            currentPosition = savedInstanceState.getInt("position");
+            currentPage = savedInstanceState.getInt("page");
         }
 
         // BroadcastReceiver to get info about network connection
@@ -229,17 +224,15 @@ public class MainActivityFragment extends Fragment {
             if (movies == null) {
                 movieList = new ArrayList<>();
             } else if (addMovies) {
-                //Log.v(LOG_TAG, "Add movies, movielist size " + movieList.size());
                 movieList.addAll(movies);
                 addMovies = false;
-                //Log.v(LOG_TAG, "After addition, movielist size " + movieList.size());
             } else {
                 movieList = movies;
             }
         } catch (ExecutionException e) {
-            //Log.v(LOG_TAG, "error");
+            Log.e(LOG_TAG, "error");
         } catch (InterruptedException e2) {
-            //Log.v(LOG_TAG, "error" + e2);
+            Log.e(LOG_TAG, "error" + e2);
         }
     }
 
@@ -248,24 +241,25 @@ public class MainActivityFragment extends Fragment {
      */
     private void redraw() {
 
-        //Log.v(LOG_TAG, "Redraw");
-
         if (currentPage > 1) {
             currentPosition = gridView.getFirstVisiblePosition();
-            //Log.v(LOG_TAG, "if: " + currentPosition);
         } else {
             currentPosition = 0;
         }
 
+        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+
+        // What is better: clone ArrayList or re-initialize adapter?
+        /*
         ArrayList<MovieObject> temp = (ArrayList<MovieObject>) movieList.clone();
-        //Log.v(LOG_TAG, "Movie list in draw " + movieList.size() + " temp " + temp.size());
-
-
         movieAdapter.clear();
-        //Log.v(LOG_TAG, "Movie list after clear " + movieList.size() + " Temp " + temp.size());
         movieAdapter.addAll(temp);
         movieAdapter.notifyDataSetChanged();
-        gridView.invalidateViews();
+        */
+
+        // Should I invalidate view? It doesn't make any difference in the app?
+        //gridView.invalidateViews();
+
         gridView.setAdapter(movieAdapter);
         gridView.setSelection(currentPosition);
     }
@@ -381,9 +375,15 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
+            //linlaProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
-            //linlaProgressBar.setVisibility(View.GONE);
+            linlaProgressBar.setVisibility(View.GONE);
             loadingMore = false;
         }
     }
