@@ -17,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,9 +42,11 @@ public class MainActivityFragment extends Fragment {
     private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
-    private ProgressBar linlaProgressBar;
+    //private ProgressBar linlaProgressBar;
     private boolean loadingMore;
     private int currentPage = 1;
+    private int currentPosition = 0;
+    private boolean addMovies = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,8 +56,8 @@ public class MainActivityFragment extends Fragment {
         // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
 
-        linlaProgressBar = (ProgressBar) rootview.findViewById(R.id.linlaProgressBar);
-        linlaProgressBar.setVisibility(View.VISIBLE);
+        //linlaProgressBar = (ProgressBar) rootview.findViewById(R.id.linlaProgressBar);
+        //linlaProgressBar.setVisibility(View.VISIBLE);
 
         // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
@@ -78,6 +78,7 @@ public class MainActivityFragment extends Fragment {
         });
 
         gridView.setAdapter(movieAdapter);
+        //Log.v(LOG_TAG, "Current position " + currentPosition + " PAGE " + currentPage + " MOVIE LIST " + movieList.size());
 
         // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -91,7 +92,9 @@ public class MainActivityFragment extends Fragment {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
                 if (lastInScreen == totalItemCount && !loadingMore) {
                     currentPage++;
-                    updateSort();
+                    addMovies = true;
+                    updateMovieList();
+                    //Log.v(LOG_TAG, "Page: " + currentPage);
                 }
 
             }
@@ -109,9 +112,17 @@ public class MainActivityFragment extends Fragment {
 
         // If movies were fetched - re-uses data
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            updateSort();
+            //Log.v(LOG_TAG, "Not saved inst");
+            updateMovieList();
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movies");
+            int page = savedInstanceState.getInt("page");
+            int position = savedInstanceState.getInt("position");
+
+            currentPosition = position;
+            currentPage = page;
+            ////Log.v(LOG_TAG, "Saved inst");
+
         }
 
         // BroadcastReceiver to get info about network connection
@@ -123,8 +134,7 @@ public class MainActivityFragment extends Fragment {
 
                 // Updates screen on network connection if nothing was on the screen
                 if (activeNetInfo != null) {
-                    Toast.makeText(context, "Active Network Type : " + activeNetInfo.getTypeName(), Toast.LENGTH_SHORT).show();
-                    updateSort();
+                    updateMovieList();
                 }
             }
         };
@@ -145,17 +155,21 @@ public class MainActivityFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         // Saves movies so we don't need to re-download them
         outState.putParcelableArrayList("movies", movieList);
+        outState.putInt("position", currentPosition);
+        outState.putInt("page", currentPage);
+
         super.onSaveInstanceState(outState);
     }
 
     /**
      * Method to update UI when settings changed
      */
-    public void updateSort() {
+    public void updateMovieList() {
         String sort = Utility.getSort(getActivity());
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
+            //Log.v(LOG_TAG, "Sort changes");
             // fetches new data
             currentPage = 1;
             fetchMovies(sort);
@@ -167,22 +181,36 @@ public class MainActivityFragment extends Fragment {
             mSort = sort;
 
         } else if (movieList == null) {
+            //Log.v(LOG_TAG, "Movie list null");
+            currentPage = 1;
             // fetches new data
             fetchMovies(sort);
         } else if (movieList.isEmpty()) {
+            //Log.v(LOG_TAG, "Movie list is empty");
+            currentPage = 1;
             fetchMovies(sort);
             redraw();
-        } else {
+        } else if (addMovies) {
+            //Log.v(LOG_TAG, "Scroll to the end");
             fetchMovies(sort);
             redraw();
         }
+        /* else {
+            redraw();
+        } */
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateSort();
-        Log.v(LOG_TAG, "Current page " + currentPage);
+        startListening();
+        updateMovieList();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(networkStateReceiver);
     }
 
     /**
@@ -200,33 +228,42 @@ public class MainActivityFragment extends Fragment {
             movies = fetchMovie.execute(sort).get();
             if (movies == null) {
                 movieList = new ArrayList<>();
-            } else if (currentPage != 1) {
+            } else if (addMovies) {
+                //Log.v(LOG_TAG, "Add movies, movielist size " + movieList.size());
                 movieList.addAll(movies);
+                addMovies = false;
+                //Log.v(LOG_TAG, "After addition, movielist size " + movieList.size());
             } else {
                 movieList = movies;
             }
         } catch (ExecutionException e) {
-            Log.v(LOG_TAG, "error");
+            //Log.v(LOG_TAG, "error");
         } catch (InterruptedException e2) {
-            Log.v(LOG_TAG, "error" + e2);
+            //Log.v(LOG_TAG, "error" + e2);
         }
     }
 
     /**
-     * Method to redraw GridView, invoked from updateSort() when movieList is empty or settings were changed
+     * Method to redraw GridView, invoked from updateMovieList() when movieList is empty or settings were changed
      */
     private void redraw() {
 
-        int currentPosition;
+        //Log.v(LOG_TAG, "Redraw");
 
         if (currentPage > 1) {
             currentPosition = gridView.getFirstVisiblePosition();
+            //Log.v(LOG_TAG, "if: " + currentPosition);
         } else {
-            currentPosition = 1;
+            currentPosition = 0;
         }
 
+        ArrayList<MovieObject> temp = (ArrayList<MovieObject>) movieList.clone();
+        //Log.v(LOG_TAG, "Movie list in draw " + movieList.size() + " temp " + temp.size());
+
+
         movieAdapter.clear();
-        movieAdapter.addAll(movieList);
+        //Log.v(LOG_TAG, "Movie list after clear " + movieList.size() + " Temp " + temp.size());
+        movieAdapter.addAll(temp);
         movieAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
         gridView.setAdapter(movieAdapter);
@@ -346,7 +383,7 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
-            linlaProgressBar.setVisibility(View.GONE);
+            //linlaProgressBar.setVisibility(View.GONE);
             loadingMore = false;
         }
     }
