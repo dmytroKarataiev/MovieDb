@@ -100,7 +100,6 @@ public class MainActivityFragment extends Fragment {
         });
 
 
-
         return rootview;
     }
 
@@ -211,6 +210,7 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to fetch movies and if there is no network to provide empty MovieObject ArrayList
      * so the App won't crash
+     *
      * @param sort to fetch data sorted with the parameter
      */
     private void fetchMovies(String sort) {
@@ -279,81 +279,66 @@ public class MainActivityFragment extends Fragment {
 
         /**
          * AsyncTask to fetch data on background thread
+         *
          * @param params doesn't take any parameters yet, gets sort from SharedPreferences
          * @return array of MovieObjects
          */
         protected ArrayList<MovieObject> doInBackground(String... params) {
 
             loadingMore = true;
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
 
+            // Network Client
             OkHttpClient client = new OkHttpClient();
-            Response responses = null;
 
             // Will contain the raw JSON response as a string.
-            String movieJsonStr;
+            String movieJsonStr = "";
+
+            // Construct the URL for the OpenWeatherMap query
+            // Possible parameters are available at Movie DB API page, at
+            // http://docs.themoviedb.apiary.io/
+            final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
+            final String QUERY_PARAM = "sort_by";
+            final String PAGE_QUERY = "page";
+            String PAGE = Integer.toString(currentPage);
+
+            // Gets preferred sort, by default: popularity.desc
+            final String SORT = Utility.getSort(mContext);
+
+            final String VOTERS = "vote_count.gte";
+            final String VOTERS_MIN = "100";
+
+            // Don't forget to add API key to the gradle.properties file
+            final String API_KEY = "api_key";
+
+            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                    .appendQueryParameter(QUERY_PARAM, SORT)
+                    .appendQueryParameter(PAGE_QUERY, PAGE)
+                    .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                    .build();
+
+            // When sort on vote_average - gets movies with at least VOTERS_MIN votes
+            if (SORT.contains("vote_average")) {
+                builtUri = builtUri.buildUpon()
+                        .appendQueryParameter(VOTERS, VOTERS_MIN)
+                        .build();
+            }
 
             try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are available at Movie DB API page, at
-                // http://docs.themoviedb.apiary.io/
-                final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-                final String QUERY_PARAM = "sort_by";
-                final String PAGE_QUERY = "page";
-                String PAGE = Integer.toString(currentPage);
-
-                // Gets preferred sort, by default: popularity.desc
-                final String SORT = Utility.getSort(mContext);
-
-                final String VOTERS = "vote_count.gte";
-                final String VOTERS_MIN = "100";
-
-                // Don't forget to add API key to the gradle.properties file
-                final String API_KEY = "api_key";
-
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, SORT)
-                        .appendQueryParameter(PAGE_QUERY, PAGE)
-                        .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
-                        .build();
-
-                // When sort on vote_average - gets movies with at least VOTERS_MIN votes
-                if (SORT.contains("vote_average")) {
-                    builtUri = builtUri.buildUpon()
-                            .appendQueryParameter(VOTERS, VOTERS_MIN)
-                            .build();
-                }
-
                 URL url = new URL(builtUri.toString());
-
                 // Create the request to OpenWeatherMap, and open the connection
                 Request request = new Request.Builder()
                         .url(url)
                         .build();
-
-
-                try {
-                    responses = client.newCall(request).execute();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Error ", e);
-                }
-
+                Response responses = client.newCall(request).execute();
                 movieJsonStr = responses.body().string();
-
                 responses.body().close();
-
-                return Utility.getMoviesGSON(mContext, movieJsonStr);
-
-                //return Utility.getMovieDataFromJSON(mContext, movieJsonStr);
-
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
-                return null;
-
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG, "Null ", e);
             }
+
+            return Utility.getMoviesGSON(mContext, movieJsonStr);
 
         }
 
