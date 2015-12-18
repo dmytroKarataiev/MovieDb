@@ -21,8 +21,9 @@ movieDbApiKey = "**YOUR API KEY**"
 * And useful WebCasts from Android NanoDegree: https://plus.google.com/u/0/107950612876685287140/posts 
 
 ## Additional Info
-App uses great image library: http://square.github.io/picasso/
+* App uses great image library: http://square.github.io/picasso/
+
 Update: as it turned out not so great, it can't save Target (recycles it) and sometimes you can get a funny behavior when scroll very fast.
-OkHttpClient performs all network work: http://square.github.io/okhttp/
-GSON library effectively parses json: https://github.com/google/gson
+* OkHttpClient performs all network work: http://square.github.io/okhttp/
+* GSON library effectively parses json: https://github.com/google/gson
 
