@@ -216,6 +216,9 @@ public class MainActivityFragment extends Fragment {
     private void fetchMovies(String sort) {
 
         ArrayList<MovieObject> movies;
+        if (linlaProgressBar != null) {
+            linlaProgressBar.setVisibility(View.VISIBLE);
+        }
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
@@ -377,7 +380,9 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
-            //linlaProgressBar.setVisibility(View.VISIBLE);
+            if (linlaProgressBar != null) {
+                linlaProgressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override

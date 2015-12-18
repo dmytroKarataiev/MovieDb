@@ -15,4 +15,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <ProgressBar
+        android:id="@+id/movie_item_spinner"
+        android:layout_width="@dimen/poster_width"
+        android:layout_height="@dimen/poster_height"
+        android:progressDrawable="@drawable/circular_progress_bar"/>
+
 </FrameLayout>
