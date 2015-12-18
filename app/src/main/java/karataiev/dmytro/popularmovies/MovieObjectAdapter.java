@@ -1,9 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +9,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -23,6 +20,8 @@ import java.util.List;
  */
 class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
+    private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
+
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
     }
@@ -30,7 +29,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
 
-        MovieObject movieObject = getItem(position);
+        final MovieObject movieObject = getItem(position);
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.movie_item, parent, false);
@@ -39,31 +38,19 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         final ProgressBar spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
         final ImageView poster = (ImageView) view.findViewById(R.id.movie_poster);
 
-        // Target to show/hide ProgressBar on ImageView
-        final Target target = new Target() {
+        spinner.setVisibility(View.VISIBLE);
 
+        Picasso.with(getContext()).load(movieObject.poster_path).into(poster, new Callback() {
             @Override
-            public void onPrepareLoad(Drawable drawable) {
-                poster.setBackgroundResource(R.color.white);
-                spinner.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onBitmapLoaded(Bitmap photo, Picasso.LoadedFrom from) {
-                poster.setBackgroundDrawable(new BitmapDrawable(photo));
+            public void onSuccess() {
                 spinner.setVisibility(View.GONE);
             }
 
             @Override
-            public void onBitmapFailed(Drawable drawable) {
+            public void onError() {
                 poster.setBackgroundResource(R.color.white);
             }
-        };
-
-        // Save strong reference to be able to show pictures without sliding the screen
-        poster.setTag(target);
-
-        Picasso.with(getContext()).load(movieObject.poster_path).into((Target) poster.getTag());
+        });
 
         // If movie doesn't have an image - uses text instead
         if (movieObject.poster_path.contains("null"))
@@ -75,4 +62,6 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
         return view;
     }
+
+
 }

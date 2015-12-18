@@ -259,9 +259,6 @@ public class MainActivityFragment extends Fragment {
         movieAdapter.notifyDataSetChanged();
         */
 
-        // Should I invalidate view? It doesn't make any difference in the app?
-        gridView.invalidateViews();
-
         gridView.setAdapter(movieAdapter);
         gridView.setSelection(currentPosition);
     }
