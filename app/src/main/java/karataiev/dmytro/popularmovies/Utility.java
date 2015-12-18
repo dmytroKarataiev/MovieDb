@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 
@@ -20,10 +22,11 @@ class Utility {
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
+     *
      * @param context to get metrics data
      * @return String name which should be used in path to image
      */
-    private static String[] posterSize(Context context) {
+    public static String[] posterSize(Context context) {
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
@@ -59,11 +62,12 @@ class Utility {
                 break;
         }
 
-        return new String[] { POSTER_SIZE, POSTER_SIZE_DETAIL };
+        return new String[]{POSTER_SIZE, POSTER_SIZE_DETAIL};
     }
 
     /**
      * Method to get sort settings from SharedPreferences
+     *
      * @param context from which call was made
      * @return current sort preference
      */
@@ -75,6 +79,7 @@ class Utility {
 
     /**
      * Formats date (cuts everything except the year)
+     *
      * @param date with month and day
      * @return year only
      */
@@ -82,14 +87,14 @@ class Utility {
 
         if (date.length() > 3) {
             return date.substring(0, 4);
-        }
-        else {
+        } else {
             return date;
         }
     }
 
     /**
      * Adds "/10" to the end of the fetched rating
+     *
      * @param rating from JSON
      * @return String rating + "/10"
      */
@@ -97,14 +102,14 @@ class Utility {
 
         if (rating.length() > 2) {
             return rating.substring(0, 3) + "/10";
-        }
-        else {
+        } else {
             return rating + "/10";
         }
     }
 
     /**
      * Formats votes -> adds "," thousands separator
+     *
      * @param votes as a String
      * @return formatted String with thousands separator
      */
@@ -116,52 +121,36 @@ class Utility {
     }
 
     /**
-     * Take the String representing movie info in JSON Format and
-     * pull out the data we need to construct the Strings needed for the wireframes.
+     * Easier way to fetch data from json string, don't need to use each token.
+     * GSON Google Library
+     *
+     * @param context      to be able to get screen density
+     * @param movieJsonStr input string
+     * @return MovieObject ArrayList with movies
      */
-    public static ArrayList<MovieObject> getMovieDataFromJSON(Context context, String movieJsonStr) {
+    public static ArrayList<MovieObject> getMoviesGSON(Context context, String movieJsonStr) {
 
-        // Attributes to parse in JSON
-        final String RESULTS = "results";
-        final String MOVIE_POSTER = "poster_path";
-        final String MOVIE_NAME = "title";
-        final String MOVIE_DESCRIPTION = "overview";
-        final String MOVIE_RELEASE_DATE = "release_date";
-        final String MOVIE_RATING = "vote_average";
-        final String MOVIE_VOTE = "vote_count";
+        ArrayList<MovieObject> movieObjects = new ArrayList<>();
 
-        // Depending on the dpi of the phone adds correct address to the link
-        final String[] POSTER_SIZE = Utility.posterSize(context);
+        JsonParser parser = new JsonParser();
 
-        // Creates to links to the posters: one for main window, one for the detailed view
-        final String FULL_PATH = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/";
-        final String FULL_PATH_DETAIL = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/";
+        JsonElement element = parser.parse(movieJsonStr);
 
-        try {
+        if (element.isJsonObject()) {
+            JsonObject results = element.getAsJsonObject();
+            JsonArray movies = results.getAsJsonArray("results");
 
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(RESULTS);
-            ArrayList<MovieObject> movieObjects = new ArrayList<>();
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
 
-            for (int i = 0, n = movieArray.length(); i < n; i++)
-            {
-                JSONObject current = movieArray.getJSONObject(i);
-
-                movieObjects.add(new MovieObject(
-                        current.getString(MOVIE_NAME),
-                        FULL_PATH + current.getString(MOVIE_POSTER),
-                        FULL_PATH_DETAIL + current.getString(MOVIE_POSTER),
-                        current.getString(MOVIE_DESCRIPTION),
-                        current.getString(MOVIE_RATING),
-                        current.getString(MOVIE_RELEASE_DATE),
-                        current.getString(MOVIE_VOTE))
-                );
+            for (int i = 0; i < movies.size(); i++) {
+                JsonObject movie = movies.get(i).getAsJsonObject();
+                MovieObject current = gson.fromJson(movie, MovieObject.class);
+                current.makeNice(context);
+                movieObjects.add(current);
             }
-            return movieObjects;
 
-        } catch (JSONException e) {
-            Log.e("LOG_TAG", e.getMessage(), e);
-            e.printStackTrace();
+            return movieObjects;
         }
 
         return null;

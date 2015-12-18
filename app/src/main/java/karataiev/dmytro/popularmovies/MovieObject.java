@@ -1,39 +1,63 @@
 package karataiev.dmytro.popularmovies;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.ArrayList;
 
 /**
  * Class for movies fetched from movieDB API
  * Created by karataev on 12/14/15.
  */
 public class MovieObject implements Parcelable {
-    final String name;
-    final String pathToImage;
-    final String pathToDetailImage;
-    final String description;
-    final String rating;
-    final String year;
-    final String voteCount;
+    private String adult;
+    private String backdrop_path;
+    private ArrayList<String> genre_ids;
+    private String id;
+    private String original_language;
+    private String original_title;
+    String overview;
+    String release_date;
+    String poster_path;
+    private String popularity;
+    String title;
+    private String video;
+    String vote_average;
+    String vote_count;
+    String full_poster_path;
 
-    public MovieObject(String name, String pathToImage, String pathToDetailImage, String description, String rating, String year, String voteCount) {
-        this.name = name;
-        this.pathToImage = pathToImage;
-        this.pathToDetailImage = pathToDetailImage;
-        this.description = description;
-        this.rating = Utility.formatRating(rating);
-        this.year = Utility.formatDate(year);
-        this.voteCount = Utility.formatVotes(voteCount);
-    }
+    public MovieObject() { }
 
     private MovieObject(Parcel in) {
-        name = in.readString();
-        pathToImage = in.readString();
-        pathToDetailImage = in.readString();
-        description = in.readString();
-        rating = in.readString();
-        year = in.readString();
-        voteCount = in.readString();
+        adult = in.readString();
+        backdrop_path = in.readString();
+        genre_ids = (ArrayList<String>) in.readSerializable();
+        id = in.readString();
+        original_language = in.readString();
+        original_title = in.readString();
+        overview = in.readString();
+        release_date = in.readString();
+        poster_path = in.readString();
+        popularity = in.readString();
+        title = in.readString();
+        video = in.readString();
+        vote_average = in.readString();
+        vote_count = in.readString();
+        full_poster_path = in.readString();
+    }
+
+    public void makeNice(Context context) {
+
+        final String[] POSTER_SIZE = Utility.posterSize(context);
+
+        // Creates to links to the posters: one for main window, one for the detailed view
+        this.full_poster_path = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/" + this.poster_path;
+        this.poster_path = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/" + this.poster_path;
+
+        this.vote_average = Utility.formatRating(vote_average);
+        this.release_date = Utility.formatDate(release_date);
+        this.vote_count = Utility.formatVotes(vote_count);
     }
 
     @Override
@@ -43,16 +67,24 @@ public class MovieObject implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeString(pathToImage);
-        parcel.writeString(pathToDetailImage);
-        parcel.writeString(description);
-        parcel.writeString(rating);
-        parcel.writeString(year);
-        parcel.writeString(voteCount);
+        parcel.writeString(adult);
+        parcel.writeString(backdrop_path);
+        parcel.writeSerializable(genre_ids);
+        parcel.writeString(id);
+        parcel.writeString(original_language);
+        parcel.writeString(original_title);
+        parcel.writeString(overview);
+        parcel.writeString(release_date);
+        parcel.writeString(poster_path);
+        parcel.writeString(popularity);
+        parcel.writeString(title);
+        parcel.writeString(video);
+        parcel.writeString(vote_average);
+        parcel.writeString(vote_count);
+        parcel.writeString(full_poster_path);
     }
 
-    public static final Parcelable.Creator<MovieObject> CREATOR = new Parcelable.Creator<MovieObject>() {
+    public static final Creator<MovieObject> CREATOR = new Creator<MovieObject>() {
         @Override
         public MovieObject createFromParcel(Parcel parcel) {
             return new MovieObject(parcel);

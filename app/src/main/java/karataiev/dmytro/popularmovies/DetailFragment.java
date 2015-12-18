@@ -66,16 +66,16 @@ public class DetailFragment extends Fragment {
         Intent intent = this.getActivity().getIntent();
         MovieObject fromIntent = intent.getParcelableExtra("movie");
 
-        viewHolder.movieName.setText(fromIntent.name);
-        viewHolder.movieDescription.setText(fromIntent.description);
-        viewHolder.movieRating.setText(fromIntent.rating);
-        viewHolder.movieReleaseDate.setText(fromIntent.year);
-        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.voteCount));
+        viewHolder.movieName.setText(fromIntent.title);
+        viewHolder.movieDescription.setText(fromIntent.overview);
+        viewHolder.movieRating.setText(fromIntent.vote_average);
+        viewHolder.movieReleaseDate.setText(fromIntent.release_date);
+        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.vote_count));
 
-        Picasso.with(getContext()).load(fromIntent.pathToDetailImage).into(viewHolder.posterView);
+        Picasso.with(getContext()).load(fromIntent.full_poster_path).into(viewHolder.posterView);
 
         // Initializes mMovie with info about a movie
-        mMovie = fromIntent.name + "\n" + fromIntent.year + "\n" + fromIntent.rating + "\n" + fromIntent.description;
+        mMovie = fromIntent.title + "\n" + fromIntent.release_date + "\n" + fromIntent.vote_average + "\n" + fromIntent.overview;
 
         return rootView;
 

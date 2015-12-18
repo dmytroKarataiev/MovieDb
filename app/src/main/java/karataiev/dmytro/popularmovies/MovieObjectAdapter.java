@@ -60,15 +60,15 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         // Save strong reference to be able to show pictures without sliding the screen
         poster.setTag(target);
 
-        Picasso.with(getContext()).load(movieObject.pathToImage).into((Target) poster.getTag());
+        Picasso.with(getContext()).load(movieObject.poster_path).into((Target) poster.getTag());
 
         // If movie doesn't have an image - uses text instead
-        if (movieObject.pathToImage.contains("null"))
+        if (movieObject.poster_path.contains("null"))
         {
             TextView imageText = (TextView) view.findViewById(R.id.movie_poster_text);
-            imageText.setText(movieObject.name);
+            imageText.setText(movieObject.title);
         }
-        poster.setContentDescription(movieObject.name);
+        poster.setContentDescription(movieObject.title);
 
         return view;
     }

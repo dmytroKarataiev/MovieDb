@@ -159,7 +159,7 @@ public class MainActivityFragment extends Fragment {
     /**
      * Method to update UI when settings changed
      */
-    public void updateMovieList() {
+    private void updateMovieList() {
         String sort = Utility.getSort(getActivity());
 
         // Checks if settings were changed
@@ -356,7 +356,9 @@ public class MainActivityFragment extends Fragment {
                 }
                 movieJsonStr = buffer.toString();
 
-                return Utility.getMovieDataFromJSON(mContext, movieJsonStr);
+                return Utility.getMoviesGSON(mContext, movieJsonStr);
+
+                //return Utility.getMovieDataFromJSON(mContext, movieJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
