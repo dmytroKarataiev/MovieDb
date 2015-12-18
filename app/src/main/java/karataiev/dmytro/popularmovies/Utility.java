@@ -2,8 +2,10 @@ package karataiev.dmytro.popularmovies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,6 +14,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -154,5 +158,46 @@ class Utility {
         }
 
         return null;
+    }
+
+    public static URL getUrl(int currentPage, Context context) {
+        // Construct the URL for the OpenWeatherMap query
+        // Possible parameters are available at Movie DB API page, at
+        // http://docs.themoviedb.apiary.io/
+        final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
+        final String QUERY_PARAM = "sort_by";
+        final String PAGE_QUERY = "page";
+        String PAGE = Integer.toString(currentPage);
+
+        // Gets preferred sort, by default: popularity.desc
+        final String SORT = Utility.getSort(context);
+
+        final String VOTERS = "vote_count.gte";
+        final String VOTERS_MIN = "100";
+
+        // Don't forget to add API key to the gradle.properties file
+        final String API_KEY = "api_key";
+
+        Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                .appendQueryParameter(QUERY_PARAM, SORT)
+                .appendQueryParameter(PAGE_QUERY, PAGE)
+                .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                .build();
+
+        // When sort on vote_average - gets movies with at least VOTERS_MIN votes
+        if (SORT.contains("vote_average")) {
+            builtUri = builtUri.buildUpon()
+                    .appendQueryParameter(VOTERS, VOTERS_MIN)
+                    .build();
+        }
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e("URL", "error " + e);
+        }
+        
+        return url;
     }
 }

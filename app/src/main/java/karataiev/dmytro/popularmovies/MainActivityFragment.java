@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -293,38 +292,8 @@ public class MainActivityFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String movieJsonStr = "";
 
-            // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are available at Movie DB API page, at
-            // http://docs.themoviedb.apiary.io/
-            final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-            final String QUERY_PARAM = "sort_by";
-            final String PAGE_QUERY = "page";
-            String PAGE = Integer.toString(currentPage);
-
-            // Gets preferred sort, by default: popularity.desc
-            final String SORT = Utility.getSort(mContext);
-
-            final String VOTERS = "vote_count.gte";
-            final String VOTERS_MIN = "100";
-
-            // Don't forget to add API key to the gradle.properties file
-            final String API_KEY = "api_key";
-
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, SORT)
-                    .appendQueryParameter(PAGE_QUERY, PAGE)
-                    .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
-                    .build();
-
-            // When sort on vote_average - gets movies with at least VOTERS_MIN votes
-            if (SORT.contains("vote_average")) {
-                builtUri = builtUri.buildUpon()
-                        .appendQueryParameter(VOTERS, VOTERS_MIN)
-                        .build();
-            }
-
             try {
-                URL url = new URL(builtUri.toString());
+                URL url = Utility.getUrl(currentPage, mContext);
                 // Create the request to OpenWeatherMap, and open the connection
                 Request request = new Request.Builder()
                         .url(url)
