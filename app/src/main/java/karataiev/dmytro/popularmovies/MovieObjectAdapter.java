@@ -44,6 +44,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
             @Override
             public void onPrepareLoad(Drawable drawable) {
+                poster.setBackgroundResource(R.color.white);
                 spinner.setVisibility(View.VISIBLE);
             }
 
@@ -54,7 +55,9 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
             }
 
             @Override
-            public void onBitmapFailed(Drawable arg0) { }
+            public void onBitmapFailed(Drawable drawable) {
+                poster.setBackgroundResource(R.color.white);
+            }
         };
 
         // Save strong reference to be able to show pictures without sliding the screen
