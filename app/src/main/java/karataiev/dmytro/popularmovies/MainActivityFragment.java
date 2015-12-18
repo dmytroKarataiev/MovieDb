@@ -260,7 +260,7 @@ public class MainActivityFragment extends Fragment {
         */
 
         // Should I invalidate view? It doesn't make any difference in the app?
-        //gridView.invalidateViews();
+        gridView.invalidateViews();
 
         gridView.setAdapter(movieAdapter);
         gridView.setSelection(currentPosition);

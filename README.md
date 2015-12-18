@@ -12,6 +12,7 @@ movieDbApiKey = "**YOUR API KEY**"
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
 * You can easily share info about chosen movie.
+* Scrolling is continuous 
 
 ## Content from the internet and other sources
 * Star in the app: http://cliparts.co/cliparts/6Tp/opb/6Tpopbaac.png
@@ -21,3 +22,7 @@ movieDbApiKey = "**YOUR API KEY**"
 
 ## Additional Info
 App uses great image library: http://square.github.io/picasso/
+Update: as it turned out not so great, it can't save Target (recycles it) and sometimes you can get a funny behavior when scroll very fast.
+OkHttpClient performs all network work: http://square.github.io/okhttp/
+GSON library effectively parses json: https://github.com/google/gson
+

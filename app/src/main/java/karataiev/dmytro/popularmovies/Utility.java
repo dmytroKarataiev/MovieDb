@@ -197,7 +197,7 @@ class Utility {
         } catch (MalformedURLException e) {
             Log.e("URL", "error " + e);
         }
-        
+
         return url;
     }
 }
