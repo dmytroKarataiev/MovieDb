@@ -200,4 +200,23 @@ class Utility {
 
         return url;
     }
+
+    /**
+     * Method to get the screen details and in the app to set them accordingly
+     * @param context to get screen metrics
+     * @return different screen parameters
+     */
+    public static int[] screenSize(Context context) {
+
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        int density = metrics.densityDpi;
+        int columns = Math.round(metrics.widthPixels / metrics.densityDpi);
+        int posterWidth = width / columns;
+        int posterHeight = (int) (posterWidth * 1.5);
+
+        return new int[] { width, height, density, columns, posterWidth, posterHeight };
+    }
 }

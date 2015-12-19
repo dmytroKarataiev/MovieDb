@@ -5,7 +5,7 @@
 
     <ImageView
         android:id="@+id/movie_poster"
-        android:layout_width="@dimen/poster_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/poster_height"
         android:scaleType="centerCrop"
         android:contentDescription="@string/movie_poster"/>
@@ -17,7 +17,7 @@
 
     <ProgressBar
         android:id="@+id/movie_item_spinner"
-        android:layout_width="@dimen/poster_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/poster_height"
         android:progressDrawable="@drawable/circular_progress_bar"/>
 

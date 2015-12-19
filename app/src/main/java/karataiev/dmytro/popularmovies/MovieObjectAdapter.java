@@ -38,6 +38,9 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         final ProgressBar spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
         final ImageView poster = (ImageView) view.findViewById(R.id.movie_poster);
 
+        // Scale posters correctly
+        poster.getLayoutParams().height = Utility.screenSize(getContext())[5];
+
         spinner.setVisibility(View.VISIBLE);
 
         Picasso.with(getContext()).load(movieObject.poster_path).into(poster, new Callback() {

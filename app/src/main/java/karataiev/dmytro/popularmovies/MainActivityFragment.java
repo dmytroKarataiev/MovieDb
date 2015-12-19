@@ -56,6 +56,14 @@ public class MainActivityFragment extends Fragment {
         // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
 
+        // Scale GridView according to the screen size
+        int[] screenSize = Utility.screenSize(getContext());
+        int columns = screenSize[3];
+        int posterWidth = screenSize[4];
+
+        gridView.setNumColumns(columns);
+        gridView.setColumnWidth(posterWidth);
+
         linlaProgressBar = (LinearLayout) rootview.findViewById(R.id.linlaProgressBar);
         linlaProgressBar.setVisibility(View.VISIBLE);
 
