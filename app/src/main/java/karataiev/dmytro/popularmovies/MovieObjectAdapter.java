@@ -40,6 +40,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
         // Scale posters correctly
         poster.getLayoutParams().height = Utility.screenSize(getContext())[5];
+        spinner.getLayoutParams().height = Utility.screenSize(getContext())[5];
 
         spinner.setVisibility(View.VISIBLE);
 
@@ -52,6 +53,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
             @Override
             public void onError() {
                 poster.setBackgroundResource(R.color.white);
+                spinner.setVisibility(View.GONE);
             }
         });
 
