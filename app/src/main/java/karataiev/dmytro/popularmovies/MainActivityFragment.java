@@ -39,6 +39,14 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private GridView gridView;
+
+    // Network status variables and methods (to stop fetching the data if the phone is offline
+    private boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
     private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
@@ -97,7 +105,7 @@ public class MainActivityFragment extends Fragment {
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
-                if (lastInScreen == totalItemCount && !loadingMore) {
+                if (lastInScreen == totalItemCount && !loadingMore && isOnline(getContext())) {
                     currentPage++;
                     addMovies = true;
                     updateMovieList();
