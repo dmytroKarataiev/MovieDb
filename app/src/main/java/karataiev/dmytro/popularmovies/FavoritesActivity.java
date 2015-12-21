@@ -3,26 +3,33 @@ package karataiev.dmytro.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Class to start DetailActivityFragment
+ * Created by karataev on 12/15/15.
+ */
+public class FavoritesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_favorites);
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment, new FavoritesActivityFragment())
+                    .commit();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -38,16 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }
-
-        if (id == R.id.action_favorites) {
-
-            startActivity(new Intent(this, FavoritesActivity.class));
-            return true;
 
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 }

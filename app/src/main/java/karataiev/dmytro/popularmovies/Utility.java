@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class with additional helper functions
@@ -80,6 +81,23 @@ class Utility {
         return prefs.getString(context.getString(R.string.pref_sort_key),
                 context.getString(R.string.pref_sort_default));
     }
+
+    /**
+     * Method to return sort parameter in a redable format
+     * @param context of an activity
+     * @return readable representation of a sort parameter
+     */
+    public static String getSortReadable(Context context) {
+
+        String sort = getSort(context);
+
+        String[] sortTypeEntries = context.getResources().getStringArray(R.array.pref_sort_entries);
+        String[] sortTypeValues = context.getResources().getStringArray(R.array.pref_sort_values);
+
+        // looks up index of the sort parameter and returns it in a readable format
+        return sortTypeEntries[Arrays.asList(sortTypeValues).indexOf(sort)];
+    }
+
 
     /**
      * Formats date (cuts everything except the year)

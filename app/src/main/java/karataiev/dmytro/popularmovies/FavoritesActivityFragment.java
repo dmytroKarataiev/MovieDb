@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +30,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class FavoritesActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = FavoritesActivityFragment.class.getSimpleName();
 
     // Couldn't find more efficient way to use following variable then to make them global
     private MovieObjectAdapter movieAdapter;
@@ -56,12 +55,6 @@ public class MainActivityFragment extends Fragment {
     private int currentPage = 1;
     private int currentPosition = 0;
     private boolean addMovies = false;
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setActionbarTitle();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -284,21 +277,6 @@ public class MainActivityFragment extends Fragment {
 
         gridView.setAdapter(movieAdapter);
         gridView.setSelection(currentPosition);
-
-        setActionbarTitle();
-
-    }
-
-    /**
-     * Method to set ActionBar title according to the sort criteria
-     */
-    private void setActionbarTitle() {
-
-        android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setTitle(Utility.getSortReadable(getContext()));
-        }
     }
 
     public class FetchMovie extends AsyncTask<String, Void, ArrayList<MovieObject>> {

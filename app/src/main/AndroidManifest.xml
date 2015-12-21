@@ -40,6 +40,15 @@
         </activity>
 
         <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favorites"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainActivity" />
+        </activity>
+
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/pref_sort"
             android:parentActivityName=".MainActivity">
