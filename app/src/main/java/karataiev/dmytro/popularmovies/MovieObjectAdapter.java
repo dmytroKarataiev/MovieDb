@@ -68,16 +68,10 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
                         Toast.makeText(getContext(), movieObject.title, Toast.LENGTH_LONG).show();
 
-                        if (favorite.getTag() == null) {
-                            favorite.setTag(R.drawable.bookmark_fav);
+                        if (movieObject.isFavorited == 0) {
                             favorite.setImageResource(R.drawable.bookmark_fav);
                             movieObject.isFavorited = 1;
-                        } else if ((Integer) favorite.getTag() == R.drawable.bookmark_fav) {
-                            favorite.setTag(R.drawable.bookmark);
-                            favorite.setImageResource(R.drawable.bookmark);
-                            movieObject.isFavorited = 0;
                         } else {
-                            favorite.setTag(R.drawable.bookmark);
                             favorite.setImageResource(R.drawable.bookmark);
                             movieObject.isFavorited = 0;
                         }
