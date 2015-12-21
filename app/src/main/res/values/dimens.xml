@@ -20,4 +20,8 @@
     <dimen name="star_height">20dp</dimen>
     <dimen name="star_margin">4dp</dimen>
 
+    <!-- Favorite button size -->
+    <dimen name="favorite_width">37dp</dimen>
+    <dimen name="favorite_height">56dp</dimen>
+
 </resources>

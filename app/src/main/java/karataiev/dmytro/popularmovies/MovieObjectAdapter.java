@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -37,23 +38,58 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
         final ProgressBar spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
         final ImageView poster = (ImageView) view.findViewById(R.id.movie_poster);
+        final ImageView favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
+
+        // set favorites icon
+        if (movieObject.isFavorited == 1) {
+            favorite.setImageResource(R.drawable.bookmark_fav);
+        } else {
+            favorite.setImageResource(R.drawable.bookmark);
+        }
 
         // Scale posters correctly
         poster.getLayoutParams().height = Utility.screenSize(getContext())[5];
         spinner.getLayoutParams().height = Utility.screenSize(getContext())[5];
+        favorite.getLayoutParams().height = (int) Math.round(Utility.screenSize(getContext())[5] * 0.2);
 
         spinner.setVisibility(View.VISIBLE);
+        favorite.setVisibility(View.GONE);
 
         Picasso.with(getContext()).load(movieObject.poster_path).into(poster, new Callback() {
             @Override
             public void onSuccess() {
                 spinner.setVisibility(View.GONE);
+                favorite.setVisibility(View.VISIBLE);
+
+                // On favorite icon click
+                favorite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Toast.makeText(getContext(), movieObject.title, Toast.LENGTH_LONG).show();
+
+                        if (favorite.getTag() == null) {
+                            favorite.setTag(R.drawable.bookmark_fav);
+                            favorite.setImageResource(R.drawable.bookmark_fav);
+                            movieObject.isFavorited = 1;
+                        } else if ((Integer) favorite.getTag() == R.drawable.bookmark_fav) {
+                            favorite.setTag(R.drawable.bookmark);
+                            favorite.setImageResource(R.drawable.bookmark);
+                            movieObject.isFavorited = 0;
+                        } else {
+                            favorite.setTag(R.drawable.bookmark);
+                            favorite.setImageResource(R.drawable.bookmark);
+                            movieObject.isFavorited = 0;
+                        }
+                    }
+                });
             }
 
             @Override
             public void onError() {
                 poster.setBackgroundResource(R.color.white);
                 spinner.setVisibility(View.GONE);
+                favorite.setVisibility(View.GONE);
             }
         });
 
