@@ -19,6 +19,7 @@ public class MovieProvider extends ContentProvider {
     private MoviesDbHelper mOpenHelper;
 
     static final int MOVIES = 100;
+    static final int MOVIE_ITEM = 200;
 
     private static final SQLiteQueryBuilder sMoviesBuilder;
 
@@ -42,6 +43,7 @@ public class MovieProvider extends ContentProvider {
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // WeatherContract to help define the types to the UriMatcher.
         sURIMatcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
+        sURIMatcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_ITEM);
 
         // 3) Return the new matcher!
         return sURIMatcher;
@@ -69,6 +71,8 @@ public class MovieProvider extends ContentProvider {
         switch (match) {
             // Student: Uncomment and fill out these two cases
             case MOVIES:
+                return MoviesContract.MovieEntry.CONTENT_TYPE;
+            case MOVIE_ITEM:
                 return MoviesContract.MovieEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -84,6 +88,17 @@ public class MovieProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             // "weather"
             case MOVIES: {
+                retCursor = mOpenHelper.getReadableDatabase()
+                        .query(MoviesContract.MovieEntry.TABLE_NAME,
+                                projection,
+                                selection,
+                                selectionArgs,
+                                null,
+                                null,
+                                sortOrder);
+                break;
+            }
+            case MOVIE_ITEM: {
                 retCursor = mOpenHelper.getReadableDatabase()
                         .query(MoviesContract.MovieEntry.TABLE_NAME,
                                 projection,
