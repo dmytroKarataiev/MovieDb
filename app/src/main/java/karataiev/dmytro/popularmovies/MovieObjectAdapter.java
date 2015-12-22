@@ -1,6 +1,8 @@
 package karataiev.dmytro.popularmovies;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import karataiev.dmytro.popularmovies.database.MoviesContract;
+
 /**
  * Adapter with MovieObjects
  * Created by karataev on 12/14/15.
@@ -22,6 +26,9 @@ import java.util.List;
 class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
     private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
+    private ContentResolver contentResolver = getContext().getContentResolver();
+
+
 
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
@@ -31,6 +38,11 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
     public View getView(final int position, View view, ViewGroup parent) {
 
         final MovieObject movieObject = getItem(position);
+
+        //contentResolver.acquireContentProviderClient(MoviesContract.BASE_CONTENT_URI);
+        final ContentValues favValue = new ContentValues();
+        favValue.put(MoviesContract.MovieEntry.COLUMN_TITLE, movieObject.title);
+        favValue.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, movieObject.overview);
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.movie_item, parent, false);
@@ -71,9 +83,14 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
                         if (movieObject.isFavorited == 0) {
                             favorite.setImageResource(R.drawable.bookmark_fav);
                             movieObject.isFavorited = 1;
+                            contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, favValue);
                         } else {
                             favorite.setImageResource(R.drawable.bookmark);
                             movieObject.isFavorited = 0;
+                            contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
+                                    MoviesContract.MovieEntry.COLUMN_TITLE,
+                                    new String[] { favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE) }
+                            );
                         }
                     }
                 });
