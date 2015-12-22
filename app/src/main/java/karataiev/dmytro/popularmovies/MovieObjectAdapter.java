@@ -3,7 +3,6 @@ package karataiev.dmytro.popularmovies;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
     public View getView(final int position, View view, ViewGroup parent) {
 
         final MovieObject movieObject = getItem(position);
-        Log.v(LOG_TAG, movieObject.title + " pos " + position + " isFav " + movieObject.isFavorited);
 
         //contentResolver.acquireContentProviderClient(MoviesContract.BASE_CONTENT_URI);
         final ContentValues favValue = new ContentValues();
@@ -55,7 +53,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         final ImageView favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
 
         // set favorites icon
-        if (movieObject.isFavorited == 1) {
+        if (Utility.isFavorite(getContext(), movieObject)) {
             favorite.setImageResource(R.drawable.bookmark_fav);
         } else {
             favorite.setImageResource(R.drawable.bookmark);
@@ -82,13 +80,11 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
                         Toast.makeText(getContext(), movieObject.title, Toast.LENGTH_LONG).show();
 
-                        if (movieObject.isFavorited == 0) {
+                        if (!Utility.isFavorite(getContext(), movieObject)) {
                             favorite.setImageResource(R.drawable.bookmark_fav);
-                            movieObject.isFavorited = 1;
                             contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, favValue);
                         } else {
                             favorite.setImageResource(R.drawable.bookmark);
-                            movieObject.isFavorited = 0;
                             contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
                                     MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
                                     new String[] { favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE) }

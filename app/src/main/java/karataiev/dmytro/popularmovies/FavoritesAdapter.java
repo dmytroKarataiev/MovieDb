@@ -1,5 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
@@ -21,6 +23,7 @@ public class FavoritesAdapter extends CursorAdapter {
     private static final String LOG_TAG = FavoritesAdapter.class.getSimpleName();
     private Context mContext;
     private static int sLoaderID;
+    ContentResolver contentResolver;
 
     public static class ViewHolder {
         public final ImageView imageView;
@@ -42,6 +45,7 @@ public class FavoritesAdapter extends CursorAdapter {
         Log.d(LOG_TAG, "FavoritesAdapter");
         mContext = context;
         sLoaderID = loaderID;
+        contentResolver = context.getContentResolver();
     }
 
     @Override
@@ -58,15 +62,31 @@ public class FavoritesAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor){
+    public void bindView(View view, final Context context, Cursor cursor){
 
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        final ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         Log.d(LOG_TAG, "In bind View");
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
         viewHolder.textView.setText(versionName);
+
+        // On favorite icon click
+        viewHolder.favImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(context, "Not favorite anymore", Toast.LENGTH_LONG).show();
+
+                viewHolder.favImage.setImageResource(R.drawable.bookmark);
+                contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
+                        MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
+                        new String[]{ versionName });
+            }
+        });
+
+        viewHolder.spinner.setVisibility(View.GONE);
 
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
         byte[] image = cursor.getBlob(imageIndex);

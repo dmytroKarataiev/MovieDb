@@ -211,9 +211,9 @@ public class MainActivityFragment extends Fragment {
             fetchMovies(sort);
             redraw();
         }
-        /* else {
+        else {
             redraw();
-        } */
+        }
     }
 
     @Override

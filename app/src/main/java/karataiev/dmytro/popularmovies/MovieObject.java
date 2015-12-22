@@ -26,7 +26,6 @@ public class MovieObject implements Parcelable {
     String vote_average;
     String vote_count;
     String full_poster_path;
-    int isFavorited;
 
     public MovieObject() { }
 
@@ -46,7 +45,6 @@ public class MovieObject implements Parcelable {
         vote_average = in.readString();
         vote_count = in.readString();
         full_poster_path = in.readString();
-        isFavorited = in.readInt();
     }
 
     public void makeNice(Context context) {
@@ -84,7 +82,6 @@ public class MovieObject implements Parcelable {
         parcel.writeString(vote_average);
         parcel.writeString(vote_count);
         parcel.writeString(full_poster_path);
-        parcel.writeInt(isFavorited);
     }
 
     public static final Creator<MovieObject> CREATOR = new Creator<MovieObject>() {

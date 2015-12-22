@@ -156,8 +156,7 @@ class Utility {
      */
     public static ArrayList<MovieObject> getMoviesGSON(Context context, String movieJsonStr) {
 
-        // get access to db to check if a movie is in fav list
-        ContentResolver contentResolver = context.getContentResolver();
+
         ArrayList<MovieObject> movieObjects = new ArrayList<>();
 
         JsonParser parser = new JsonParser();
@@ -175,23 +174,6 @@ class Utility {
                 JsonObject movie = movies.get(i).getAsJsonObject();
                 MovieObject current = gson.fromJson(movie, MovieObject.class);
                 current.makeNice(context);
-
-                // if a movie is in the database - make it favorite
-                Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
-                        null,
-                        MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                        new String[]{current.title},
-                        null);
-
-                if (currentPoster != null) {
-                    currentPoster.moveToFirst();
-                    int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
-
-                    if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(current.title)) {
-                        current.isFavorited = 1;
-                    }
-                    currentPoster.close();
-                }
                 movieObjects.add(current);
             }
             return movieObjects;
@@ -258,5 +240,35 @@ class Utility {
         int posterHeight = (int) (posterWidth * 1.5);
 
         return new int[] { width, height, density, columns, posterWidth, posterHeight };
+    }
+
+    /**
+     * Method to check in the database if movie is present
+     * @param context from which method is called
+     * @param movie to check if it is in database
+     * @return boolean true if present, false otherwise
+     */
+    public static boolean isFavorite(Context context, MovieObject movie) {
+        // get access to db to check if a movie is in fav list
+        ContentResolver contentResolver = context.getContentResolver();
+
+        // if a movie is in the database - make it favorite
+        Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
+                null,
+                MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
+                new String[]{movie.title},
+                null);
+
+        if (currentPoster != null) {
+            currentPoster.moveToFirst();
+            int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+
+            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.title)) {
+                return true;
+            }
+            currentPoster.close();
+        }
+
+        return false;
     }
 }
