@@ -1,7 +1,9 @@
 package karataiev.dmytro.popularmovies;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -18,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
  * Class with additional helper functions
@@ -152,6 +156,8 @@ class Utility {
      */
     public static ArrayList<MovieObject> getMoviesGSON(Context context, String movieJsonStr) {
 
+        // get access to db to check if a movie is in fav list
+        ContentResolver contentResolver = context.getContentResolver();
         ArrayList<MovieObject> movieObjects = new ArrayList<>();
 
         JsonParser parser = new JsonParser();
@@ -169,9 +175,25 @@ class Utility {
                 JsonObject movie = movies.get(i).getAsJsonObject();
                 MovieObject current = gson.fromJson(movie, MovieObject.class);
                 current.makeNice(context);
+
+                // if a movie is in the database - make it favorite
+                Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
+                        null,
+                        MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
+                        new String[]{current.title},
+                        null);
+
+                if (currentPoster != null) {
+                    currentPoster.moveToFirst();
+                    int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+
+                    if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(current.title)) {
+                        current.isFavorited = 1;
+                    }
+                    currentPoster.close();
+                }
                 movieObjects.add(current);
             }
-
             return movieObjects;
         }
 

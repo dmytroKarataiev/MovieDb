@@ -274,14 +274,6 @@ public class MainActivityFragment extends Fragment {
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 
-        // What is better: clone ArrayList or re-initialize adapter?
-        /*
-        ArrayList<MovieObject> temp = (ArrayList<MovieObject>) movieList.clone();
-        movieAdapter.clear();
-        movieAdapter.addAll(temp);
-        movieAdapter.notifyDataSetChanged();
-        */
-
         gridView.setAdapter(movieAdapter);
         gridView.setSelection(currentPosition);
 

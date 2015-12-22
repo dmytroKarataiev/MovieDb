@@ -3,6 +3,7 @@ package karataiev.dmytro.popularmovies;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
     public View getView(final int position, View view, ViewGroup parent) {
 
         final MovieObject movieObject = getItem(position);
+        Log.v(LOG_TAG, movieObject.title + " pos " + position + " isFav " + movieObject.isFavorited);
 
         //contentResolver.acquireContentProviderClient(MoviesContract.BASE_CONTENT_URI);
         final ContentValues favValue = new ContentValues();
@@ -88,7 +90,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
                             favorite.setImageResource(R.drawable.bookmark);
                             movieObject.isFavorited = 0;
                             contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
-                                    MoviesContract.MovieEntry.COLUMN_TITLE,
+                                    MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
                                     new String[] { favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE) }
                             );
                         }
