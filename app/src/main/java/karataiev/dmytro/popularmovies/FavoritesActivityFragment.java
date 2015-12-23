@@ -103,7 +103,8 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
                 movie.vote_count = currentPoster.getString(voteCount);
                 movie.poster_path = currentPoster.getString(postetPath);
 
-                currentPoster.close();
+                // When closed - error StaleDataException disappears
+                // currentPoster.close();
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra("movie", movie);
