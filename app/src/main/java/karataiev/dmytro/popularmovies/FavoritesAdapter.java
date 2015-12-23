@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,6 @@ public class FavoritesAdapter extends CursorAdapter {
 
     public FavoritesAdapter(Context context, Cursor c, int flags, int loaderID){
         super(context, c, flags);
-        Log.d(LOG_TAG, "FavoritesAdapter");
         mContext = context;
         sLoaderID = loaderID;
         contentResolver = context.getContentResolver();
@@ -52,8 +50,6 @@ public class FavoritesAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
         int layoutId = R.layout.movie_item;
-
-        Log.d(LOG_TAG, "In new View");
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
@@ -66,8 +62,6 @@ public class FavoritesAdapter extends CursorAdapter {
     public void bindView(View view, final Context context, Cursor cursor){
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        Log.d(LOG_TAG, "In bind View");
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
@@ -91,7 +85,6 @@ public class FavoritesAdapter extends CursorAdapter {
 
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
         byte[] image = cursor.getBlob(imageIndex);
-        Log.i(LOG_TAG, "Image reference extracted");
 
         if (image != null) {
             viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));

@@ -12,17 +12,12 @@ import android.view.MenuItem;
  */
 public class FavoritesActivity extends AppCompatActivity {
 
+    private String LOG_TAG = FavoritesActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_favorites);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_favorites, new FavoritesActivityFragment())
-                    .commit();
-        }
     }
 
     @Override
@@ -42,10 +37,8 @@ public class FavoritesActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-
         }
 
         return super.onOptionsItemSelected(item);

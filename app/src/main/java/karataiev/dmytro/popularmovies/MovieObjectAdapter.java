@@ -59,9 +59,7 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         // set favorites icon
         if (Utility.isFavorite(getContext(), movieObject)) {
             favorite.setImageResource(R.drawable.bookmark_fav);
-
         } else {
-
             favorite.setImageResource(R.drawable.bookmark);
         }
 
@@ -78,8 +76,6 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
             public void onSuccess() {
                 spinner.setVisibility(View.GONE);
                 favorite.setVisibility(View.VISIBLE);
-
-
 
                 // On favorite icon click
                 favorite.setOnClickListener(new View.OnClickListener() {

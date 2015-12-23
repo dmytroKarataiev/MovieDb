@@ -105,8 +105,7 @@ public class MainActivityFragment extends Fragment {
         // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
@@ -117,7 +116,6 @@ public class MainActivityFragment extends Fragment {
                     addMovies = true;
                     updateMovieList();
                 }
-
             }
         });
 
@@ -169,12 +167,12 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
         // Saves movies so we don't need to re-download them
         outState.putParcelableArrayList("movies", movieList);
         outState.putInt("position", currentPosition);
         outState.putInt("page", currentPage);
-
-        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -210,8 +208,7 @@ public class MainActivityFragment extends Fragment {
             //Log.v(LOG_TAG, "Scroll to the end");
             fetchMovies(sort);
             redraw();
-        }
-        else {
+        } else {
             redraw();
         }
     }
@@ -267,7 +264,9 @@ public class MainActivityFragment extends Fragment {
     private void redraw() {
 
         if (currentPage > 1) {
-            currentPosition = gridView.getFirstVisiblePosition();
+            if (gridView.getFirstVisiblePosition() != 0) {
+                currentPosition = gridView.getFirstVisiblePosition();
+            }
         } else {
             currentPosition = 0;
         }
@@ -278,7 +277,6 @@ public class MainActivityFragment extends Fragment {
         gridView.setSelection(currentPosition);
 
         setActionbarTitle();
-
     }
 
     /**

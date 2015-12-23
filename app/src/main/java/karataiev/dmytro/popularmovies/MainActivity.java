@@ -9,9 +9,12 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String LOG_TAG = MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -35,16 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
         if (id == R.id.action_favorites) {
-
             startActivity(new Intent(this, FavoritesActivity.class));
             return true;
-
         }
 
         return super.onOptionsItemSelected(item);

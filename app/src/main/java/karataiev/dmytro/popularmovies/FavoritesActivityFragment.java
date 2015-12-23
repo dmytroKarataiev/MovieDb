@@ -1,9 +1,7 @@
 package karataiev.dmytro.popularmovies;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +44,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    private BroadcastReceiver networkStateReceiver;
+    //private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
     private boolean loadingMore;
@@ -55,52 +52,18 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     private int currentPosition = 0;
     private boolean addMovies = false;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // BroadcastReceiver to get info about network connection
-        networkStateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
-
-                // Updates screen on network connection if nothing was on the screen
-                if (activeNetInfo != null) {
-                    updateMovieList();
-                }
-            }
-        };
-        // Starts receiver
-        startListening();
-    }
+    public FavoritesActivityFragment() { }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
-        Cursor c =
-                getActivity().getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
-                        new String[]{MoviesContract.MovieEntry._ID},
-                        null,
-                        null,
-                        null);
-        if (c.getCount() == 0){
-            //insertData();
-            Log.v(LOG_TAG, "ZERO " + c.getCount());
-        } else {
-            Log.v(LOG_TAG, "Cursor " + c.getCount());
-        }
-        // initialize loader
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-
         super.onActivityCreated(savedInstanceState);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootview = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         // Main object on the screen - grid with posters
         gridView = (GridView) rootview.findViewById(R.id.movies_grid);
@@ -139,11 +102,10 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
         gridView.setAdapter(movieAdapter);
 
-        // Listenes to your scroll activity and adds posters if you've reached the end of the screen
+        // Listens to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
@@ -153,21 +115,10 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
                     currentPage++;
                     addMovies = true;
                 }
-
             }
         });
 
-
         return rootview;
-    }
-
-    /**
-     * Method to register BroadcastReceiver
-     */
-    private void startListening() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver(networkStateReceiver, filter);
     }
 
     @Override
@@ -179,27 +130,6 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
         super.onSaveInstanceState(outState);
     }
-
-    /**
-     * Method to update UI when settings changed
-     */
-    private void updateMovieList() {
-        String sort = Utility.getSort(getActivity());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        startListening();
-        updateMovieList();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(networkStateReceiver);
-    }
-
 
     // Attach loader to our flavors database query
     // run when loader is initialized
@@ -214,7 +144,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
