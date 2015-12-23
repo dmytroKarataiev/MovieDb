@@ -20,7 +20,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment, new FavoritesActivityFragment())
+                    .add(R.id.fragment_favorites, new FavoritesActivityFragment())
                     .commit();
         }
     }

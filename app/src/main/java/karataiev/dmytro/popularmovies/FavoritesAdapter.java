@@ -3,6 +3,7 @@ package karataiev.dmytro.popularmovies;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,7 +93,9 @@ public class FavoritesAdapter extends CursorAdapter {
         byte[] image = cursor.getBlob(imageIndex);
         Log.i(LOG_TAG, "Image reference extracted");
 
-        //viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+        if (image != null) {
+            viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+        }
 
     }
 }

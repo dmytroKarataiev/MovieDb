@@ -3,6 +3,9 @@ package karataiev.dmytro.popularmovies;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import karataiev.dmytro.popularmovies.database.MoviesContract;
@@ -55,7 +59,9 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         // set favorites icon
         if (Utility.isFavorite(getContext(), movieObject)) {
             favorite.setImageResource(R.drawable.bookmark_fav);
+
         } else {
+
             favorite.setImageResource(R.drawable.bookmark);
         }
 
@@ -73,6 +79,8 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
                 spinner.setVisibility(View.GONE);
                 favorite.setVisibility(View.VISIBLE);
 
+
+
                 // On favorite icon click
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -81,14 +89,23 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
                         Toast.makeText(getContext(), movieObject.title, Toast.LENGTH_LONG).show();
 
                         if (!Utility.isFavorite(getContext(), movieObject)) {
+                            // Save drawable for later usage
+                            Drawable loadedPoster = poster.getDrawable();
+                            Bitmap bitmap = ((BitmapDrawable) loadedPoster).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            byte[] bitmapData = stream.toByteArray();
+
+                            // save byte array of an image to the database
+                            favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+
                             favorite.setImageResource(R.drawable.bookmark_fav);
                             contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, favValue);
                         } else {
                             favorite.setImageResource(R.drawable.bookmark);
                             contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
                                     MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                                    new String[] { favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE) }
-                            );
+                                    new String[]{favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE)});
                         }
                     }
                 });

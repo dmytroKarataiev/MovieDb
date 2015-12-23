@@ -56,21 +56,8 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     private boolean addMovies = false;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        Cursor c =
-                getActivity().getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
-                        new String[]{MoviesContract.MovieEntry._ID},
-                        null,
-                        null,
-                        null);
-        if (c.getCount() == 0){
-            //insertData();
-            Log.v(LOG_TAG, "ZERO " + c.getCount());
-        } else {
-            Log.v(LOG_TAG, "Cursor " + c.getCount());
-        }
-        // initialize loader
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // BroadcastReceiver to get info about network connection
         networkStateReceiver = new BroadcastReceiver() {
@@ -87,6 +74,24 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         };
         // Starts receiver
         startListening();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        Cursor c =
+                getActivity().getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
+                        new String[]{MoviesContract.MovieEntry._ID},
+                        null,
+                        null,
+                        null);
+        if (c.getCount() == 0){
+            //insertData();
+            Log.v(LOG_TAG, "ZERO " + c.getCount());
+        } else {
+            Log.v(LOG_TAG, "Cursor " + c.getCount());
+        }
+        // initialize loader
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         super.onActivityCreated(savedInstanceState);
     }
