@@ -32,8 +32,6 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
     private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
     private ContentResolver contentResolver = getContext().getContentResolver();
 
-
-
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
     }
@@ -47,6 +45,10 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
         final ContentValues favValue = new ContentValues();
         favValue.put(MoviesContract.MovieEntry.COLUMN_TITLE, movieObject.title);
         favValue.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, movieObject.overview);
+        favValue.put(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE, movieObject.release_date);
+        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, movieObject.vote_average);
+        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT, movieObject.vote_count);
+        favValue.put(MoviesContract.MovieEntry.COLUMN_POSTER_PATH, movieObject.poster_path);
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.movie_item, parent, false);

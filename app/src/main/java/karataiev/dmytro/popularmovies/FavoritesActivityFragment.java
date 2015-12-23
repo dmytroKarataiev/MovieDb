@@ -89,8 +89,19 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
                 MovieObject movie = new MovieObject();
 
                 int title = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+                int overview = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_OVERVIEW);
+                int releaseDate = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE);
+                int voteAverage = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE);
+                int voteCount = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT);
+                int postetPath = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
+
 
                 movie.title = currentPoster.getString(title);
+                movie.overview = currentPoster.getString(overview);
+                movie.release_date = currentPoster.getString(releaseDate);
+                movie.vote_average = currentPoster.getString(voteAverage);
+                movie.vote_count = currentPoster.getString(voteCount);
+                movie.poster_path = currentPoster.getString(postetPath);
 
                 currentPoster.close();
 

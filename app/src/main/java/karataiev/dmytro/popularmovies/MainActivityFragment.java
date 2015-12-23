@@ -108,7 +108,6 @@ public class MainActivityFragment extends Fragment {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_FLING) {
                     currentPosition = gridView.getFirstVisiblePosition();
-                    Log.v(LOG_TAG, "Scroll " + gridView.getFirstVisiblePosition());
                 }
             }
 
@@ -269,11 +268,9 @@ public class MainActivityFragment extends Fragment {
      */
     private void redraw() {
 
-        Log.v(LOG_TAG, "Current position " + currentPosition);
         if (currentPosition == 0) {
             currentPosition = gridView.getFirstVisiblePosition();
         }
-        Log.v(LOG_TAG, "Updated position " + currentPosition);
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 

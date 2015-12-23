@@ -1,6 +1,7 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -271,5 +272,20 @@ class Utility {
         }
 
         return false;
+    }
+
+    public static void insertToDb(Context context, ContentValues favValue) {
+        // get access to db to check if a movie is in fav list
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, favValue);
+    }
+
+    public static void deleteFromDb(Context context, ContentValues favValue) {
+        // get access to db to check if a movie is in fav list
+        ContentResolver contentResolver = context.getContentResolver();
+
+        contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
+                MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
+                new String[]{favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE)});
     }
 }

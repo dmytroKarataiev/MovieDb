@@ -1,6 +1,10 @@
 package karataiev.dmytro.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -13,9 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+
+import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
  * Detailed Movie Fragment with poster, rating, description.
@@ -35,6 +46,8 @@ public class DetailFragment extends Fragment {
     public static class ViewHolder {
 
         public final ImageView posterView;
+        public final ProgressBar spinner;
+        public final ImageView favorite;
         public final TextView movieName;
         public final TextView movieReleaseDate;
         public final TextView movieRating;
@@ -42,7 +55,9 @@ public class DetailFragment extends Fragment {
         public final TextView movieVotes;
 
         public ViewHolder(View view) {
-            posterView = (ImageView) view.findViewById(R.id.poster_imageview);
+            favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
+            posterView = (ImageView) view.findViewById(R.id.movie_poster);
+            spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
             movieName = (TextView) view.findViewById(R.id.movie_name);
             movieReleaseDate = (TextView) view.findViewById(R.id.detail_releasedate_textview);
             movieRating = (TextView) view.findViewById(R.id.detail_rating_textview);
@@ -60,11 +75,11 @@ public class DetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ViewHolder viewHolder = new ViewHolder(rootView);
+        final ViewHolder viewHolder = new ViewHolder(rootView);
 
         // Gets data from intent (using parcelable) and populates views
         Intent intent = this.getActivity().getIntent();
-        MovieObject fromIntent = intent.getParcelableExtra("movie");
+        final MovieObject fromIntent = intent.getParcelableExtra("movie");
 
         viewHolder.movieName.setText(fromIntent.title);
         viewHolder.movieDescription.setText(fromIntent.overview);
@@ -72,7 +87,63 @@ public class DetailFragment extends Fragment {
         viewHolder.movieReleaseDate.setText(fromIntent.release_date);
         viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.vote_count));
 
-        Picasso.with(getContext()).load(fromIntent.full_poster_path).into(viewHolder.posterView);
+        if (Utility.isFavorite(getContext(), fromIntent)) {
+            viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+        } else {
+            viewHolder.favorite.setImageResource(R.drawable.bookmark);
+        }
+
+        Picasso.with(getContext()).load(fromIntent.poster_path).into(viewHolder.posterView, new Callback() {
+            @Override
+            public void onSuccess() {
+                viewHolder.spinner.setVisibility(View.GONE);
+                viewHolder.favorite.setVisibility(View.VISIBLE);
+
+                // On favorite icon click
+                viewHolder.favorite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ContentValues favValue = new ContentValues();
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_TITLE, fromIntent.title);
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, fromIntent.overview);
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE, fromIntent.release_date);
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, fromIntent.vote_average);
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT, fromIntent.vote_count);
+
+                        Toast.makeText(getContext(), fromIntent.title, Toast.LENGTH_LONG).show();
+
+                        if (!Utility.isFavorite(getContext(), fromIntent)) {
+
+                            // Save drawable for later usage
+                            Drawable loadedPoster = viewHolder.posterView.getDrawable();
+                            Bitmap bitmap = ((BitmapDrawable) loadedPoster).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            byte[] bitmapData = stream.toByteArray();
+
+                            // save byte array of an image to the database
+                            favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+
+                            viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+
+                            Utility.insertToDb(getContext(), favValue);
+
+                        } else {
+                            viewHolder.favorite.setImageResource(R.drawable.bookmark);
+                            Utility.deleteFromDb(getContext(), favValue);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onError() {
+                viewHolder.posterView.setBackgroundResource(R.color.white);
+                viewHolder.spinner.setVisibility(View.GONE);
+                viewHolder.favorite.setVisibility(View.GONE);
+            }
+        });
 
         // Initializes mMovie with info about a movie
         mMovie = fromIntent.title + "\n" + fromIntent.release_date + "\n" + fromIntent.vote_average + "\n" + fromIntent.overview;
