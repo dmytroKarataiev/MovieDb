@@ -264,6 +264,7 @@ class Utility {
             int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
 
             if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.title)) {
+                currentPoster.close();
                 return true;
             }
             currentPoster.close();

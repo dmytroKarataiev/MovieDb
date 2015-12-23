@@ -92,11 +92,12 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
                 movie.title = currentPoster.getString(title);
 
-                if (currentPoster != null) {
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                currentPoster.close();
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra("movie", movie);
-                    startActivity(intent);
-                }
+                startActivity(intent);
+
             }
         });
 

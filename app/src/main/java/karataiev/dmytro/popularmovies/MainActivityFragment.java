@@ -54,7 +54,7 @@ public class MainActivityFragment extends Fragment {
     private LinearLayout linlaProgressBar;
     private boolean loadingMore;
     private int currentPage = 1;
-    private int currentPosition = 0;
+    private int currentPosition;
     private boolean addMovies = false;
 
     @Override
@@ -105,12 +105,18 @@ public class MainActivityFragment extends Fragment {
         // Listenes to your scroll activity and adds posters if you've reached the end of the screen
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {}
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_FLING) {
+                    currentPosition = gridView.getFirstVisiblePosition();
+                    Log.v(LOG_TAG, "Scroll " + gridView.getFirstVisiblePosition());
+                }
+            }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
+
                 if (lastInScreen == totalItemCount && !loadingMore && isOnline(getContext())) {
                     currentPage++;
                     addMovies = true;
@@ -263,13 +269,11 @@ public class MainActivityFragment extends Fragment {
      */
     private void redraw() {
 
-        if (currentPage > 1) {
-            if (gridView.getFirstVisiblePosition() != 0) {
-                currentPosition = gridView.getFirstVisiblePosition();
-            }
-        } else {
-            currentPosition = 0;
+        Log.v(LOG_TAG, "Current position " + currentPosition);
+        if (currentPosition == 0) {
+            currentPosition = gridView.getFirstVisiblePosition();
         }
+        Log.v(LOG_TAG, "Updated position " + currentPosition);
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 
