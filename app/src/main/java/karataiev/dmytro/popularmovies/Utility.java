@@ -27,7 +27,9 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
  * Class with additional helper functions
  * Created by karataev on 12/15/15.
  */
-class Utility {
+public class Utility {
+
+    private static String LOG_TAG = Utility.class.getSimpleName();
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
@@ -156,7 +158,6 @@ class Utility {
      */
     public static ArrayList<MovieObject> getMoviesGSON(Context context, String movieJsonStr) {
 
-
         ArrayList<MovieObject> movieObjects = new ArrayList<>();
 
         JsonParser parser = new JsonParser();
@@ -174,6 +175,8 @@ class Utility {
                 JsonObject movie = movies.get(i).getAsJsonObject();
                 MovieObject current = gson.fromJson(movie, MovieObject.class);
                 current.makeNice(context);
+                current.trailer_path = getTrailersURL(current.id).toString();
+
                 movieObjects.add(current);
             }
             return movieObjects;
@@ -182,8 +185,14 @@ class Utility {
         return null;
     }
 
+    /**
+     * Method to get URL for a page from Movie DB
+     * @param currentPage to fetch correct page
+     * @param context from which a call is being made
+     * @return URL to next 20 movies
+     */
     public static URL getUrl(int currentPage, Context context) {
-        // Construct the URL for the OpenWeatherMap query
+        // Construct the URL for the movie query
         // Possible parameters are available at Movie DB API page, at
         // http://docs.themoviedb.apiary.io/
         final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
@@ -271,5 +280,68 @@ class Utility {
         }
 
         return false;
+    }
+
+    /**
+     * Method to get trailer URL
+     * @param movie_id from MovieObject
+     * @return URL request for trailers
+     */
+    public static URL getTrailersURL(String movie_id) {
+        // Construct the URL for the movie query
+        // Possible parameters are available at Movie DB API page, at
+        // http://docs.themoviedb.apiary.io/
+        Log.v(LOG_TAG, "ger trailers urls");
+
+
+        String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/" + movie_id + "/videos";
+
+
+        // Don't forget to add API key to the gradle.properties file
+        final String API_KEY = "api_key";
+
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e("URL", "error " + e);
+        }
+
+        return url;
+    }
+
+    /**
+     * Method to parse JSON string and return ArrayList of YouTube id's
+     * @param movieJsonStr JSON string with trailers
+     * @return ArrayList of Strings with id's for YouTube
+     */
+    public static ArrayList<String> getTrailers(String movieJsonStr) {
+
+        Log.v(LOG_TAG, "getTrailers" + movieJsonStr);
+
+        ArrayList<String> trailers = new ArrayList<>();
+
+        JsonParser parser = new JsonParser();
+
+        JsonElement element = parser.parse(movieJsonStr);
+
+        if (element.isJsonObject()) {
+            JsonObject results = element.getAsJsonObject();
+            JsonArray trailersList = results.getAsJsonArray("results");
+
+            for (int i = 0; i < trailersList.size(); i++) {
+                JsonObject movie = trailersList.get(i).getAsJsonObject();
+                JsonElement trailerKey = movie.getAsJsonPrimitive("key");
+                Log.v("Trailer", trailerKey.getAsString());
+                trailers.add(trailerKey.getAsString());
+            }
+            return trailers;
+        }
+
+        return null;
     }
 }

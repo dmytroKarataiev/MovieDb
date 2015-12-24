@@ -19,6 +19,7 @@ android {
     }
     buildTypes.each {
         it.buildConfigField 'String', 'MOVIE_DB_API_KEY', movieDbApiKey
+        it.buildConfigField 'String', 'YOUTUBE_API_KEY', youtubeApiKey
     }
 }
 

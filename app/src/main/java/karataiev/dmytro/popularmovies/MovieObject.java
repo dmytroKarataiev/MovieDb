@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class MovieObject implements Parcelable {
     private String adult;
     private String backdrop_path;
-    private ArrayList<String> genre_ids;
-    private String id;
+    ArrayList<String> genre_ids;
+    String id;
     private String original_language;
     private String original_title;
     String overview;
@@ -26,6 +26,8 @@ public class MovieObject implements Parcelable {
     String vote_average;
     String vote_count;
     String full_poster_path;
+    ArrayList<String> key;
+    String trailer_path;
 
     public MovieObject() { }
 
@@ -45,6 +47,8 @@ public class MovieObject implements Parcelable {
         vote_average = in.readString();
         vote_count = in.readString();
         full_poster_path = in.readString();
+        key = (ArrayList<String>) in.readSerializable();
+        trailer_path = in.readString();
     }
 
     public void makeNice(Context context) {
@@ -82,6 +86,9 @@ public class MovieObject implements Parcelable {
         parcel.writeString(vote_average);
         parcel.writeString(vote_count);
         parcel.writeString(full_poster_path);
+        parcel.writeSerializable(key);
+        parcel.writeString(trailer_path);
+
     }
 
     public static final Creator<MovieObject> CREATOR = new Creator<MovieObject>() {

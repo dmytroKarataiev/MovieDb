@@ -1,43 +1,63 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.concurrent.ExecutionException;
 
+import karataiev.dmytro.popularmovies.AsyncTask.FetchTrailers;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
  * Detailed Movie Fragment with poster, rating, description.
  * Created by karataev on 12/15/15.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     // String which is used in share intent
     private String mMovie;
+
+    // YouTube variables
+    private YouTubePlayer YPlayer;
+    private int currentVideoMillis;
+    private String videoID;
+    YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
     /**
      * Cache of the children views
@@ -66,8 +86,16 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    public DetailFragment() {
-        setHasOptionsMenu(true);
+    public DetailFragment() { setHasOptionsMenu(true); }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            // Get video progress
+            currentVideoMillis = savedInstanceState.getInt("time");
+        }
     }
 
     @Override
@@ -152,6 +180,46 @@ public class DetailFragment extends Fragment {
         // Initializes mMovie with info about a movie
         mMovie = fromIntent.title + "\n" + fromIntent.release_date + "\n" + fromIntent.vote_average + "\n" + fromIntent.overview;
 
+        // YouTube view initialization
+        youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
+        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, this);
+        FragmentManager fragmentManager = getFragmentManager();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
+
+        // Detect if display is in landscape mode and set YouTube layout height accordingly
+        TypedValue tv = new TypedValue();
+
+        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270))
+        {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            FrameLayout youtubeFrame = (FrameLayout) rootView.findViewById(R.id.youtube_fragment);
+            ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
+
+            layoutParams.height = Utility.screenSize(getContext())[1] - (actionBarHeight + actionBarHeight / 2);
+            youtubeFrame.setLayoutParams(layoutParams);
+        }
+
+        try {
+            // get from AsyncTask trailers
+            FetchTrailers fetchTrailers = new FetchTrailers();
+            fromIntent.key = fetchTrailers.execute(fromIntent.trailer_path).get();
+
+            if (fromIntent.key != null) {
+                Log.v(LOG_TAG, TextUtils.join(", ", fromIntent.key));
+                videoID = fromIntent.key.get(0);
+            }
+
+        } catch (ExecutionException e) {
+            Log.e(LOG_TAG, "error");
+        } catch (InterruptedException e2) {
+            Log.e(LOG_TAG, "error" + e2);
+        }
+
         return rootView;
 
     }
@@ -188,4 +256,39 @@ public class DetailFragment extends Fragment {
 
         return sendIntent;
     }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
+
+        this.YPlayer = player;
+
+        if(!wasRestored){
+            if (videoID != null) {
+                YPlayer.cueVideo(videoID, currentVideoMillis);
+            } else {
+                // hide youtube player if there is no video
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().hide(youTubePlayerSupportFragment).commit();
+            }
+        }
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult result) {
+        if (result.isUserRecoverableError()) {
+            result.getErrorDialog(this.getActivity(),1).show();
+        } else {
+            Toast.makeText(this.getActivity(), "YouTubePlayer.onInitializationFailure(): " + result.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        super.onSaveInstanceState(saveInstanceState);
+
+        // Save YouTube progress
+        saveInstanceState.putInt("time", YPlayer.getCurrentTimeMillis());
+    }
+
+
 }
