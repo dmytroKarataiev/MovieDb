@@ -127,11 +127,15 @@ public class DetailFragment extends Fragment {
 
                             viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
 
-                            Utility.insertToDb(getContext(), favValue);
-
+                            // Insert on background thread
+                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                            utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
                         } else {
                             viewHolder.favorite.setImageResource(R.drawable.bookmark);
-                            Utility.deleteFromDb(getContext(), favValue);
+
+                            // Delete on bacjground thread
+                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                            utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
                         }
                     }
                 });

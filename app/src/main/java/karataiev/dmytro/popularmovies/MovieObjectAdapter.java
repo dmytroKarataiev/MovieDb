@@ -1,7 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -30,7 +29,7 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
 class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
     private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
-    private ContentResolver contentResolver = getContext().getContentResolver();
+    //private ContentResolver contentResolver = getContext().getContentResolver();
 
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
@@ -98,12 +97,16 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
                             favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
 
                             favorite.setImageResource(R.drawable.bookmark_fav);
-                            contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, favValue);
+
+                            // Insert on background thread
+                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                            utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
                         } else {
                             favorite.setImageResource(R.drawable.bookmark);
-                            contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
-                                    MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                                    new String[]{favValue.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE)});
+
+                            // Delete on background thread
+                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                            utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
                         }
                     }
                 });

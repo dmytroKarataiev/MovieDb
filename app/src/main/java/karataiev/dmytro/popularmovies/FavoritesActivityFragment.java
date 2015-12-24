@@ -136,11 +136,6 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // Saves movies so we don't need to re-download them
-        //outState.putParcelableArrayList("movies", movieList);
-        //outState.putInt("position", currentPosition);
-        //outState.putInt("page", currentPage);
-
         super.onSaveInstanceState(outState);
     }
 

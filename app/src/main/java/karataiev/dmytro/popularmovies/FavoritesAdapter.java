@@ -1,6 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
-import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -23,7 +23,6 @@ public class FavoritesAdapter extends CursorAdapter {
     private static final String LOG_TAG = FavoritesAdapter.class.getSimpleName();
     private Context mContext;
     private static int sLoaderID;
-    ContentResolver contentResolver;
 
     public static class ViewHolder {
         public final ImageView imageView;
@@ -44,7 +43,6 @@ public class FavoritesAdapter extends CursorAdapter {
         super(context, c, flags);
         mContext = context;
         sLoaderID = loaderID;
-        contentResolver = context.getContentResolver();
     }
 
     @Override
@@ -76,9 +74,14 @@ public class FavoritesAdapter extends CursorAdapter {
                 Toast.makeText(context, "Not favorite anymore", Toast.LENGTH_LONG).show();
 
                 viewHolder.favImage.setImageResource(R.drawable.bookmark);
-                contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
-                        MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                        new String[]{ versionName });
+
+                // Temp way to delete data from the db
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, versionName);
+
+                // Deletion on background thread
+                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
+                utilityAsyncTask.execute(UtilityAsyncTask.DELETE, contentValues);
             }
         });
 
