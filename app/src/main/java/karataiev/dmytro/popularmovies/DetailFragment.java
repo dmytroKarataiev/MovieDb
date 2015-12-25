@@ -33,6 +33,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -206,15 +207,25 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             if (fromIntent.getTrailers() != null && fromIntent.getTrailers().size() > 0) {
                 videoID = fromIntent.getTrailers();
+
+                // If there are trailers - add their links to the share Intent
+                mMovie += "\nAlso check out the Trailers:\n";
+                for (String each : fromIntent.getTrailers()) {
+                    mMovie += "https://www.youtube.com/watch?v=" + each + "\n";
+                }
             }
 
             // Get Reviews from AsyncTask and put them in a simple TextView
             FetchJSON fetchJSONReviews = new FetchJSON();
             TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
-            reviews.setText(TextUtils.join("\n", fetchJSONReviews
-                    .execute(Utility.getReviewsURL(fromIntent.getId()).toString())
-                    .get()));
 
+            ArrayList<String> reviewsArrayList = fetchJSONReviews
+                    .execute(Utility.getReviewsURL(fromIntent.getId()).toString())
+                    .get();
+
+            if (reviewsArrayList != null) {
+                reviews.setText(TextUtils.join("\n", reviewsArrayList));
+            }
 
         } catch (ExecutionException e) {
             Log.e(LOG_TAG, "error");
@@ -263,7 +274,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
 
         this.YPlayer = player;
-        
+
         YPlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
@@ -322,7 +333,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Save YouTube progress
         saveInstanceState.putInt("time", YPlayer.getCurrentTimeMillis());
         saveInstanceState.putInt("video", currentVideo);
-
     }
 
 
