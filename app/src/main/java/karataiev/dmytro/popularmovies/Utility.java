@@ -296,10 +296,36 @@ public class Utility {
         // Construct the URL for the movie query
         // Possible parameters are available at Movie DB API page, at
         // http://docs.themoviedb.apiary.io/
-        Log.v(LOG_TAG, "ger trailers urls");
-
-
         String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/" + movie_id + "/videos";
+
+
+        // Don't forget to add API key to the gradle.properties file
+        final String API_KEY = "api_key";
+
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e("URL", "error " + e);
+        }
+
+        return url;
+    }
+
+    /**
+     * Method to get reviews URL
+     * @param movie_id from MovieObject
+     * @return URL request for reviews
+     */
+    public static URL getReviewsURL(String movie_id) {
+        // Construct the URL for the movie query
+        // Possible parameters are available at Movie DB API page, at
+        // http://docs.themoviedb.apiary.io/
+        String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/" + movie_id + "/reviews";
 
 
         // Don't forget to add API key to the gradle.properties file
@@ -326,8 +352,6 @@ public class Utility {
      */
     public static ArrayList<String> getTrailers(String movieJsonStr) {
 
-        Log.v(LOG_TAG, "getTrailers" + movieJsonStr);
-
         ArrayList<String> trailers = new ArrayList<>();
 
         JsonParser parser = new JsonParser();
@@ -342,12 +366,44 @@ public class Utility {
                 for (int i = 0; i < trailersList.size(); i++) {
                     JsonObject movie = trailersList.get(i).getAsJsonObject();
                     JsonElement trailerKey = movie.getAsJsonPrimitive("key");
-                    Log.v("Trailer", trailerKey.getAsString());
                     trailers.add(trailerKey.getAsString());
                 }
             }
 
             return trailers;
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to parse JSON string and return ArrayList of Reviews
+     * @param movieJsonStr JSON string with reviews
+     * @return ArrayList of Strings with reviews of a movie
+     */
+    public static ArrayList<String> getReviews(String movieJsonStr) {
+
+        ArrayList<String> reviews = new ArrayList<>();
+
+        JsonParser parser = new JsonParser();
+
+        JsonElement element = parser.parse(movieJsonStr);
+
+        if (element.isJsonObject()) {
+            JsonObject results = element.getAsJsonObject();
+            JsonArray trailersList = results.getAsJsonArray("results");
+
+            if (trailersList != null) {
+                for (int i = 0; i < trailersList.size(); i++) {
+                    JsonObject movie = trailersList.get(i).getAsJsonObject();
+                    JsonElement author = movie.getAsJsonPrimitive("author");
+                    JsonElement content = movie.getAsJsonPrimitive("content");
+
+                    reviews.add(author.getAsString() + "\n" + content.getAsString());
+                }
+            }
+
+            return reviews;
         }
 
         return null;
@@ -401,7 +457,7 @@ public class Utility {
 
     /**
      * Method to create ContentValues from a MovieObject
-     * Called from MovieObjectAdapter
+     * Called from MovieObjectAdapter, DetailFragment
      * @param movie with contents
      * @return ContentValues with contents from the MovieObject
      */
@@ -429,7 +485,7 @@ public class Utility {
 
     /**
      * Method to create byte[] from a Drawable to later put it into the database
-     * Called from MovieObjectAdapter
+     * Called from MovieObjectAdapter, DetailFragment
      * @param drawable to convert
      * @return byte[] made from the Drawable
      */

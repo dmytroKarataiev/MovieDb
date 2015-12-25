@@ -35,7 +35,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.ExecutionException;
 
-import karataiev.dmytro.popularmovies.AsyncTask.FetchTrailers;
+import karataiev.dmytro.popularmovies.AsyncTask.FetchJSON;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
@@ -193,13 +193,20 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         try {
             // get from AsyncTask trailers
-            FetchTrailers fetchTrailers = new FetchTrailers();
-            fromIntent.setKeys(fetchTrailers.execute(fromIntent.getTrailerPath()).get());
+            FetchJSON fetchJSON = new FetchJSON();
+            fromIntent.setKeys(fetchJSON.execute(fromIntent.getTrailerPath()).get());
 
             if (fromIntent.getTrailers() != null && fromIntent.getTrailers().size() > 0) {
-                Log.v(LOG_TAG, TextUtils.join(", ", fromIntent.getTrailers()));
                 videoID = fromIntent.getTrailers().get(0);
             }
+
+            // Get Reviews from AsyncTask and put them in a simple TextView
+            FetchJSON fetchJSONReviews = new FetchJSON();
+            TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
+            reviews.setText(TextUtils.join("\n", fetchJSONReviews
+                    .execute(Utility.getReviewsURL(fromIntent.getId()).toString())
+                    .get()));
+
 
         } catch (ExecutionException e) {
             Log.e(LOG_TAG, "error");

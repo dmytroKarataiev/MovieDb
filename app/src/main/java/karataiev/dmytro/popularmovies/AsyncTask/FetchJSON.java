@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import karataiev.dmytro.popularmovies.Utility;
 
 /**
- * Class to retreive trailers on background thread
+ * Class to retreive JSON on background thread
  * Created by karataev on 12/23/15.
  */
-public class FetchTrailers extends AsyncTask<String, Void, ArrayList<String>> {
+public class FetchJSON extends AsyncTask<String, Void, ArrayList<String>> {
 
-    private final String LOG_TAG = FetchTrailers.class.getSimpleName();
+    private final String LOG_TAG = FetchJSON.class.getSimpleName();
 
-    public FetchTrailers() {}
+    public FetchJSON() {}
 
     /**
      * AsyncTask to fetch data on background thread
@@ -30,7 +30,6 @@ public class FetchTrailers extends AsyncTask<String, Void, ArrayList<String>> {
      * @return ArrayList of YouTube id's for trailers
      */
     protected ArrayList<String> doInBackground(String... params) {
-        Log.v(LOG_TAG, "started" + params[0]);
         // Network Client
         OkHttpClient client = new OkHttpClient();
 
@@ -52,8 +51,11 @@ public class FetchTrailers extends AsyncTask<String, Void, ArrayList<String>> {
         } catch (NullPointerException e) {
             Log.e(LOG_TAG, "Null ", e);
         }
-        Log.v(LOG_TAG, "returned" + movieJsonStr);
 
-        return Utility.getTrailers(movieJsonStr);
+        if (params[0].contains("reviews")) {
+            return Utility.getReviews(movieJsonStr);
+        } else {
+            return Utility.getTrailers(movieJsonStr);
+        }
     }
 }
