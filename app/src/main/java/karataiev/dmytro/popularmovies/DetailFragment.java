@@ -33,6 +33,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import karataiev.dmytro.popularmovies.AsyncTask.FetchJSON;
@@ -51,8 +52,14 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     // YouTube variables
     private YouTubePlayer YPlayer;
+
+    // save current video and position
     private int currentVideoMillis;
-    private String videoID;
+    private int currentVideo;
+
+    // list of videos
+    private List<String> videoID;
+
     YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
     /**
@@ -91,6 +98,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         if (savedInstanceState != null) {
             // Get video progress
             currentVideoMillis = savedInstanceState.getInt("time");
+            currentVideo = savedInstanceState.getInt("video");
         }
     }
 
@@ -197,7 +205,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             fromIntent.setKeys(fetchJSON.execute(fromIntent.getTrailerPath()).get());
 
             if (fromIntent.getTrailers() != null && fromIntent.getTrailers().size() > 0) {
-                videoID = fromIntent.getTrailers().get(0);
+                videoID = fromIntent.getTrailers();
             }
 
             // Get Reviews from AsyncTask and put them in a simple TextView
@@ -255,10 +263,41 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
 
         this.YPlayer = player;
+        
+        YPlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+            @Override
+            public void onLoading() {
 
+            }
+
+            @Override
+            public void onLoaded(String s) {
+                currentVideo = videoID.indexOf(s);
+            }
+
+            @Override
+            public void onAdStarted() {
+
+            }
+
+            @Override
+            public void onVideoStarted() {
+
+            }
+
+            @Override
+            public void onVideoEnded() {
+
+            }
+
+            @Override
+            public void onError(YouTubePlayer.ErrorReason errorReason) {
+
+            }
+        });
         if(!wasRestored){
             if (videoID != null) {
-                YPlayer.cueVideo(videoID, currentVideoMillis);
+                YPlayer.cueVideos(videoID, currentVideo, currentVideoMillis);
             } else {
                 // hide youtube player if there is no video
                 FragmentManager fragmentManager = getFragmentManager();
@@ -282,6 +321,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         // Save YouTube progress
         saveInstanceState.putInt("time", YPlayer.getCurrentTimeMillis());
+        saveInstanceState.putInt("video", currentVideo);
+
     }
 
 
