@@ -1,18 +1,20 @@
 # PopularMovies
-App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show popular movies
+App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies
 
 
-## API Key
-For this app to work you have to acquire API key and put it into gradle.properties file. 
-
-Following line should be added to the file:
+## API Keys
+For this app to work you have to acquire API keys and put them into gradle.properties file. 
+Following lines should be added to the file:
 
 movieDbApiKey = "**YOUR API KEY**"
+youtubeApiKey = "**YOUR API KEY**"
 
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
 * You can easily share info about chosen movie.
 * Scrolling is continuous 
+* You can watch trailers inside of the app (YouTube API)
+* You can save your favorite movies
 
 ## Content from the internet and other sources
 * Star in the app: http://cliparts.co/cliparts/6Tp/opb/6Tpopbaac.png
@@ -21,7 +23,8 @@ movieDbApiKey = "**YOUR API KEY**"
 * And useful WebCasts from Android NanoDegree: https://plus.google.com/u/0/107950612876685287140/posts 
 
 ## Additional Info
-* App uses great image library: http://square.github.io/picasso/
+* App uses great image library Picasso: http://square.github.io/picasso/
 * OkHttpClient performs all network work: http://square.github.io/okhttp/
 * GSON library effectively parses json: https://github.com/google/gson
-
+* YouTube Player API: https://developers.google.com/youtube/android/player/downloads/
+* How to get YouTube API key you can read here: https://developers.google.com/youtube/v3/getting-started
