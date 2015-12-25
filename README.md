@@ -1,20 +1,25 @@
 # PopularMovies
 App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies
 
-
-## API Keys
-For this app to work you have to acquire API keys and put them into gradle.properties file. 
-Following lines should be added to the file:
-
-movieDbApiKey = "**YOUR API KEY**"
-youtubeApiKey = "**YOUR API KEY**"
-
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
 * You can easily share info about chosen movie.
 * Scrolling is continuous 
 * You can watch trailers inside of the app (YouTube API)
 * You can save your favorite movies
+
+## Development plans
+* Tablet Design
+* Search by movie titles, actors (whatever is available from Movie DB API)
+
+## API Keys
+For this app to work you have to acquire API keys and put them into gradle.properties file. 
+Following lines should be added to the file:
+
+movieDbApiKey = "**YOUR API KEY**"
+
+youtubeApiKey = "**YOUR API KEY**"
+
 
 ## Content from the internet and other sources
 * Star in the app: http://cliparts.co/cliparts/6Tp/opb/6Tpopbaac.png
