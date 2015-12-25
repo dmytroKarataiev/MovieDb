@@ -1,9 +1,13 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -16,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -175,7 +180,7 @@ public class Utility {
                 JsonObject movie = movies.get(i).getAsJsonObject();
                 MovieObject current = gson.fromJson(movie, MovieObject.class);
                 current.makeNice(context);
-                current.trailer_path = getTrailersURL(current.id).toString();
+                current.setTrailerPath(getTrailersURL(current.getId()).toString());
 
                 movieObjects.add(current);
             }
@@ -265,14 +270,14 @@ public class Utility {
         Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
                 null,
                 MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                new String[]{movie.title},
+                new String[]{movie.getTitle()},
                 null);
 
         if (currentPoster != null) {
             currentPoster.moveToFirst();
             int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
 
-            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.title)) {
+            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.getTitle())) {
                 currentPoster.close();
                 return true;
             }
@@ -333,15 +338,108 @@ public class Utility {
             JsonObject results = element.getAsJsonObject();
             JsonArray trailersList = results.getAsJsonArray("results");
 
-            for (int i = 0; i < trailersList.size(); i++) {
-                JsonObject movie = trailersList.get(i).getAsJsonObject();
-                JsonElement trailerKey = movie.getAsJsonPrimitive("key");
-                Log.v("Trailer", trailerKey.getAsString());
-                trailers.add(trailerKey.getAsString());
+            if (trailersList != null) {
+                for (int i = 0; i < trailersList.size(); i++) {
+                    JsonObject movie = trailersList.get(i).getAsJsonObject();
+                    JsonElement trailerKey = movie.getAsJsonPrimitive("key");
+                    Log.v("Trailer", trailerKey.getAsString());
+                    trailers.add(trailerKey.getAsString());
+                }
             }
+
             return trailers;
         }
 
         return null;
+    }
+
+    /**
+     * Method to create a MovieObject from a Cursor
+     *
+     * @param cursor with movie data
+     * @return MovieObject filled with contents from the Cursor
+     */
+    public static MovieObject makeMovieFromCursor(Cursor cursor) {
+
+        MovieObject movie = new MovieObject();
+
+        int adult = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ADULT);
+        int backdropPath = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH);
+        int id = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ID);
+        int originalLanguage = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE);
+        int originalTitle = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
+        int overview = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_OVERVIEW);
+        int releaseDate = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE);
+        int posterPath = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
+        int popularity = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POPULARITY);
+        int title = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+        int video = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VIDEO);
+        int voteAverage = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE);
+        int voteCount = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT);
+        int fullPosterPath = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH);
+
+        movie.setAdult(cursor.getString(adult));
+        movie.setBackdropPath(cursor.getString(backdropPath));
+        movie.setId(cursor.getString(id));
+        movie.setOriginalLanguage(cursor.getString(originalLanguage));
+        movie.setOriginalTitle(cursor.getString(originalTitle));
+        movie.setOverview(cursor.getString(overview));
+        movie.setReleaseDate(cursor.getString(releaseDate));
+        movie.setPosterPath(cursor.getString(posterPath));
+        movie.setPopularity(cursor.getString(popularity));
+        movie.setTitle(cursor.getString(title));
+        movie.setVideo(cursor.getString(video));
+        movie.setVoteAverage(cursor.getString(voteAverage));
+        movie.setVoteCount(cursor.getString(voteCount));
+        movie.setFullPosterPath(cursor.getString(fullPosterPath));
+
+        // Separate call
+        movie.setTrailerPath(Utility.getTrailersURL(movie.getId()).toString());
+
+        return movie;
+    }
+
+    /**
+     * Method to create ContentValues from a MovieObject
+     * Called from MovieObjectAdapter
+     * @param movie with contents
+     * @return ContentValues with contents from the MovieObject
+     */
+    public static ContentValues makeContentValues(MovieObject movie) {
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_ADULT, movie.getAdult());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_ID, movie.getId());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginalTitle());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_VIDEO, movie.getVideo());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT, movie.getVoteCount());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH, movie.getFullPosterPath());
+
+        return contentValues;
+    }
+
+    /**
+     * Method to create byte[] from a Drawable to later put it into the database
+     * Called from MovieObjectAdapter
+     * @param drawable to convert
+     * @return byte[] made from the Drawable
+     */
+    public static byte[] makeByteArray(Drawable drawable) {
+
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+        return stream.toByteArray();
+
     }
 }

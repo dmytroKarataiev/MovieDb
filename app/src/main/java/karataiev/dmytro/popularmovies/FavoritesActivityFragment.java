@@ -84,27 +84,9 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Cursor currentPoster = (Cursor) gridView.getItemAtPosition(position);
+                Cursor cursor = (Cursor) gridView.getItemAtPosition(position);
 
-                MovieObject movie = new MovieObject();
-
-                int title = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
-                int overview = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_OVERVIEW);
-                int releaseDate = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE);
-                int voteAverage = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE);
-                int voteCount = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT);
-                int postetPath = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
-
-
-                movie.title = currentPoster.getString(title);
-                movie.overview = currentPoster.getString(overview);
-                movie.release_date = currentPoster.getString(releaseDate);
-                movie.vote_average = currentPoster.getString(voteAverage);
-                movie.vote_count = currentPoster.getString(voteCount);
-                movie.poster_path = currentPoster.getString(postetPath);
-
-                // When closed - error StaleDataException disappears
-                // currentPoster.close();
+                MovieObject movie = Utility.makeMovieFromCursor(cursor);
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra("movie", movie);

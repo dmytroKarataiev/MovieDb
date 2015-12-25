@@ -3,9 +3,6 @@ package karataiev.dmytro.popularmovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,7 +33,6 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ExecutionException;
 
 import karataiev.dmytro.popularmovies.AsyncTask.FetchTrailers;
@@ -109,11 +105,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         Intent intent = this.getActivity().getIntent();
         final MovieObject fromIntent = intent.getParcelableExtra("movie");
 
-        viewHolder.movieName.setText(fromIntent.title);
-        viewHolder.movieDescription.setText(fromIntent.overview);
-        viewHolder.movieRating.setText(fromIntent.vote_average);
-        viewHolder.movieReleaseDate.setText(fromIntent.release_date);
-        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.vote_count));
+        viewHolder.movieName.setText(fromIntent.getTitle());
+        viewHolder.movieDescription.setText(fromIntent.getOverview());
+        viewHolder.movieRating.setText(fromIntent.getVoteAverage());
+        viewHolder.movieReleaseDate.setText(fromIntent.getReleaseDate());
+        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.getVoteCount()));
 
         if (Utility.isFavorite(getContext(), fromIntent)) {
             viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
@@ -121,7 +117,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             viewHolder.favorite.setImageResource(R.drawable.bookmark);
         }
 
-        Picasso.with(getContext()).load(fromIntent.poster_path).into(viewHolder.posterView, new Callback() {
+        Picasso.with(getContext()).load(fromIntent.getPosterPath()).into(viewHolder.posterView, new Callback() {
             @Override
             public void onSuccess() {
                 viewHolder.spinner.setVisibility(View.GONE);
@@ -132,23 +128,14 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                     @Override
                     public void onClick(View v) {
 
-                        ContentValues favValue = new ContentValues();
-                        favValue.put(MoviesContract.MovieEntry.COLUMN_TITLE, fromIntent.title);
-                        favValue.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, fromIntent.overview);
-                        favValue.put(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE, fromIntent.release_date);
-                        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, fromIntent.vote_average);
-                        favValue.put(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT, fromIntent.vote_count);
+                        ContentValues favValue = Utility.makeContentValues(fromIntent);
 
-                        Toast.makeText(getContext(), fromIntent.title, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), fromIntent.getTitle(), Toast.LENGTH_LONG).show();
 
                         if (!Utility.isFavorite(getContext(), fromIntent)) {
 
                             // Save drawable for later usage
-                            Drawable loadedPoster = viewHolder.posterView.getDrawable();
-                            Bitmap bitmap = ((BitmapDrawable) loadedPoster).getBitmap();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                            byte[] bitmapData = stream.toByteArray();
+                            byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
 
                             // save byte array of an image to the database
                             favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
@@ -161,7 +148,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         } else {
                             viewHolder.favorite.setImageResource(R.drawable.bookmark);
 
-                            // Delete on bacjground thread
+                            // Delete on background thread
                             UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
                             utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
                         }
@@ -178,7 +165,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         });
 
         // Initializes mMovie with info about a movie
-        mMovie = fromIntent.title + "\n" + fromIntent.release_date + "\n" + fromIntent.vote_average + "\n" + fromIntent.overview;
+        mMovie = fromIntent.getTitle() + "\n" + fromIntent.getReleaseDate() + "\n" + fromIntent.getVoteAverage() + "\n" + fromIntent.getOverview();
 
         // YouTube view initialization
         youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
@@ -207,11 +194,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         try {
             // get from AsyncTask trailers
             FetchTrailers fetchTrailers = new FetchTrailers();
-            fromIntent.key = fetchTrailers.execute(fromIntent.trailer_path).get();
+            fromIntent.setKeys(fetchTrailers.execute(fromIntent.getTrailerPath()).get());
 
-            if (fromIntent.key != null) {
-                Log.v(LOG_TAG, TextUtils.join(", ", fromIntent.key));
-                videoID = fromIntent.key.get(0);
+            if (fromIntent.getTrailers() != null && fromIntent.getTrailers().size() > 0) {
+                Log.v(LOG_TAG, TextUtils.join(", ", fromIntent.getTrailers()));
+                videoID = fromIntent.getTrailers().get(0);
             }
 
         } catch (ExecutionException e) {

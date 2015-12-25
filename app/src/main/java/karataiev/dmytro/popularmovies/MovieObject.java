@@ -13,21 +13,21 @@ import java.util.ArrayList;
 public class MovieObject implements Parcelable {
     private String adult;
     private String backdrop_path;
-    ArrayList<String> genre_ids;
-    String id;
+    private ArrayList<String> genre_ids;
+    private String id;
     private String original_language;
     private String original_title;
-    String overview;
-    String release_date;
-    String poster_path;
+    private String overview;
+    private String release_date;
+    private String poster_path;
     private String popularity;
-    String title;
+    private String title;
     private String video;
-    String vote_average;
-    String vote_count;
-    String full_poster_path;
-    ArrayList<String> key;
-    String trailer_path;
+    private String vote_average;
+    private String vote_count;
+    private String full_poster_path;
+    private ArrayList<String> key;
+    private String trailer_path;
 
     public MovieObject() { }
 
@@ -103,4 +103,135 @@ public class MovieObject implements Parcelable {
         }
 
     };
+
+    // Public functions to get and set objects from outside
+    public String getTitle() {
+        return title;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public String getVoteAverage() {
+        return vote_average;
+    }
+
+    public String getReleaseDate() {
+        return release_date;
+    }
+
+    public String getVoteCount() {
+        return vote_count;
+    }
+
+    public String getPosterPath() {
+        return poster_path;
+    }
+
+    public ArrayList<String> getTrailers() {
+        return key;
+    }
+
+    public void setKeys(ArrayList<String> trailers) {
+        key = trailers;
+    }
+
+    public String getTrailerPath() {
+        return trailer_path;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setReleaseDate(String release_date) {
+        this.release_date = release_date;
+    }
+
+    public void setVoteAverage(String vote_average) {
+        this.vote_average = vote_average;
+    }
+
+    public void setVoteCount(String vote_count) {
+        this.vote_count = vote_count;
+    }
+
+    public void setPosterPath(String poster_path) {
+        this.poster_path = poster_path;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setTrailerPath(String trailer_path) {
+        this.trailer_path = trailer_path;
+    }
+
+    public void setAdult(String adult) {
+        this.adult = adult;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdrop_path = backdropPath;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setOriginalLanguage(String originalLanguage) {
+        this.original_language = originalLanguage;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.original_title = originalTitle;
+    }
+
+    public void setPopularity(String popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    public void setFullPosterPath(String fullPosterPath) {
+        this.full_poster_path = fullPosterPath;
+    }
+
+    public String getAdult() {
+        return adult;
+    }
+
+    public String getBackdropPath() {
+        return backdrop_path;
+    }
+
+    public String getOriginalLanguage() {
+        return original_language;
+    }
+
+    public String getOriginalTitle() {
+        return original_title;
+    }
+
+    public String getPopularity() {
+        return popularity;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public String getFullPosterPath() {
+        return full_poster_path;
+    }
+
+
 }
