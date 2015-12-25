@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -51,7 +50,6 @@ public class MainActivityFragment extends Fragment {
     private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
-    private LinearLayout linlaProgressBar;
     private boolean loadingMore;
     private int currentPage = 1;
     private int currentPosition;
@@ -78,9 +76,6 @@ public class MainActivityFragment extends Fragment {
 
         gridView.setNumColumns(columns);
         gridView.setColumnWidth(posterWidth);
-
-        linlaProgressBar = (LinearLayout) rootview.findViewById(R.id.linlaProgressBar);
-        linlaProgressBar.setVisibility(View.VISIBLE);
 
         // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
@@ -240,9 +235,6 @@ public class MainActivityFragment extends Fragment {
     private void fetchMovies(String sort) {
 
         ArrayList<MovieObject> movies;
-        if (linlaProgressBar != null) {
-            linlaProgressBar.setVisibility(View.VISIBLE);
-        }
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
@@ -338,17 +330,8 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPreExecute() {
-            // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
-            if (linlaProgressBar != null) {
-                linlaProgressBar.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
-            // SHOW THE BOTTOM PROGRESS BAR (SPINNER) WHILE LOADING MORE PHOTOS
-            linlaProgressBar.setVisibility(View.GONE);
+            // Check the flag that activity is over
             loadingMore = false;
         }
     }

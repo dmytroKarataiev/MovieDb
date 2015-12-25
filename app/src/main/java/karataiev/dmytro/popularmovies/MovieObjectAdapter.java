@@ -25,7 +25,6 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
 class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
     private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
-    //private ContentResolver contentResolver = getContext().getContentResolver();
 
     public MovieObjectAdapter(Activity context, List<MovieObject> movieObjects) {
         super(context, 0, movieObjects);
@@ -116,6 +115,5 @@ class MovieObjectAdapter extends ArrayAdapter<MovieObject> {
 
         return view;
     }
-
 
 }
