@@ -85,14 +85,29 @@ public class MainActivityFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     afterChange = s.toString();
+                    currentPage = 1;
+                    if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
 
+                        Log.v(LOG_TAG, "1 " + Boolean.toString(afterChange.length() > beforeChange.length())
+                                + " 2 " + Boolean.toString(afterChange.length() < (searchParameter.length() + 4) && searchParameter.length() > 0)
+                                + " 3 " + Boolean.toString(afterChange.length() < (searchParameter.length() + 4))
+                                + " 4 " + Boolean.toString(searchParameter.length() > 0)
+                                + " after length " + afterChange.length()
+                                + " bef length " + beforeChange.length()
+                                + " curr length " + searchParameter.length());
 
-                    if (afterChange.length() > beforeChange.length() || afterChange.length() < (searchParameter.length() + 4) && searchParameter.length() > 0) {
                         searchParameter = s.toString();
                         isSearch = true;
                         updateMovieList();
-                    } else if (afterChange.length() == 0) {
+                    } else if (afterChange.length() < 4) {
+                        searchParameter = "";
                         isSearch = false;
+
+                        if (!loadingMore) {
+                            fetchMovies("");
+                            redraw();
+                        }
+
                     }
                 }
             });
@@ -342,6 +357,7 @@ public class MainActivityFragment extends Fragment {
                 Log.v(LOG_TAG, url.toString());
             } else {
                 url = Utility.getUrl(currentPage, mContext);
+                Log.v(LOG_TAG, url.toString());
             }
 
             loadingMore = true;
