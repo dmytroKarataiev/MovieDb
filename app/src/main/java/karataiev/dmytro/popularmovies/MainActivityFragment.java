@@ -223,23 +223,23 @@ public class MainActivityFragment extends Fragment {
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
+            Log.v(LOG_TAG, "new sort");
+            mSort = sort;
             // fetches new data
             currentPage = 1;
             fetchMovies(sort);
-
             // updates global settings variable
-            mSort = sort;
             setActionbarTitle();
 
         } else if (movieList == null) {
             currentPage = 1;
             // fetches new data
-            fetchMovies(sort);
+            fetchMovies("");
         } else if (movieList.isEmpty()) {
             currentPage = 1;
-            fetchMovies(sort);
+            fetchMovies("");
         } else if (addMovies) {
-            fetchMovies(sort);
+            fetchMovies("");
         } else if (isSearch) {
             fetchMovies(searchParameter);
         }
@@ -270,16 +270,17 @@ public class MainActivityFragment extends Fragment {
     private void fetchMovies(String sort) {
 
         ArrayList<MovieObject> movies;
-        boolean check = false;
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
 
-            movies = fetchMovie.execute(searchParameter).get();
-            if (movies == null) {
+            movies = fetchMovie.execute(sort).get();
+            if (sort.equals(mSort)) {
+                movieList = movies;
+                Log.v(LOG_TAG, "new sort " + movieList.size());
+            } else if (movies == null) {
                 movieList = new ArrayList<>();
                 Log.v(LOG_TAG, "movies == null");
-                check = true;
             } else if (addMovies) {
                 movieList.addAll(movies);
                 addMovies = false;
@@ -293,12 +294,10 @@ public class MainActivityFragment extends Fragment {
             } else if (isSearch || movieList == null) {
                 movieList = movies;
                 Log.v(LOG_TAG, "movieList == null || isSearch " + movieList.size());
-                check = true;
             } else if (sort.equals("") && isClearedSearch) {
                 Log.v(LOG_TAG, "cleared search " + movieList.size());
 
                 movieList = movies;
-                check = true;
                 isClearedSearch = false;
             }
         } catch (ExecutionException e) {
