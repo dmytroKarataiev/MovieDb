@@ -63,7 +63,8 @@ public class FavoritesAdapter extends CursorAdapter {
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
-        viewHolder.textView.setText(versionName);
+        //viewHolder.textView.setText(versionName);
+
         viewHolder.favImage.setImageResource(R.drawable.bookmark_fav);
 
         // On favorite icon click

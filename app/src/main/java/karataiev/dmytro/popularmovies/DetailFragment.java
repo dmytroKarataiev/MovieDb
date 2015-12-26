@@ -34,6 +34,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -117,16 +118,20 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         Intent intent = this.getActivity().getIntent();
         final MovieObject fromIntent = intent.getParcelableExtra("movie");
 
+        // Files from db to load into ImageViews
+        byte[] posterLoad = intent.getByteArrayExtra("poster");
+        byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
+        File posterFile = Utility.makeFile(getContext(), posterLoad, fromIntent.getId() + "poster");
+        File backdropFile = Utility.makeFile(getContext(), backdropLoad, fromIntent.getId() + "backdrop");
+
+        // ActionBar title and image adding
         android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         if (actionBar != null) {
             actionBar.setTitle(fromIntent.getTitle());
         }
 
-        ImageView backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
-        Picasso.with(getContext()).load("https://image.tmdb.org/t/p/w500" + fromIntent.getBackdropPath()).into(backdrop);
-
-        Log.v(LOG_TAG, "backdrop " + fromIntent.getBackdropPath());
+        final ImageView backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
 
         viewHolder.movieName.setText(fromIntent.getTitle());
         viewHolder.movieDescription.setText(fromIntent.getOverview());
@@ -140,7 +145,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             viewHolder.favorite.setImageResource(R.drawable.bookmark);
         }
 
-        Picasso.with(getContext()).load(fromIntent.getPosterPath()).into(viewHolder.posterView, new Callback() {
+        // Callback inside of Picasso Call
+        Callback callback = new Callback() {
             @Override
             public void onSuccess() {
                 viewHolder.spinner.setVisibility(View.GONE);
@@ -159,9 +165,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
                             // Save drawable for later usage
                             byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
+                            byte[] backdropBitmap = Utility.makeByteArray(backdrop.getDrawable());
 
                             // save byte array of an image to the database
                             favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+                            favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
 
                             viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
 
@@ -185,7 +193,21 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 viewHolder.spinner.setVisibility(View.GONE);
                 viewHolder.favorite.setVisibility(View.GONE);
             }
-        });
+        };
+
+        if (posterFile != null && backdropFile != null) {
+            Log.v(LOG_TAG, "first");
+            Picasso.with(getContext()).load(backdropFile).into(backdrop);
+            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
+        } else if (backdropFile == null && posterFile != null) {
+            Log.v(LOG_TAG, "second");
+            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
+            Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
+        } else {
+            Log.v(LOG_TAG, "third");
+            Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
+            Picasso.with(getContext()).load(fromIntent.getPosterPath()).into(viewHolder.posterView, callback);
+        }
 
         // Initializes mMovie with info about a movie
         mMovie = fromIntent.getTitle() + "\n" + fromIntent.getReleaseDate() + "\n" + fromIntent.getVoteAverage() + "\n" + fromIntent.getOverview();

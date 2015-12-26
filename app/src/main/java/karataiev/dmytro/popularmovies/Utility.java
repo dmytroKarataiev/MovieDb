@@ -21,6 +21,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -497,5 +500,34 @@ public class Utility {
 
         return stream.toByteArray();
 
+    }
+
+    /**
+     * Method to Make file from byte[]
+     * @param context from which call is being made
+     * @param input byte[] array with data
+     * @return File from input
+     */
+    public static File makeFile(Context context, byte[] input, String filename) {
+
+        if (input != null) {
+            try {
+                File f = new File(context.getCacheDir(), filename);
+                f.createNewFile();
+
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(input);
+                fos.flush();
+                fos.close();
+                Log.v(LOG_TAG, "Not null " + filename);
+
+                return f;
+
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "IO " + e);
+            }
+        }
+
+        return null;
     }
 }

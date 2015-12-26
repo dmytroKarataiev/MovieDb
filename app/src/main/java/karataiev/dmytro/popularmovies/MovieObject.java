@@ -58,7 +58,7 @@ public class MovieObject implements Parcelable {
         // Creates to links to the posters: one for main window, one for the detailed view
         this.full_poster_path = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/" + this.poster_path;
         this.poster_path = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/" + this.poster_path;
-
+        this.backdrop_path = "https://image.tmdb.org/t/p/" + POSTER_SIZE[1] + this.backdrop_path;
         this.vote_average = Utility.formatRating(vote_average);
         this.release_date = Utility.formatDate(release_date);
         this.vote_count = Utility.formatVotes(vote_count);

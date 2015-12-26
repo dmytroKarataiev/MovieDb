@@ -75,8 +75,15 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
                 MovieObject movie = Utility.makeMovieFromCursor(cursor);
 
+                int posterIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
+                int backdropIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE);
+                byte[] posterBytes = cursor.getBlob(posterIndex);
+                byte[] backdropBytes = cursor.getBlob(backdropIndex);
+
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("movie", movie);
+                        .putExtra("movie", movie)
+                        .putExtra("poster", posterBytes)
+                        .putExtra("backdrop", backdropBytes);
                 startActivity(intent);
 
             }
