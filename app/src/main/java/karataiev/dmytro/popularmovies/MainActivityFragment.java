@@ -10,13 +10,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.GridView;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -38,7 +37,8 @@ public class MainActivityFragment extends Fragment {
     private MovieObjectAdapter movieAdapter;
     private ArrayList<MovieObject> movieList;
     private String mSort;
-    private GridView gridView;
+    private RecyclerView rv;
+    private GridLayoutManager gridLayoutManager;
 
     // Network status variables and methods (to stop fetching the data if the phone is offline
     private boolean isOnline(Context context) {
@@ -64,54 +64,25 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootview = inflater.inflate(R.layout.fragment_main, container, false);
-
-        // Main object on the screen - grid with posters
-        gridView = (GridView) rootview.findViewById(R.id.movies_grid);
+        rv = (RecyclerView) inflater.inflate(R.layout.fragment_main, container, false);
 
         // Scale GridView according to the screen size
         int[] screenSize = Utility.screenSize(getContext());
         int columns = screenSize[3];
-        int posterWidth = screenSize[4];
 
-        gridView.setNumColumns(columns);
-        gridView.setColumnWidth(posterWidth);
+        gridLayoutManager = new GridLayoutManager(rv.getContext(), columns);
+        rv.setLayoutManager(gridLayoutManager);
 
-        // Adapter which adds movies to the grid
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 
-        // onClick activity which launches detailed view
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
-
-                MovieObject currentPoster = (MovieObject) adapterView.getItemAtPosition(position);
-
-                if (currentPoster != null) {
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("movie", currentPoster);
-                    startActivity(intent);
-                }
-            }
-        });
-
-        gridView.setAdapter(movieAdapter);
-
-        // Listenes to your scroll activity and adds posters if you've reached the end of the screen
-        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_FLING) {
-                    currentPosition = gridView.getFirstVisiblePosition();
-                }
-            }
+        rv.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                int lastInScreen = firstVisibleItem + visibleItemCount;
-
-                if (lastInScreen == totalItemCount && !loadingMore && isOnline(getContext())) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
+                Log.v(LOG_TAG, "scroll item: " + currentPosition + " compl " + gridLayoutManager.findFirstCompletelyVisibleItemPosition() + " last " + gridLayoutManager.findLastVisibleItemPosition());
+                if (gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8) {
                     currentPage++;
                     addMovies = true;
                     updateMovieList();
@@ -119,8 +90,9 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+        rv.setAdapter(movieAdapter);
 
-        return rootview;
+        return rv;
     }
 
     @Override
@@ -261,13 +233,13 @@ public class MainActivityFragment extends Fragment {
     private void redraw() {
 
         if (currentPosition == 0) {
-            currentPosition = gridView.getFirstVisiblePosition();
+            currentPosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
         }
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
 
-        gridView.setAdapter(movieAdapter);
-        gridView.setSelection(currentPosition);
+        rv.setAdapter(movieAdapter);
+        rv.scrollToPosition(currentPosition);
 
         setActionbarTitle();
     }
