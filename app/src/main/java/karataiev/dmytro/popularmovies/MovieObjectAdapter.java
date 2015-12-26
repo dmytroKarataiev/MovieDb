@@ -157,6 +157,8 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
         if (movieObject.getPosterPath().contains("null"))
         {
             holder.mTextView.setText(movieObject.getTitle());
+        } else {
+            holder.mTextView.setText("");
         }
         holder.poster.setContentDescription(movieObject.getTitle());
 

@@ -99,11 +99,9 @@ public class MainActivityFragment extends Fragment {
                     } else if (afterChange.length() < 4) {
                         searchParameter = "";
                         isSearch = false;
-
                         if (!loadingMore) {
                             fetchMovies("");
                         }
-
                     }
                 }
             });
@@ -151,7 +149,6 @@ public class MainActivityFragment extends Fragment {
                         updateMovieList();
                     }
                 }
-
             }
         });
 
@@ -282,9 +279,7 @@ public class MainActivityFragment extends Fragment {
                     movieList.addAll(movies);
                     addSearchMovies = false;
                 }
-            } else if (isSearch) {
-                movieList = movies;
-            } else if (movieList == null) {
+            } else if (isSearch || movieList == null || sort.equals("")) {
                 movieList = movies;
             }
         } catch (ExecutionException e) {
@@ -293,8 +288,8 @@ public class MainActivityFragment extends Fragment {
             Log.e(LOG_TAG, "error" + e2);
         }
 
-        if (movieAdapter != null) {
-            movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+        if (rv != null) {
             rv.swapAdapter(movieAdapter, false);
         }
     }
@@ -360,7 +355,6 @@ public class MainActivityFragment extends Fragment {
             }
 
             return Utility.getMoviesGSON(mContext, movieJsonStr);
-
         }
 
         @Override
