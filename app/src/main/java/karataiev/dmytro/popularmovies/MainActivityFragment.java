@@ -12,10 +12,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -54,11 +57,47 @@ public class MainActivityFragment extends Fragment {
     private int currentPage = 1;
     private int currentPosition;
     private boolean addMovies = false;
+    private boolean isSearch = false;
+    private boolean addSearchMovies = false;
+    private String searchParameter = "";
+    private String beforeChange;
+    private String afterChange;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setActionbarTitle();
+
+        EditText editText = (EditText) ((AppCompatActivity) getActivity()).findViewById(R.id.searchBar);
+
+        Log.v(LOG_TAG, "" + Boolean.toString(editText == null));
+        if (editText != null) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    beforeChange = s.toString();
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    afterChange = s.toString();
+
+
+                    if (afterChange.length() > beforeChange.length() || afterChange.length() < (searchParameter.length() + 4) && searchParameter.length() > 0) {
+                        searchParameter = s.toString();
+                        isSearch = true;
+                        updateMovieList();
+                    } else if (afterChange.length() == 0) {
+                        isSearch = false;
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
@@ -85,10 +124,18 @@ public class MainActivityFragment extends Fragment {
                 currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
 
                 if (gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8 && isOnline(getContext())) {
-                    currentPage++;
-                    addMovies = true;
-                    updateMovieList();
+
+                    if (isSearch) {
+                        currentPage++;
+                        addSearchMovies = true;
+                        updateMovieList();
+                    } else if (searchParameter.length() == 0){
+                        currentPage++;
+                        addMovies = true;
+                        updateMovieList();
+                    }
                 }
+
             }
         });
 
@@ -182,6 +229,9 @@ public class MainActivityFragment extends Fragment {
             //Log.v(LOG_TAG, "Scroll to the end");
             fetchMovies(sort);
             redraw();
+        } else if (isSearch) {
+            fetchMovies(searchParameter);
+            redraw();
         } else {
             redraw();
         }
@@ -213,12 +263,21 @@ public class MainActivityFragment extends Fragment {
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
 
-            movies = fetchMovie.execute(sort).get();
+            movies = fetchMovie.execute(searchParameter).get();
             if (movies == null) {
                 movieList = new ArrayList<>();
             } else if (addMovies) {
                 movieList.addAll(movies);
                 addMovies = false;
+            } else if (addSearchMovies) {
+                if (movies.size() == 0) {
+                    isSearch = false;
+                } else {
+                    movieList.addAll(movies);
+                    addSearchMovies = false;
+                }
+            } else if (isSearch) {
+                movieList = movies;
             } else {
                 movieList = movies;
             }
@@ -276,6 +335,15 @@ public class MainActivityFragment extends Fragment {
          */
         protected ArrayList<MovieObject> doInBackground(String... params) {
 
+            URL url;
+
+            if (isSearch) {
+                url = Utility.getSearchURL(searchParameter, currentPage);
+                Log.v(LOG_TAG, url.toString());
+            } else {
+                url = Utility.getUrl(currentPage, mContext);
+            }
+
             loadingMore = true;
 
             // Network Client
@@ -285,7 +353,6 @@ public class MainActivityFragment extends Fragment {
             String movieJsonStr = "";
 
             try {
-                URL url = Utility.getUrl(currentPage, mContext);
                 // Create the request to OpenWeatherMap, and open the connection
                 Request request = new Request.Builder()
                         .url(url)

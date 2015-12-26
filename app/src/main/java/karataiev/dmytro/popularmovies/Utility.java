@@ -179,15 +179,17 @@ public class Utility {
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
 
-            for (int i = 0; i < movies.size(); i++) {
-                JsonObject movie = movies.get(i).getAsJsonObject();
-                MovieObject current = gson.fromJson(movie, MovieObject.class);
-                current.makeNice(context);
-                current.setTrailerPath(getTrailersURL(current.getId()).toString());
+            if (movies != null) {
+                for (int i = 0; i < movies.size(); i++) {
+                    JsonObject movie = movies.get(i).getAsJsonObject();
+                    MovieObject current = gson.fromJson(movie, MovieObject.class);
+                    current.makeNice(context);
+                    current.setTrailerPath(getTrailersURL(current.getId()).toString());
 
-                movieObjects.add(current);
+                    movieObjects.add(current);
+                }
+                return movieObjects;
             }
-            return movieObjects;
         }
 
         return null;
@@ -272,15 +274,15 @@ public class Utility {
         // if a movie is in the database - make it favorite
         Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
                 null,
-                MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
-                new String[]{movie.getTitle()},
+                MoviesContract.MovieEntry.COLUMN_ID + " = ?",
+                new String[]{movie.getId()},
                 null);
 
         if (currentPoster != null) {
             currentPoster.moveToFirst();
-            int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+            int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ID);
 
-            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.getTitle())) {
+            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.getId())) {
                 currentPoster.close();
                 return true;
             }
@@ -335,6 +337,38 @@ public class Utility {
         final String API_KEY = "api_key";
 
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e("URL", "error " + e);
+        }
+
+        return url;
+    }
+
+    /**
+     * Method to get search URL
+     * @param search request
+     * @return URL request for movies
+     */
+    public static URL getSearchURL(String search, int page) {
+        // Construct the URL for the movie query
+        // Possible parameters are available at Movie DB API page, at
+        // http://docs.themoviedb.apiary.io/
+        String MOVIE_BASE_URL = "http://api.themoviedb.org/3/search/movie";
+        final String PAGE_QUERY = "page";
+        String PAGE = Integer.toString(page);
+
+        // Don't forget to add API key to the gradle.properties file
+        final String API_KEY = "api_key";
+
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendQueryParameter("query", search)
+                .appendQueryParameter(PAGE_QUERY, PAGE)
                 .appendQueryParameter(API_KEY, BuildConfig.MOVIE_DB_API_KEY)
                 .build();
 
