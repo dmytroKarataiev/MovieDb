@@ -7,10 +7,10 @@ App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and 
 * Scrolling is continuous 
 * You can watch trailers inside of the app (YouTube API)
 * You can save your favorite movies
+* Search by movie titles
 
 ## Development plans
 * Tablet Design
-* Search by movie titles, actors (whatever is available from Movie DB API)
 
 ## API Keys
 For this app to work you have to acquire API keys and put them into gradle.properties file. 
@@ -33,3 +33,10 @@ youtubeApiKey = "**YOUR API KEY**"
 * GSON library effectively parses json: https://github.com/google/gson
 * YouTube Player API: https://developers.google.com/youtube/android/player/downloads/
 * How to get YouTube API key you can read here: https://developers.google.com/youtube/v3/getting-started
+
+## Used Android Technologies
+* RecyclerView, RecyclerAdapter
+* AsyncTask
+* Fragments
+* Content Provider, Database
+* CursorAdapter
