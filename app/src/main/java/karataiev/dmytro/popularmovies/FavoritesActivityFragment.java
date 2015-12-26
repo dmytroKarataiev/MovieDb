@@ -13,11 +13,8 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-
-import java.util.ArrayList;
 
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
@@ -33,8 +30,6 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     private static final int CURSOR_LOADER_ID = 0;
 
     // Couldn't find more efficient way to use following variable then to make them global
-    private ArrayList<MovieObject> movieList;
-    private String mSort;
     private GridView gridView;
 
     // Network status variables and methods (to stop fetching the data if the phone is offline
@@ -43,14 +38,6 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
-
-    //private BroadcastReceiver networkStateReceiver;
-
-    // Continuous viewing and progress bar variables
-    private boolean loadingMore;
-    private int currentPage = 1;
-    private int currentPosition = 0;
-    private boolean addMovies = false;
 
     public FavoritesActivityFragment() { }
 
@@ -96,22 +83,6 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         });
 
         gridView.setAdapter(movieAdapter);
-
-        // Listens to your scroll activity and adds posters if you've reached the end of the screen
-        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {}
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                int lastInScreen = firstVisibleItem + visibleItemCount;
-                if (lastInScreen == totalItemCount && !loadingMore && isOnline(getContext())) {
-                    currentPage++;
-                    addMovies = true;
-                }
-            }
-        });
 
         return rootview;
     }

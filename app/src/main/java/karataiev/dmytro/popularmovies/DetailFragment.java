@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -90,7 +91,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         }
     }
 
-    public DetailFragment() { setHasOptionsMenu(true); }
+    public DetailFragment() {
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +116,17 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Gets data from intent (using parcelable) and populates views
         Intent intent = this.getActivity().getIntent();
         final MovieObject fromIntent = intent.getParcelableExtra("movie");
+
+        android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle(fromIntent.getTitle());
+        }
+
+        ImageView backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
+        Picasso.with(getContext()).load("https://image.tmdb.org/t/p/w500" + fromIntent.getBackdropPath()).into(backdrop);
+
+        Log.v(LOG_TAG, "backdrop " + fromIntent.getBackdropPath());
 
         viewHolder.movieName.setText(fromIntent.getTitle());
         viewHolder.movieDescription.setText(fromIntent.getOverview());

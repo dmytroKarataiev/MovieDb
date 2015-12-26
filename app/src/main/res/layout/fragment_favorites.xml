@@ -17,21 +17,5 @@
 
     </GridView>
 
-    <LinearLayout
-        android:id="@+id/linlaProgressBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-
-        <ProgressBar
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp" />
-
-    </LinearLayout>
-
-
 </LinearLayout>
 
