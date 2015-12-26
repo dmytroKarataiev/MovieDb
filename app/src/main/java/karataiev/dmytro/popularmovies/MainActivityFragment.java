@@ -51,6 +51,7 @@ public class MainActivityFragment extends Fragment {
     private boolean addMovies = false;
     private boolean isSearch = false;
     private boolean addSearchMovies = false;
+    private boolean isClearedSearch = false;
     private String searchParameter = "";
     private String beforeChange;
     private String afterChange;
@@ -90,15 +91,17 @@ public class MainActivityFragment extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    Log.v(LOG_TAG, "after text changed");
                     afterChange = s.toString();
                     currentPage = 1;
                     if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
                         searchParameter = s.toString();
                         isSearch = true;
                         updateMovieList();
-                    } else if (afterChange.length() < 4) {
+                    } else if (afterChange.length() < 4 && searchParameter.length() > 0) {
                         searchParameter = "";
                         isSearch = false;
+                        isClearedSearch = true;
                         if (!loadingMore) {
                             fetchMovies("");
                         }
@@ -106,10 +109,7 @@ public class MainActivityFragment extends Fragment {
                 }
             });
         }
-
-        if (savedInstanceState != null) {
-            currentPosition = savedInstanceState.getInt("position");
-        }
+        Log.v(LOG_TAG, "onActivityCreated movies " + movieList.size() + " position " + currentPosition);
 
     }
 
@@ -153,6 +153,8 @@ public class MainActivityFragment extends Fragment {
         });
 
         rv.setAdapter(movieAdapter);
+        rv.scrollToPosition(currentPosition);
+        Log.v(LOG_TAG, "onCreateView movies " + movieList.size() + " position " + currentPosition);
 
         return rootview;
     }
@@ -168,7 +170,9 @@ public class MainActivityFragment extends Fragment {
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             updateMovieList();
         } else {
+
             movieList = savedInstanceState.getParcelableArrayList("movies");
+            Log.v(LOG_TAG, "movies saved " + movieList.size());
             currentPosition = savedInstanceState.getInt("position");
             currentPage = savedInstanceState.getInt("page");
         }
@@ -188,6 +192,8 @@ public class MainActivityFragment extends Fragment {
         };
         // Starts receiver
         startListening();
+        Log.v(LOG_TAG, "onCreate movies " + movieList.size() + " position " + currentPosition);
+
     }
 
     /**
@@ -242,7 +248,9 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        rv.scrollToPosition(currentPosition);
+
+        Log.v(LOG_TAG, "movies " + movieList.size() + " position " + currentPosition);
+
         startListening();
         updateMovieList();
     }
@@ -262,6 +270,7 @@ public class MainActivityFragment extends Fragment {
     private void fetchMovies(String sort) {
 
         ArrayList<MovieObject> movies;
+        boolean check = false;
 
         try {
             FetchMovie fetchMovie = new FetchMovie(getContext());
@@ -269,6 +278,8 @@ public class MainActivityFragment extends Fragment {
             movies = fetchMovie.execute(searchParameter).get();
             if (movies == null) {
                 movieList = new ArrayList<>();
+                Log.v(LOG_TAG, "movies == null");
+                check = true;
             } else if (addMovies) {
                 movieList.addAll(movies);
                 addMovies = false;
@@ -279,8 +290,16 @@ public class MainActivityFragment extends Fragment {
                     movieList.addAll(movies);
                     addSearchMovies = false;
                 }
-            } else if (isSearch || movieList == null || sort.equals("")) {
+            } else if (isSearch || movieList == null) {
                 movieList = movies;
+                Log.v(LOG_TAG, "movieList == null || isSearch " + movieList.size());
+                check = true;
+            } else if (sort.equals("") && isClearedSearch) {
+                Log.v(LOG_TAG, "cleared search " + movieList.size());
+
+                movieList = movies;
+                check = true;
+                isClearedSearch = false;
             }
         } catch (ExecutionException e) {
             Log.e(LOG_TAG, "error");
@@ -289,6 +308,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+
         if (rv != null) {
             rv.swapAdapter(movieAdapter, false);
         }
@@ -361,6 +381,7 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // Check the flag that activity is over
             loadingMore = false;
+            Log.v(LOG_TAG, "Updated");
         }
     }
 
