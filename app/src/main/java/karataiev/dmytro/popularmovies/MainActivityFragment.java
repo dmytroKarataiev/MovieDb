@@ -64,7 +64,9 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rv = (RecyclerView) inflater.inflate(R.layout.fragment_main, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_main, container, false);
+
+        rv = (RecyclerView) rootview.findViewById(R.id.recyclerview);
 
         // Scale GridView according to the screen size
         int[] screenSize = Utility.screenSize(getContext());
@@ -81,8 +83,8 @@ public class MainActivityFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
-                Log.v(LOG_TAG, "scroll item: " + currentPosition + " compl " + gridLayoutManager.findFirstCompletelyVisibleItemPosition() + " last " + gridLayoutManager.findLastVisibleItemPosition());
-                if (gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8) {
+
+                if (gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8 && isOnline(getContext())) {
                     currentPage++;
                     addMovies = true;
                     updateMovieList();
@@ -92,7 +94,7 @@ public class MainActivityFragment extends Fragment {
 
         rv.setAdapter(movieAdapter);
 
-        return rv;
+        return rootview;
     }
 
     @Override

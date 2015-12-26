@@ -24,4 +24,6 @@
     <dimen name="favorite_width">37dp</dimen>
     <dimen name="favorite_height">56dp</dimen>
 
+    <dimen name="search">12dp</dimen>
+
 </resources>
