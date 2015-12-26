@@ -196,15 +196,12 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         };
 
         if (posterFile != null && backdropFile != null) {
-            Log.v(LOG_TAG, "first");
             Picasso.with(getContext()).load(backdropFile).into(backdrop);
             Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
         } else if (backdropFile == null && posterFile != null) {
-            Log.v(LOG_TAG, "second");
             Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
             Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
         } else {
-            Log.v(LOG_TAG, "third");
             Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
             Picasso.with(getContext()).load(fromIntent.getPosterPath()).into(viewHolder.posterView, callback);
         }
@@ -289,7 +286,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             mShareActionProvider.setShareIntent(movieIntent());
         }
         else {
-            Log.v(LOG_TAG, "fail");
+            Log.e(LOG_TAG, "fail");
         }
     }
 

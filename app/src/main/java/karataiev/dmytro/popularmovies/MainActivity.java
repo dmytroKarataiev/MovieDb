@@ -10,6 +10,8 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     private String LOG_TAG = MainActivity.class.getSimpleName();
+    private MainActivityFragment mContent;
+    private final String FRAGMENT_TAG = "FFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (savedInstanceState == null) {
+            mContent = new MainActivityFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.container, mContent, FRAGMENT_TAG).commit();
+        } else {
+            mContent = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        }
 
     }
 
@@ -48,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outstate) {
+        super.onSaveInstanceState(outstate);
     }
 
 }

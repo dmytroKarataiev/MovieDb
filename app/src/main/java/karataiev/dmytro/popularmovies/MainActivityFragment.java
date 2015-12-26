@@ -42,14 +42,6 @@ public class MainActivityFragment extends Fragment {
     private String mSort;
     private RecyclerView rv;
     private GridLayoutManager gridLayoutManager;
-
-    // Network status variables and methods (to stop fetching the data if the phone is offline
-    private boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
-
     private BroadcastReceiver networkStateReceiver;
 
     // Continuous viewing and progress bar variables
@@ -63,6 +55,21 @@ public class MainActivityFragment extends Fragment {
     private String beforeChange;
     private String afterChange;
 
+    public MainActivityFragment() {
+    }
+
+    // Network status variables and methods (to stop fetching the data if the phone is offline
+    private boolean isOnline(Context context) {
+
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+
+        return false;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -70,7 +77,6 @@ public class MainActivityFragment extends Fragment {
 
         EditText editText = (EditText) ((AppCompatActivity) getActivity()).findViewById(R.id.searchBar);
 
-        Log.v(LOG_TAG, "" + Boolean.toString(editText == null));
         if (editText != null) {
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -87,15 +93,6 @@ public class MainActivityFragment extends Fragment {
                     afterChange = s.toString();
                     currentPage = 1;
                     if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
-
-                        Log.v(LOG_TAG, "1 " + Boolean.toString(afterChange.length() > beforeChange.length())
-                                + " 2 " + Boolean.toString(afterChange.length() < (searchParameter.length() + 4) && searchParameter.length() > 0)
-                                + " 3 " + Boolean.toString(afterChange.length() < (searchParameter.length() + 4))
-                                + " 4 " + Boolean.toString(searchParameter.length() > 0)
-                                + " after length " + afterChange.length()
-                                + " bef length " + beforeChange.length()
-                                + " curr length " + searchParameter.length());
-
                         searchParameter = s.toString();
                         isSearch = true;
                         updateMovieList();
@@ -105,12 +102,15 @@ public class MainActivityFragment extends Fragment {
 
                         if (!loadingMore) {
                             fetchMovies("");
-                            redraw();
                         }
 
                     }
                 }
             });
+        }
+
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt("position");
         }
 
     }
@@ -127,6 +127,7 @@ public class MainActivityFragment extends Fragment {
         int columns = screenSize[3];
 
         gridLayoutManager = new GridLayoutManager(rv.getContext(), columns);
+
         rv.setLayoutManager(gridLayoutManager);
 
         movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
@@ -144,7 +145,7 @@ public class MainActivityFragment extends Fragment {
                         currentPage++;
                         addSearchMovies = true;
                         updateMovieList();
-                    } else if (searchParameter.length() == 0){
+                    } else if (searchParameter.length() == 0) {
                         currentPage++;
                         addMovies = true;
                         updateMovieList();
@@ -219,42 +220,32 @@ public class MainActivityFragment extends Fragment {
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
-            //Log.v(LOG_TAG, "Sort changes");
             // fetches new data
             currentPage = 1;
             fetchMovies(sort);
 
-            // clears adapter, updates data, notifies and sets to grid view
-            redraw();
-
             // updates global settings variable
             mSort = sort;
+            setActionbarTitle();
 
         } else if (movieList == null) {
-            //Log.v(LOG_TAG, "Movie list null");
             currentPage = 1;
             // fetches new data
             fetchMovies(sort);
         } else if (movieList.isEmpty()) {
-            //Log.v(LOG_TAG, "Movie list is empty");
             currentPage = 1;
             fetchMovies(sort);
-            redraw();
         } else if (addMovies) {
-            //Log.v(LOG_TAG, "Scroll to the end");
             fetchMovies(sort);
-            redraw();
         } else if (isSearch) {
             fetchMovies(searchParameter);
-            redraw();
-        } else {
-            redraw();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        rv.scrollToPosition(currentPosition);
         startListening();
         updateMovieList();
     }
@@ -293,7 +284,7 @@ public class MainActivityFragment extends Fragment {
                 }
             } else if (isSearch) {
                 movieList = movies;
-            } else {
+            } else if (movieList == null) {
                 movieList = movies;
             }
         } catch (ExecutionException e) {
@@ -301,23 +292,11 @@ public class MainActivityFragment extends Fragment {
         } catch (InterruptedException e2) {
             Log.e(LOG_TAG, "error" + e2);
         }
-    }
 
-    /**
-     * Method to redraw GridView, invoked from updateMovieList() when movieList is empty or settings were changed
-     */
-    private void redraw() {
-
-        if (currentPosition == 0) {
-            currentPosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+        if (movieAdapter != null) {
+            movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+            rv.swapAdapter(movieAdapter, false);
         }
-
-        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
-
-        rv.setAdapter(movieAdapter);
-        rv.scrollToPosition(currentPosition);
-
-        setActionbarTitle();
     }
 
     /**
@@ -354,10 +333,8 @@ public class MainActivityFragment extends Fragment {
 
             if (isSearch) {
                 url = Utility.getSearchURL(searchParameter, currentPage);
-                Log.v(LOG_TAG, url.toString());
             } else {
                 url = Utility.getUrl(currentPage, mContext);
-                Log.v(LOG_TAG, url.toString());
             }
 
             loadingMore = true;
