@@ -1,8 +1,8 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,15 +13,12 @@ import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -220,16 +217,14 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Detect if display is in landscape mode and set YouTube layout height accordingly
         TypedValue tv = new TypedValue();
 
-        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int rotation = display.getRotation();
-
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270))
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
             FrameLayout youtubeFrame = (FrameLayout) rootView.findViewById(R.id.youtube_fragment);
             ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
 
-            layoutParams.height = Utility.screenSize(getContext())[1] - (actionBarHeight + actionBarHeight / 2);
+            layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
+            layoutParams.width = layoutParams.height * 2;
             youtubeFrame.setLayoutParams(layoutParams);
         }
 
@@ -352,11 +347,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult result) {
-        if (result.isUserRecoverableError()) {
-            result.getErrorDialog(this.getActivity(),1).show();
-        } else {
-            Toast.makeText(this.getActivity(), "YouTubePlayer.onInitializationFailure(): " + result.toString(), Toast.LENGTH_LONG).show();
-        }
+        getFragmentManager().beginTransaction().hide(youTubePlayerSupportFragment).commit();
+        Toast.makeText(this.getActivity(), "YouTubePlayer initialization failure: " + result.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -367,6 +359,5 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         saveInstanceState.putInt("time", YPlayer.getCurrentTimeMillis());
         saveInstanceState.putInt("video", currentVideo);
     }
-
 
 }

@@ -136,8 +136,10 @@ public class MainActivityFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
-
-                if (gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8 && isOnline(getContext())) {
+                
+                if (((gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8
+                        || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
+                        && isOnline(getContext()))) {
 
                     if (isSearch) {
                         currentPage++;
