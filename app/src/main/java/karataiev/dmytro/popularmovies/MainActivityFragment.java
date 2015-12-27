@@ -109,8 +109,6 @@ public class MainActivityFragment extends Fragment {
                 }
             });
         }
-        Log.v(LOG_TAG, "onActivityCreated movies " + movieList.size() + " position " + currentPosition);
-
     }
 
     @Override
@@ -136,7 +134,7 @@ public class MainActivityFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
-                
+
                 if (((gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8
                         || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
                         && isOnline(getContext()))) {
@@ -156,7 +154,6 @@ public class MainActivityFragment extends Fragment {
 
         rv.setAdapter(movieAdapter);
         rv.scrollToPosition(currentPosition);
-        Log.v(LOG_TAG, "onCreateView movies " + movieList.size() + " position " + currentPosition);
 
         return rootview;
     }
@@ -174,7 +171,6 @@ public class MainActivityFragment extends Fragment {
         } else {
 
             movieList = savedInstanceState.getParcelableArrayList("movies");
-            Log.v(LOG_TAG, "movies saved " + movieList.size());
             currentPosition = savedInstanceState.getInt("position");
             currentPage = savedInstanceState.getInt("page");
         }
@@ -194,8 +190,6 @@ public class MainActivityFragment extends Fragment {
         };
         // Starts receiver
         startListening();
-        Log.v(LOG_TAG, "onCreate movies " + movieList.size() + " position " + currentPosition);
-
     }
 
     /**
@@ -225,7 +219,6 @@ public class MainActivityFragment extends Fragment {
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
-            Log.v(LOG_TAG, "new sort");
             mSort = sort;
             // fetches new data
             currentPage = 1;
@@ -250,8 +243,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        Log.v(LOG_TAG, "movies " + movieList.size() + " position " + currentPosition);
 
         startListening();
         updateMovieList();
@@ -279,10 +270,8 @@ public class MainActivityFragment extends Fragment {
             movies = fetchMovie.execute(sort).get();
             if (sort.equals(mSort)) {
                 movieList = movies;
-                Log.v(LOG_TAG, "new sort " + movieList.size());
             } else if (movies == null) {
                 movieList = new ArrayList<>();
-                Log.v(LOG_TAG, "movies == null");
             } else if (addMovies) {
                 movieList.addAll(movies);
                 addMovies = false;
@@ -295,10 +284,7 @@ public class MainActivityFragment extends Fragment {
                 }
             } else if (isSearch || movieList == null) {
                 movieList = movies;
-                Log.v(LOG_TAG, "movieList == null || isSearch " + movieList.size());
             } else if (sort.equals("") && isClearedSearch) {
-                Log.v(LOG_TAG, "cleared search " + movieList.size());
-
                 movieList = movies;
                 isClearedSearch = false;
             }
@@ -382,7 +368,6 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
             // Check the flag that activity is over
             loadingMore = false;
-            Log.v(LOG_TAG, "Updated");
         }
     }
 
