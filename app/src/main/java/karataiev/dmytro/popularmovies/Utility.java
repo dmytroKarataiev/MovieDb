@@ -75,6 +75,10 @@ public class Utility {
                 POSTER_SIZE = "w500";
                 POSTER_SIZE_DETAIL = "w780";
                 break;
+            case 720:
+                POSTER_SIZE = "w500";
+                POSTER_SIZE_DETAIL = "w780";
+                break;
             default:
                 POSTER_SIZE = "w185";
                 POSTER_SIZE_DETAIL = "w342";
@@ -253,12 +257,17 @@ public class Utility {
 
         int width = metrics.widthPixels;
         int height = metrics.heightPixels;
-        int density = metrics.densityDpi;
-        int columns = Math.round(metrics.widthPixels / metrics.densityDpi);
+        int densityDpi = metrics.densityDpi;
+        float density = metrics.density;
+        int columns = width / densityDpi;
         int posterWidth = width / columns;
         int posterHeight = (int) (posterWidth * 1.5);
 
-        return new int[] { width, height, density, columns, posterWidth, posterHeight };
+        if (width / density > 599 && height / density > 599) {
+            columns = (int) Math.round(columns * 0.33);
+        }
+
+        return new int[] { width, height, densityDpi, columns, posterWidth, posterHeight };
     }
 
     /**
@@ -268,15 +277,19 @@ public class Utility {
      * @return boolean true if present, false otherwise
      */
     public static boolean isFavorite(Context context, MovieObject movie) {
+
         // get access to db to check if a movie is in fav list
         ContentResolver contentResolver = context.getContentResolver();
+        Cursor currentPoster = null;
 
         // if a movie is in the database - make it favorite
-        Cursor currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
-                null,
-                MoviesContract.MovieEntry.COLUMN_ID + " = ?",
-                new String[]{movie.getId()},
-                null);
+        if (movie.getId() != null) {
+            currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
+                    null,
+                    MoviesContract.MovieEntry.COLUMN_ID + " = ?",
+                    new String[]{movie.getId()},
+                    null);
+        }
 
         if (currentPoster != null) {
             currentPoster.moveToFirst();

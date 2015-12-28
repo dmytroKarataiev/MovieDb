@@ -1,10 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -32,17 +28,30 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     // Couldn't find more efficient way to use following variable then to make them global
     private GridView gridView;
 
-    // Network status variables and methods (to stop fetching the data if the phone is offline
-    private boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+//    // Network status variables and methods (to stop fetching the data if the phone is offline
+//    private boolean isOnline(Context context) {
+//        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+//    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface CallbackFromFavorites {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(MovieObject movieObject);
     }
 
     public FavoritesActivityFragment() { }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
+
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -80,11 +89,13 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
                 byte[] posterBytes = cursor.getBlob(posterIndex);
                 byte[] backdropBytes = cursor.getBlob(backdropIndex);
 
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("movie", movie)
-                        .putExtra("poster", posterBytes)
-                        .putExtra("backdrop", backdropBytes);
-                startActivity(intent);
+                ((MovieObjectAdapter.CallbackFromAdapter) getActivity()).onItemSelected(movie);
+
+//                Intent intent = new Intent(getActivity(), DetailActivity.class)
+//                        .putExtra("movie", movie)
+//                        .putExtra("poster", posterBytes)
+//                        .putExtra("backdrop", backdropBytes);
+//                startActivity(intent);
 
             }
         });
@@ -127,4 +138,5 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
     public void onLoaderReset(Loader<Cursor> loader){
         movieAdapter.swapCursor(null);
     }
+
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import karataiev.dmytro.popularmovies.AsyncTask.FetchJSON;
+import karataiev.dmytro.popularmovies.AsyncTask.FetchMovies;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
@@ -49,6 +51,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     // String which is used in share intent
     private String mMovie;
+    private MovieObject mMovieObject;
 
     // YouTube variables
     private YouTubePlayer YPlayer;
@@ -56,6 +59,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     // save current video and position
     private int currentVideoMillis;
     private int currentVideo;
+    private final String VIDEO_TAG = "youtube";
 
     // list of videos
     private List<String> videoID;
@@ -96,47 +100,71 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
+        Log.v(LOG_TAG, "DetailActivityFragment");
+        if (savedInstanceState != null && savedInstanceState.containsKey(VIDEO_TAG)) {
             // Get video progress
             currentVideoMillis = savedInstanceState.getInt("time");
-            currentVideo = savedInstanceState.getInt("video");
+            currentVideo = savedInstanceState.getInt(VIDEO_TAG);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        Intent intent;
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mMovieObject = arguments.getParcelable("movie");
+            intent = new Intent();
+        } else {
+            // Gets data from intent (using parcelable) and populates views
+            intent = this.getActivity().getIntent();
+            mMovieObject = intent.getParcelableExtra("movie");
+            if (mMovieObject == null) {
+                try {
+                    FetchMovies fetchFirstMovie = new FetchMovies(getContext(), null, false, 1);
+                    mMovieObject = fetchFirstMovie.execute(Utility.getUrl(1, getContext()).toString()).get().get(0);
+                } catch (ExecutionException e) {
+                    Log.e(LOG_TAG, "error");
+                } catch (InterruptedException e2) {
+                    Log.e(LOG_TAG, "error" + e2);
+                }
+            }
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         final ViewHolder viewHolder = new ViewHolder(rootView);
 
-        // Gets data from intent (using parcelable) and populates views
-        Intent intent = this.getActivity().getIntent();
-        final MovieObject fromIntent = intent.getParcelableExtra("movie");
-
         // Files from db to load into ImageViews
         byte[] posterLoad = intent.getByteArrayExtra("poster");
         byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
-        File posterFile = Utility.makeFile(getContext(), posterLoad, fromIntent.getId() + "poster");
-        File backdropFile = Utility.makeFile(getContext(), backdropLoad, fromIntent.getId() + "backdrop");
+        File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
+        File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
 
         // ActionBar title and image adding
-        android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         if (actionBar != null) {
-            actionBar.setTitle(fromIntent.getTitle());
+            actionBar.setTitle(mMovieObject.getTitle());
         }
 
-        final ImageView backdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
+        ImageView tempForBackdrop;
+        if (rootView.findViewById(R.id.backdrop) == null) {
+            tempForBackdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
+        } else {
+            tempForBackdrop = (ImageView) rootView.findViewById(R.id.backdrop);
+        }
+        final ImageView backdrop = tempForBackdrop;
 
-        viewHolder.movieName.setText(fromIntent.getTitle());
-        viewHolder.movieDescription.setText(fromIntent.getOverview());
-        viewHolder.movieRating.setText(fromIntent.getVoteAverage());
-        viewHolder.movieReleaseDate.setText(fromIntent.getReleaseDate());
-        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), fromIntent.getVoteCount()));
+        viewHolder.movieName.setText(mMovieObject.getTitle());
+        viewHolder.movieDescription.setText(mMovieObject.getOverview());
+        viewHolder.movieRating.setText(mMovieObject.getVoteAverage());
+        viewHolder.movieReleaseDate.setText(mMovieObject.getReleaseDate());
+        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
-        if (Utility.isFavorite(getContext(), fromIntent)) {
+        if (Utility.isFavorite(getContext(), mMovieObject)) {
             viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
         } else {
             viewHolder.favorite.setImageResource(R.drawable.bookmark);
@@ -154,11 +182,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                     @Override
                     public void onClick(View v) {
 
-                        ContentValues favValue = Utility.makeContentValues(fromIntent);
+                        ContentValues favValue = Utility.makeContentValues(mMovieObject);
 
-                        Toast.makeText(getContext(), fromIntent.getTitle(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
 
-                        if (!Utility.isFavorite(getContext(), fromIntent)) {
+                        if (!Utility.isFavorite(getContext(), mMovieObject)) {
 
                             // Save drawable for later usage
                             byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
@@ -197,48 +225,28 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
         } else if (backdropFile == null && posterFile != null) {
             Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
-            Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
+            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
         } else {
-            Picasso.with(getContext()).load(fromIntent.getBackdropPath()).into(backdrop);
-            Picasso.with(getContext()).load(fromIntent.getPosterPath()).into(viewHolder.posterView, callback);
+            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
+            Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(viewHolder.posterView, callback);
         }
 
         // Initializes mMovie with info about a movie
-        mMovie = fromIntent.getTitle() + "\n" + fromIntent.getReleaseDate() + "\n" + fromIntent.getVoteAverage() + "\n" + fromIntent.getOverview();
+        mMovie = mMovieObject.getTitle() + "\n" + mMovieObject.getReleaseDate() + "\n" + mMovieObject.getVoteAverage() + "\n" + mMovieObject.getOverview();
 
-        // YouTube view initialization
-        youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
-        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, this);
-        FragmentManager fragmentManager = getFragmentManager();
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
-
-        // Detect if display is in landscape mode and set YouTube layout height accordingly
-        TypedValue tv = new TypedValue();
-
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
-        {
-            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
-            FrameLayout youtubeFrame = (FrameLayout) rootView.findViewById(R.id.youtube_fragment);
-            ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
-
-            layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
-            layoutParams.width = layoutParams.height * 2;
-            youtubeFrame.setLayoutParams(layoutParams);
-        }
 
         try {
             // get from AsyncTask trailers
             FetchJSON fetchJSON = new FetchJSON();
-            fromIntent.setKeys(fetchJSON.execute(fromIntent.getTrailerPath()).get());
+            mMovieObject.setKeys(fetchJSON.execute(mMovieObject.getTrailerPath()).get());
 
-            if (fromIntent.getTrailers() != null && fromIntent.getTrailers().size() > 0) {
-                videoID = fromIntent.getTrailers();
+            if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
+                videoID = mMovieObject.getTrailers();
 
                 // If there are trailers - add their links to the share Intent
                 mMovie += "\nAlso check out the Trailers:\n";
-                for (String each : fromIntent.getTrailers()) {
+                for (String each : mMovieObject.getTrailers()) {
                     mMovie += "https://www.youtube.com/watch?v=" + each + "\n";
                 }
             }
@@ -248,7 +256,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
 
             ArrayList<String> reviewsArrayList = fetchJSONReviews
-                    .execute(Utility.getReviewsURL(fromIntent.getId()).toString())
+                    .execute(Utility.getReviewsURL(mMovieObject.getId()).toString())
                     .get();
 
             if (reviewsArrayList != null) {
@@ -262,6 +270,19 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         }
 
         return rootView;
+
+    }
+
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // YouTube view initialization
+        youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
+        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
 
     }
 
@@ -301,6 +322,19 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
 
+        // Detect if display is in landscape mode and set YouTube layout height accordingly
+        TypedValue tv = new TypedValue();
+
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
+        {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
+            ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
+
+            layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
+            layoutParams.width = layoutParams.height * 2;
+            youtubeFrame.setLayoutParams(layoutParams);
+        }
         this.YPlayer = player;
 
         YPlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
@@ -356,8 +390,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         super.onSaveInstanceState(saveInstanceState);
 
         // Save YouTube progress
-        saveInstanceState.putInt("time", YPlayer.getCurrentTimeMillis());
-        saveInstanceState.putInt("video", currentVideo);
+        if (YPlayer != null) {
+            saveInstanceState.putInt(VIDEO_TAG, YPlayer.getCurrentTimeMillis());
+            saveInstanceState.putInt("video", currentVideo);
+        }
+
     }
 
 }

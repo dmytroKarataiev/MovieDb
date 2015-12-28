@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -20,19 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import karataiev.dmytro.popularmovies.AsyncTask.FetchMovies;
+import karataiev.dmytro.popularmovies.AsyncTask.TaskCompleted;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements TaskCompleted{
 
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
@@ -109,12 +105,13 @@ public class MainActivityFragment extends Fragment {
                 }
             });
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootview = inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootview = inflater.inflate(R.layout.fragment_main, container, false);
 
         rv = (RecyclerView) rootview.findViewById(R.id.recyclerview);
 
@@ -161,7 +158,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.v(LOG_TAG, "MainActivityFragment");
         // Initializes global mSort with SharedPreferences of sort
         mSort = Utility.getSort(getContext());
 
@@ -215,7 +212,7 @@ public class MainActivityFragment extends Fragment {
      * Method to update UI when settings changed
      */
     private void updateMovieList() {
-        String sort = Utility.getSort(getActivity());
+        String sort = Utility.getSort(getContext());
 
         // Checks if settings were changed
         if (!sort.equals(mSort)) {
@@ -265,7 +262,12 @@ public class MainActivityFragment extends Fragment {
         ArrayList<MovieObject> movies;
 
         try {
-            FetchMovie fetchMovie = new FetchMovie(getContext());
+            FetchMovies fetchMovie = new FetchMovies(getContext(), new TaskCompleted() {
+                @Override
+                public void onAsyncProgress(boolean progress) {
+                    loadingMore = progress;
+                }
+            }, isSearch, currentPage);
 
             movies = fetchMovie.execute(sort).get();
             if (sort.equals(mSort)) {
@@ -313,62 +315,8 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    public class FetchMovie extends AsyncTask<String, Void, ArrayList<MovieObject>> {
-
-        private final String LOG_TAG = FetchMovie.class.getSimpleName();
-
-        private final Context mContext;
-
-        public FetchMovie(Context context) {
-            mContext = context;
-        }
-
-        /**
-         * AsyncTask to fetch data on background thread
-         *
-         * @param params doesn't take any parameters yet, gets sort from SharedPreferences
-         * @return array of MovieObjects
-         */
-        protected ArrayList<MovieObject> doInBackground(String... params) {
-
-            URL url;
-
-            if (isSearch) {
-                url = Utility.getSearchURL(searchParameter, currentPage);
-            } else {
-                url = Utility.getUrl(currentPage, mContext);
-            }
-
-            loadingMore = true;
-
-            // Network Client
-            OkHttpClient client = new OkHttpClient();
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = "";
-
-            try {
-                // Create the request to OpenWeatherMap, and open the connection
-                Request request = new Request.Builder()
-                        .url(url)
-                        .build();
-                Response responses = client.newCall(request).execute();
-                movieJsonStr = responses.body().string();
-                responses.body().close();
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-            } catch (NullPointerException e) {
-                Log.e(LOG_TAG, "Null ", e);
-            }
-
-            return Utility.getMoviesGSON(mContext, movieJsonStr);
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
-            // Check the flag that activity is over
-            loadingMore = false;
-        }
+    @Override
+    public void onAsyncProgress(boolean progress) {
+        loadingMore = progress;
     }
-
 }

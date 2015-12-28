@@ -2,7 +2,6 @@ package karataiev.dmytro.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -32,6 +31,19 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
     private int mBackground;
     private List<MovieObject> mValues;
     private Context mContext;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface CallbackFromAdapter {
+
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(MovieObject movieObject);
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -84,10 +96,8 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = v.getContext();
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("movie", mValues.get(position));
-                context.startActivity(intent);
+
+                ((CallbackFromAdapter) mContext).onItemSelected(movieObject);
             }
         });
 
@@ -168,5 +178,7 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
     public int getItemCount() {
         return mValues.size();
     }
+
+
 
 }

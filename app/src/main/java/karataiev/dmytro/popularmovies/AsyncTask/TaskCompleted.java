@@ -1,0 +1,10 @@
+package karataiev.dmytro.popularmovies.AsyncTask;
+
+/**
+ * Interface to pass status of downloading to prevent skipping of pages
+ * Created by karataev on 12/27/15.
+ */
+public interface TaskCompleted {
+
+    public void onAsyncProgress(boolean progress);
+}

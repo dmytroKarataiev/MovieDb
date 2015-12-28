@@ -36,26 +36,29 @@ public class FetchJSON extends AsyncTask<String, Void, ArrayList<String>> {
         // Will contain the raw JSON response as a string.
         String movieJsonStr = "";
 
-        try {
-            URL url = new URL(params[0]);
-            Log.v(LOG_TAG, url.toString());
-            // Create the request to movide db, and open the connection
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-            Response responses = client.newCall(request).execute();
-            movieJsonStr = responses.body().string();
-            responses.body().close();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-        } catch (NullPointerException e) {
-            Log.e(LOG_TAG, "Null ", e);
-        }
+        if (params[0] != null) {
+            try {
+                URL url = new URL(params[0]);
+                Log.v(LOG_TAG, url.toString());
+                // Create the request to movide db, and open the connection
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+                Response responses = client.newCall(request).execute();
+                movieJsonStr = responses.body().string();
+                responses.body().close();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG, "Null ", e);
+            }
 
-        if (params[0].contains("reviews")) {
-            return Utility.getReviews(movieJsonStr);
-        } else {
-            return Utility.getTrailers(movieJsonStr);
+            if (params[0].contains("reviews")) {
+                return Utility.getReviews(movieJsonStr);
+            } else {
+                return Utility.getTrailers(movieJsonStr);
+            }
         }
+        return null;
     }
 }
