@@ -8,9 +8,11 @@ App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and 
 * You can watch trailers inside of the app (YouTube API)
 * You can save your favorite movies
 * Search by movie titles
+* Tablet Design
 
 ## Development plans
-* Tablet Design
+* Fix leakage of memory
+* Design improvements
 
 ## API Keys
 For this app to work you have to acquire API keys and put them into gradle.properties file. 
