@@ -10,7 +10,7 @@ import android.view.MenuItem;
  * Class to start DetailActivityFragment
  * Created by karataev on 12/15/15.
  */
-public class FavoritesActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity implements FavoritesActivityFragment.CallbackFromFavorites{
 
     private String LOG_TAG = FavoritesActivity.class.getSimpleName();
 
@@ -42,5 +42,14 @@ public class FavoritesActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(MovieObject movieObject) {
+
+        Intent intent = new Intent(this, DetailActivity.class)
+                .putExtra("movie", movieObject);
+        startActivity(intent);
+
     }
 }

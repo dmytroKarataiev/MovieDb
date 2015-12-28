@@ -89,7 +89,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
                 byte[] posterBytes = cursor.getBlob(posterIndex);
                 byte[] backdropBytes = cursor.getBlob(backdropIndex);
 
-                ((MovieObjectAdapter.CallbackFromAdapter) getActivity()).onItemSelected(movie);
+                ((CallbackFromFavorites) getContext()).onItemSelected(movie);
 
 //                Intent intent = new Intent(getActivity(), DetailActivity.class)
 //                        .putExtra("movie", movie)
