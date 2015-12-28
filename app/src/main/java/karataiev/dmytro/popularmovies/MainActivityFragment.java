@@ -131,22 +131,25 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
+                if (movieList != null) {
+                    currentPosition = gridLayoutManager.findFirstVisibleItemPosition();
 
-                if (((gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8
-                        || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
-                        && isOnline(getContext()))) {
+                    if (((gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8
+                            || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
+                            && isOnline(getContext()))) {
 
-                    if (isSearch) {
-                        currentPage++;
-                        addSearchMovies = true;
-                        updateMovieList();
-                    } else if (searchParameter.length() == 0) {
-                        currentPage++;
-                        addMovies = true;
-                        updateMovieList();
+                        if (isSearch) {
+                            currentPage++;
+                            addSearchMovies = true;
+                            updateMovieList();
+                        } else if (searchParameter.length() == 0) {
+                            currentPage++;
+                            addMovies = true;
+                            updateMovieList();
+                        }
                     }
                 }
+
             }
         });
 
@@ -181,7 +184,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
                 NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 
                 // Updates screen on network connection if nothing was on the screen
-                if (activeNetInfo != null) {
+                if (activeNetInfo != null && movieList == null) {
                     networkRestored = true;
                     updateMovieList();
                 }
@@ -215,31 +218,34 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
      */
     private void updateMovieList() {
         String sort = Utility.getSort(getContext());
+        if (isOnline(getContext())) {
+            // Checks if settings were changed
+            if (!sort.equals(mSort)) {
+                mSort = sort;
+                // fetches new data
+                currentPage = 1;
+                fetchMovies(sort);
+                // updates global settings variable
+                setActionbarTitle();
 
-        // Checks if settings were changed
-        if (!sort.equals(mSort)) {
-            mSort = sort;
-            // fetches new data
-            currentPage = 1;
-            fetchMovies(sort);
-            // updates global settings variable
-            setActionbarTitle();
-
-        } else if (movieList == null) {
-            currentPage = 1;
-            // fetches new data
-            fetchMovies("");
-        } else if (movieList.isEmpty()) {
-            currentPage = 1;
-            fetchMovies("");
-        } else if (addMovies) {
-            fetchMovies("");
-        } else if (isSearch) {
-            fetchMovies(searchParameter);
-        } else if (networkRestored) {
-            fetchMovies(sort);
-            networkRestored = false;
+            } else if (movieList == null) {
+                currentPage = 1;
+                // fetches new data
+                fetchMovies("");
+            } else if (movieList.isEmpty()) {
+                currentPage = 1;
+                fetchMovies("");
+            } else if (addMovies) {
+                fetchMovies("");
+            } else if (isSearch) {
+                fetchMovies(searchParameter);
+            } else if (networkRestored) {
+                Log.v(LOG_TAG, "network restored");
+                fetchMovies(sort);
+                networkRestored = false;
+            }
         }
+
     }
 
     @Override
