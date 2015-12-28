@@ -39,6 +39,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     private RecyclerView rv;
     private GridLayoutManager gridLayoutManager;
     private BroadcastReceiver networkStateReceiver;
+    private boolean networkRestored;
 
     // Continuous viewing and progress bar variables
     private boolean loadingMore;
@@ -181,6 +182,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
 
                 // Updates screen on network connection if nothing was on the screen
                 if (activeNetInfo != null) {
+                    networkRestored = true;
                     updateMovieList();
                 }
             }
@@ -234,6 +236,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
             fetchMovies("");
         } else if (isSearch) {
             fetchMovies(searchParameter);
+        } else if (networkRestored) {
+            fetchMovies(sort);
+            networkRestored = false;
         }
     }
 

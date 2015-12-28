@@ -122,7 +122,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             if (mMovieObject == null) {
                 try {
                     FetchMovies fetchFirstMovie = new FetchMovies(getContext(), null, false, 1);
-                    mMovieObject = fetchFirstMovie.execute(Utility.getUrl(1, getContext()).toString()).get().get(0);
+
+                    ArrayList<MovieObject> temporary = fetchFirstMovie.execute(Utility.getUrl(1, getContext()).toString()).get();
+                    if (temporary != null) {
+                        mMovieObject = temporary.get(0);
+                    }
                 } catch (ExecutionException e) {
                     Log.e(LOG_TAG, "error");
                 } catch (InterruptedException e2) {
@@ -135,93 +139,94 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         final ViewHolder viewHolder = new ViewHolder(rootView);
 
-        // Maybe it increases chance of OOM
-        // Files from db to load into ImageViews
+        if (mMovieObject != null) {
+            // Maybe it increases chance of OOM
+            // Files from db to load into ImageViews
 //        byte[] posterLoad = intent.getByteArrayExtra("poster");
 //        byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
 //        File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
 //        File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
 
-        // ActionBar title and image adding
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            // ActionBar title and image adding
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-        if (actionBar != null) {
-            actionBar.setTitle(mMovieObject.getTitle());
-        }
+            if (actionBar != null) {
+                actionBar.setTitle(mMovieObject.getTitle());
+            }
 
-        ImageView tempForBackdrop;
-        if (rootView.findViewById(R.id.backdrop) == null) {
-            tempForBackdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
-        } else {
-            tempForBackdrop = (ImageView) rootView.findViewById(R.id.backdrop);
-        }
-        final ImageView backdrop = tempForBackdrop;
+            ImageView tempForBackdrop;
+            if (rootView.findViewById(R.id.backdrop) == null) {
+                tempForBackdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
+            } else {
+                tempForBackdrop = (ImageView) rootView.findViewById(R.id.backdrop);
+            }
+            final ImageView backdrop = tempForBackdrop;
 
-        viewHolder.movieName.setText(mMovieObject.getTitle());
-        viewHolder.movieDescription.setText(mMovieObject.getOverview());
-        viewHolder.movieRating.setText(mMovieObject.getVoteAverage());
-        viewHolder.movieReleaseDate.setText(mMovieObject.getReleaseDate());
-        viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
+            viewHolder.movieName.setText(mMovieObject.getTitle());
+            viewHolder.movieDescription.setText(mMovieObject.getOverview());
+            viewHolder.movieRating.setText(mMovieObject.getVoteAverage());
+            viewHolder.movieReleaseDate.setText(mMovieObject.getReleaseDate());
+            viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
-        if (Utility.isFavorite(getContext(), mMovieObject)) {
-            //viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
-            Picasso.with(getContext()).load(R.drawable.bookmark_fav).into(viewHolder.favorite);
-        } else {
-            //viewHolder.favorite.setImageResource(R.drawable.bookmark);
-            Picasso.with(getContext()).load(R.drawable.bookmark).into(viewHolder.favorite);
-        }
+            if (Utility.isFavorite(getContext(), mMovieObject)) {
+                //viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+                Picasso.with(getContext()).load(R.drawable.bookmark_fav).into(viewHolder.favorite);
+            } else {
+                //viewHolder.favorite.setImageResource(R.drawable.bookmark);
+                Picasso.with(getContext()).load(R.drawable.bookmark).into(viewHolder.favorite);
+            }
 
-        // Callback inside of Picasso Call
-        Callback callback = new Callback() {
-            @Override
-            public void onSuccess() {
-                viewHolder.spinner.setVisibility(View.GONE);
-                viewHolder.favorite.setVisibility(View.VISIBLE);
+            // Callback inside of Picasso Call
+            Callback callback = new Callback() {
+                @Override
+                public void onSuccess() {
+                    viewHolder.spinner.setVisibility(View.GONE);
+                    viewHolder.favorite.setVisibility(View.VISIBLE);
 
-                // On favorite icon click
-                viewHolder.favorite.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    // On favorite icon click
+                    viewHolder.favorite.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                        ContentValues favValue = Utility.makeContentValues(mMovieObject);
+                            ContentValues favValue = Utility.makeContentValues(mMovieObject);
 
-                        Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
 
-                        if (!Utility.isFavorite(getContext(), mMovieObject)) {
+                            if (!Utility.isFavorite(getContext(), mMovieObject)) {
 
-                            // Save drawable for later usage
-                            byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
-                            byte[] backdropBitmap = Utility.makeByteArray(backdrop.getDrawable());
+                                // Save drawable for later usage
+                                byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
+                                byte[] backdropBitmap = Utility.makeByteArray(backdrop.getDrawable());
 
-                            // save byte array of an image to the database
-                            favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
-                            favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
+                                // save byte array of an image to the database
+                                favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+                                favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
 
-                            viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+                                viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
 
-                            // Insert on background thread
-                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
-                            utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
-                        } else {
-                            viewHolder.favorite.setImageResource(R.drawable.bookmark);
+                                // Insert on background thread
+                                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                                utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
+                            } else {
+                                viewHolder.favorite.setImageResource(R.drawable.bookmark);
 
-                            // Delete on background thread
-                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
-                            utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
+                                // Delete on background thread
+                                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
+                                utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            @Override
-            public void onError() {
-                viewHolder.posterView.setBackgroundResource(R.color.white);
-                viewHolder.spinner.setVisibility(View.GONE);
-                viewHolder.favorite.setVisibility(View.GONE);
-            }
-        };
+                @Override
+                public void onError() {
+                    viewHolder.posterView.setBackgroundResource(R.color.white);
+                    viewHolder.spinner.setVisibility(View.GONE);
+                    viewHolder.favorite.setVisibility(View.GONE);
+                }
+            };
 
-        // Not sure if it increases risk of OOM error
+            // Not sure if it increases risk of OOM error
 //        if (posterFile != null && backdropFile != null) {
 //            Picasso.with(getContext()).load(backdropFile).into(backdrop);
 //            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
@@ -231,42 +236,45 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 //        } else {
             Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
             Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(viewHolder.posterView, callback);
-        //}
+            //}
 
-        // Initializes mMovie with info about a movie
-        mMovie = mMovieObject.getTitle() + "\n" + mMovieObject.getReleaseDate() + "\n" + mMovieObject.getVoteAverage() + "\n" + mMovieObject.getOverview();
+            // Initializes mMovie with info about a movie
+            mMovie = mMovieObject.getTitle() + "\n" + mMovieObject.getReleaseDate() + "\n" + mMovieObject.getVoteAverage() + "\n" + mMovieObject.getOverview();
 
-        try {
-            // get from AsyncTask trailers
-            FetchJSON fetchJSON = new FetchJSON();
-            mMovieObject.setKeys(fetchJSON.execute(mMovieObject.getTrailerPath()).get());
+            try {
+                // get from AsyncTask trailers
+                FetchJSON fetchJSON = new FetchJSON();
 
-            if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
-                videoID = mMovieObject.getTrailers();
+                ArrayList<String> keys = fetchJSON.execute(mMovieObject.getTrailerPath()).get();
+                mMovieObject.setKeys(keys);
 
-                // If there are trailers - add their links to the share Intent
-                mMovie += "\nAlso check out the Trailers:\n";
-                for (String each : mMovieObject.getTrailers()) {
-                    mMovie += "https://www.youtube.com/watch?v=" + each + "\n";
+                if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
+                    videoID = mMovieObject.getTrailers();
+
+                    // If there are trailers - add their links to the share Intent
+                    mMovie += "\nAlso check out the Trailers:\n";
+                    for (String each : mMovieObject.getTrailers()) {
+                        mMovie += "https://www.youtube.com/watch?v=" + each + "\n";
+                    }
                 }
+
+                // Get Reviews from AsyncTask and put them in a simple TextView
+                FetchJSON fetchJSONReviews = new FetchJSON();
+                TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
+
+                ArrayList<String> reviewsArrayList = fetchJSONReviews
+                        .execute(Utility.getReviewsURL(mMovieObject.getId()).toString())
+                        .get();
+
+                if (reviewsArrayList != null) {
+                    reviews.setText(TextUtils.join("\n", reviewsArrayList));
+                }
+
+            } catch (ExecutionException e) {
+                Log.e(LOG_TAG, "error");
+            } catch (InterruptedException e2) {
+                Log.e(LOG_TAG, "error" + e2);
             }
-
-            // Get Reviews from AsyncTask and put them in a simple TextView
-            FetchJSON fetchJSONReviews = new FetchJSON();
-            TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
-
-            ArrayList<String> reviewsArrayList = fetchJSONReviews
-                    .execute(Utility.getReviewsURL(mMovieObject.getId()).toString())
-                    .get();
-
-            if (reviewsArrayList != null) {
-                reviews.setText(TextUtils.join("\n", reviewsArrayList));
-            }
-
-        } catch (ExecutionException e) {
-            Log.e(LOG_TAG, "error");
-        } catch (InterruptedException e2) {
-            Log.e(LOG_TAG, "error" + e2);
         }
 
         return rootView;
