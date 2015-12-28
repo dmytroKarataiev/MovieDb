@@ -1,22 +1,20 @@
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-<EditText
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/searchBar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/colorLighter"
-    android:hint="@string/search"
-    android:inputType="textCapWords"
-    android:padding="@dimen/search"
-    android:imeOptions="actionDone"/>
 
-<android.support.v7.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recyclerview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorLighter"
+        android:hint="@string/search"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords"
+        android:padding="@dimen/search" />
+
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

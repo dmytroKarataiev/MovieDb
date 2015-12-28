@@ -72,7 +72,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
         super.onActivityCreated(savedInstanceState);
         setActionbarTitle();
 
-        EditText editText = (EditText) ((AppCompatActivity) getActivity()).findViewById(R.id.searchBar);
+        EditText editText = (EditText) (getActivity()).findViewById(R.id.searchBar);
 
         if (editText != null) {
             editText.addTextChangedListener(new TextWatcher() {
@@ -87,9 +87,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    Log.v(LOG_TAG, "after text changed");
                     afterChange = s.toString();
                     currentPage = 1;
+                    currentPosition = 1;
                     if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
                         searchParameter = s.toString();
                         isSearch = true;
@@ -158,7 +158,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, "MainActivityFragment");
+
         // Initializes global mSort with SharedPreferences of sort
         mSort = Utility.getSort(getContext());
 
@@ -300,6 +300,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
 
         if (rv != null) {
             rv.swapAdapter(movieAdapter, false);
+            rv.smoothScrollToPosition(currentPosition);
         }
     }
 

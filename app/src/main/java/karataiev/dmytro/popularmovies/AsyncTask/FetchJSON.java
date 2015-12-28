@@ -39,7 +39,6 @@ public class FetchJSON extends AsyncTask<String, Void, ArrayList<String>> {
         if (params[0] != null) {
             try {
                 URL url = new URL(params[0]);
-                Log.v(LOG_TAG, url.toString());
                 // Create the request to movide db, and open the connection
                 Request request = new Request.Builder()
                         .url(url)

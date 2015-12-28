@@ -32,7 +32,6 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -64,7 +63,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     // list of videos
     private List<String> videoID;
 
-    YouTubePlayerSupportFragment youTubePlayerSupportFragment;
+    private YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
     /**
      * Cache of the children views
@@ -100,7 +99,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, "DetailActivityFragment");
+
         if (savedInstanceState != null && savedInstanceState.containsKey(VIDEO_TAG)) {
             // Get video progress
             currentVideoMillis = savedInstanceState.getInt("time");
@@ -116,7 +115,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         Bundle arguments = getArguments();
         if (arguments != null) {
             mMovieObject = arguments.getParcelable("movie");
-            intent = new Intent();
         } else {
             // Gets data from intent (using parcelable) and populates views
             intent = this.getActivity().getIntent();
@@ -137,11 +135,12 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         final ViewHolder viewHolder = new ViewHolder(rootView);
 
+        // Maybe it increases chance of OOM
         // Files from db to load into ImageViews
-        byte[] posterLoad = intent.getByteArrayExtra("poster");
-        byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
-        File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
-        File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
+//        byte[] posterLoad = intent.getByteArrayExtra("poster");
+//        byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
+//        File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
+//        File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
 
         // ActionBar title and image adding
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -165,9 +164,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
         if (Utility.isFavorite(getContext(), mMovieObject)) {
-            viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+            //viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+            Picasso.with(getContext()).load(R.drawable.bookmark_fav).into(viewHolder.favorite);
         } else {
-            viewHolder.favorite.setImageResource(R.drawable.bookmark);
+            //viewHolder.favorite.setImageResource(R.drawable.bookmark);
+            Picasso.with(getContext()).load(R.drawable.bookmark).into(viewHolder.favorite);
         }
 
         // Callback inside of Picasso Call
@@ -220,21 +221,20 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             }
         };
 
-        if (posterFile != null && backdropFile != null) {
-            Picasso.with(getContext()).load(backdropFile).into(backdrop);
-            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
-        } else if (backdropFile == null && posterFile != null) {
-            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
-            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
-        } else {
+        // Not sure if it increases risk of OOM error
+//        if (posterFile != null && backdropFile != null) {
+//            Picasso.with(getContext()).load(backdropFile).into(backdrop);
+//            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
+//        } else if (backdropFile == null && posterFile != null) {
+//            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
+//            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
+//        } else {
             Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
             Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(viewHolder.posterView, callback);
-        }
+        //}
 
         // Initializes mMovie with info about a movie
         mMovie = mMovieObject.getTitle() + "\n" + mMovieObject.getReleaseDate() + "\n" + mMovieObject.getVoteAverage() + "\n" + mMovieObject.getOverview();
-
-
 
         try {
             // get from AsyncTask trailers
@@ -328,12 +328,16 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
-            FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
-            ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
 
-            layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
-            layoutParams.width = layoutParams.height * 2;
-            youtubeFrame.setLayoutParams(layoutParams);
+            if (getView() != null) {
+                FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
+                ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
+
+                layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
+                layoutParams.width = Utility.screenSize(getContext())[0];
+                youtubeFrame.setLayoutParams(layoutParams);
+            }
+
         }
         this.YPlayer = player;
 
@@ -382,7 +386,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult result) {
         getFragmentManager().beginTransaction().hide(youTubePlayerSupportFragment).commit();
-        Toast.makeText(this.getActivity(), "YouTubePlayer initialization failure: " + result.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this.getActivity(), "YouTubePlayer initialization failure: " + result.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -395,6 +399,21 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             saveInstanceState.putInt("video", currentVideo);
         }
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (YPlayer != null) {
+            YPlayer.release();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //RefWatcher refWatcher = PopularMoviesApplication.getRefWatcher(getActivity());
+        //refWatcher.watch(this);
     }
 
 }

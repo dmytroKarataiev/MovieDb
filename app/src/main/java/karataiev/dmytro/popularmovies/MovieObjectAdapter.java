@@ -17,8 +17,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import karataiev.dmytro.popularmovies.database.MoviesContract;
-
 /**
  * Adapter with MovieObjects
  * Created by karataev on 12/14/15.
@@ -28,9 +26,9 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
     private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
 
     private final TypedValue mTypedValue = new TypedValue();
-    private int mBackground;
-    private List<MovieObject> mValues;
-    private Context mContext;
+    private final int mBackground;
+    private final List<MovieObject> mValues;
+    private final Context mContext;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -105,9 +103,11 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
 
         // set favorites icon
         if (Utility.isFavorite(holder.favorite.getContext(), movieObject)) {
-            holder.favorite.setImageResource(R.drawable.bookmark_fav);
+            //holder.favorite.setImageResource(R.drawable.bookmark_fav);
+            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark_fav).into(holder.favorite);
         } else {
-            holder.favorite.setImageResource(R.drawable.bookmark);
+            //holder.favorite.setImageResource(R.drawable.bookmark);
+            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark).into(holder.favorite);
         }
 
         // Scale posters correctly
@@ -134,19 +134,19 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
                         if (!Utility.isFavorite(mContext, movieObject)) {
 
                             // Save drawable for later usage
-                            byte[] bitmapData = Utility.makeByteArray(holder.poster.getDrawable());
+                            //byte[] bitmapData = Utility.makeByteArray(holder.poster.getDrawable());
 
                             // save byte array of an image to the database
-                            favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+                            //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
 
-                            holder.favorite.setImageResource(R.drawable.bookmark_fav);
-
+                            //holder.favorite.setImageResource(R.drawable.bookmark_fav);
+                            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark_fav).into(holder.favorite);
                             // Insert on background thread
                             UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
                             utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
                         } else {
-                            holder.favorite.setImageResource(R.drawable.bookmark);
-
+                            //holder.favorite.setImageResource(R.drawable.bookmark);
+                            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark).into(holder.favorite);
                             // Delete on background thread
                             UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
                             utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);

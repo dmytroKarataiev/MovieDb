@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
+ * MoviesContract v0.1
  * Created by karataev on 12/19/15.
  */
 public class MoviesContract {

@@ -16,14 +16,14 @@
         <ImageView
             android:id="@+id/backdrop"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/poster_height"
+            android:layout_height="400dp"
             android:scaleType="centerCrop" />
 
         <!-- Header: Movie Title -->
         <TextView
             android:id="@+id/movie_name"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:background="@color/colorLighter"
             android:padding="@dimen/fab_margin"
             android:textColor="@color/white"
@@ -67,7 +67,6 @@
                     android:src="@drawable/bookmark" />
 
             </FrameLayout>
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -119,15 +118,17 @@
 
             </LinearLayout>
 
+            <!-- Movie Description -->
+            <TextView
+                android:id="@+id/detail_description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/fab_margin"
+                android:paddingRight="@dimen/fab_margin" />
+
         </LinearLayout>
 
-        <!-- Movie Description -->
-        <TextView
-            android:id="@+id/detail_description_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/fab_margin"
-            android:paddingRight="@dimen/fab_margin" />
+
 
         <!-- YouTube Frame -->
         <FrameLayout

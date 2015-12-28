@@ -6,5 +6,5 @@ package karataiev.dmytro.popularmovies.AsyncTask;
  */
 public interface TaskCompleted {
 
-    public void onAsyncProgress(boolean progress);
+    void onAsyncProgress(boolean progress);
 }

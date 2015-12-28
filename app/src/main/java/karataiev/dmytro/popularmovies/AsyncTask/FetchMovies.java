@@ -22,10 +22,10 @@ import karataiev.dmytro.popularmovies.Utility;
 public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>> {
 
     private final String LOG_TAG = FetchMovies.class.getSimpleName();
-    private Context mContext;
-    private TaskCompleted listener;
-    private boolean isSearch;
-    private int currentPage;
+    private final Context mContext;
+    private final TaskCompleted listener;
+    private final boolean isSearch;
+    private final int currentPage;
 
     public FetchMovies(Context context, TaskCompleted listener, boolean isSearch, int currentPage) {
         mContext = context;
@@ -64,7 +64,6 @@ public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>>
         if (params[0] != null) {
             try {
                 //URL url = new URL(params[0]);
-                Log.v(LOG_TAG, url.toString());
                 // Create the request to movide db, and open the connection
                 Request request = new Request.Builder()
                         .url(url)

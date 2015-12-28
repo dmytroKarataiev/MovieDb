@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
     private final String FAVFRAGMENT_TAG = "FAVFR";
 
     // Two Pane variable
-    public boolean mTwoPane;
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +66,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Log.v(LOG_TAG, "button " + id + " " + item.toString());
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;

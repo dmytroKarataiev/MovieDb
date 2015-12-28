@@ -44,7 +44,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(MovieObject movieObject);
+        void onItemSelected(MovieObject movieObject);
     }
 
     public FavoritesActivityFragment() { }
@@ -84,10 +84,10 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
 
                 MovieObject movie = Utility.makeMovieFromCursor(cursor);
 
-                int posterIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
-                int backdropIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE);
-                byte[] posterBytes = cursor.getBlob(posterIndex);
-                byte[] backdropBytes = cursor.getBlob(backdropIndex);
+                //int posterIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
+                //int backdropIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE);
+                //byte[] posterBytes = cursor.getBlob(posterIndex);
+                //byte[] backdropBytes = cursor.getBlob(backdropIndex);
 
                 ((CallbackFromFavorites) getContext()).onItemSelected(movie);
 

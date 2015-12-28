@@ -3,11 +3,15 @@
     package="karataiev.dmytro.popularmovies">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 
     <!-- Needed to check when the network connection changes -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application android:allowBackup="true"
+    <application
+        android:name=".PopularMoviesApplication"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -17,7 +21,7 @@
             android:authorities="karataiev.dmytro.popularmovies"
             android:name=".database.MovieProvider"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"

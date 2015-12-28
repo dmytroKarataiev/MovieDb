@@ -3,7 +3,6 @@ package karataiev.dmytro.popularmovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +12,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
 /**
+ * Adapter to the DB
  * Created by karataev on 12/22/15.
  */
-public class FavoritesAdapter extends CursorAdapter {
+class FavoritesAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = FavoritesAdapter.class.getSimpleName();
-    private Context mContext;
+    private final Context mContext;
     private static int sLoaderID;
 
     public static class ViewHolder {
@@ -65,7 +67,8 @@ public class FavoritesAdapter extends CursorAdapter {
         final String versionName = cursor.getString(versionIndex);
         //viewHolder.textView.setText(versionName);
 
-        viewHolder.favImage.setImageResource(R.drawable.bookmark_fav);
+        //viewHolder.favImage.setImageResource(R.drawable.bookmark_fav);
+        Picasso.with(context).load(R.drawable.bookmark_fav).into(viewHolder.favImage);
 
         // On favorite icon click
         viewHolder.favImage.setOnClickListener(new View.OnClickListener() {
@@ -74,8 +77,8 @@ public class FavoritesAdapter extends CursorAdapter {
 
                 Toast.makeText(context, "Not favorite anymore", Toast.LENGTH_LONG).show();
 
-                viewHolder.favImage.setImageResource(R.drawable.bookmark);
-
+                //viewHolder.favImage.setImageResource(R.drawable.bookmark);
+                Picasso.with(context).load(R.drawable.bookmark).into(viewHolder.favImage);
                 // Temp way to delete data from the db
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, versionName);
@@ -88,11 +91,13 @@ public class FavoritesAdapter extends CursorAdapter {
 
         viewHolder.spinner.setVisibility(View.GONE);
 
-        int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
-        byte[] image = cursor.getBlob(imageIndex);
-
+        // gets image from Picasso cache, instead of db
+        int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
+        //byte[] image = cursor.getBlob(imageIndex);
+        String image = cursor.getString(imageIndex);
         if (image != null) {
-            viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+            Picasso.with(context).load(image).into(viewHolder.imageView);
+        //    viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         }
 
     }

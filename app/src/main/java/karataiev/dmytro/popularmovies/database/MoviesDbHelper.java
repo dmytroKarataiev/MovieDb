@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Manages a local database for movies karataiev.dmytro.popularmovies.database
  * Created by karataev on 12/19/15.
  */
-public class MoviesDbHelper extends SQLiteOpenHelper {
+class MoviesDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;

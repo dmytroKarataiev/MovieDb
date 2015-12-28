@@ -37,7 +37,7 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
  */
 public class Utility {
 
-    private static String LOG_TAG = Utility.class.getSimpleName();
+    private final static String LOG_TAG = Utility.class.getSimpleName();
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
@@ -47,12 +47,10 @@ public class Utility {
      */
     public static String[] posterSize(Context context) {
 
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
         String POSTER_SIZE;
         String POSTER_SIZE_DETAIL;
 
-        switch (metrics.densityDpi) {
+        switch (screenSize(context)[2]) {
             case 120:
                 POSTER_SIZE = "w92";
                 POSTER_SIZE_DETAIL = "w154";
@@ -265,6 +263,10 @@ public class Utility {
 
         if (width / density > 599 && height / density > 599) {
             columns = (int) Math.round(columns * 0.33);
+            height = (int) Math.round(height * 0.66);
+            width = (int) Math.round(width * 0.66);
+            densityDpi = densityDpi * 2;
+
         }
 
         return new int[] { width, height, densityDpi, columns, posterWidth, posterHeight };
@@ -560,21 +562,19 @@ public class Utility {
         if (input != null) {
             try {
                 File f = new File(context.getCacheDir(), filename);
-                f.createNewFile();
+                if (f.createNewFile()) {
+                    FileOutputStream fos = new FileOutputStream(f);
+                    fos.write(input);
+                    fos.flush();
+                    fos.close();
 
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(input);
-                fos.flush();
-                fos.close();
-                Log.v(LOG_TAG, "Not null " + filename);
-
-                return f;
+                    return f;
+                }
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "IO " + e);
             }
         }
-
         return null;
     }
 }

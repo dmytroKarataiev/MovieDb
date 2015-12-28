@@ -13,7 +13,7 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
  * Takes Objects as parameters
  * Created by karataev on 12/23/15.
  */
-public class UtilityAsyncTask extends AsyncTask<Object, Void, Void> {
+class UtilityAsyncTask extends AsyncTask<Object, Void, Void> {
 
     private final String LOG_TAG = UtilityAsyncTask.class.getSimpleName();
     private final Context mContext;
