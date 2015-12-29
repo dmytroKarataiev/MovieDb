@@ -412,9 +412,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onPause() {
         super.onPause();
-        if (YPlayer != null) {
-            YPlayer.release();
-        }
+//        if (YPlayer != null) {
+//            YPlayer.release();
+//        }
     }
 
     @Override
