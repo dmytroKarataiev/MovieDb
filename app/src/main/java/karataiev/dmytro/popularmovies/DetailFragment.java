@@ -59,9 +59,10 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     private int currentVideoMillis;
     private int currentVideo;
     private final String VIDEO_TAG = "youtube";
+    private final String VIDEO_NUM = "video_num";
 
     // list of videos
-    private List<String> videoID;
+    private List<String> trailersList;
 
     private YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
@@ -102,8 +103,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         if (savedInstanceState != null && savedInstanceState.containsKey(VIDEO_TAG)) {
             // Get video progress
-            currentVideoMillis = savedInstanceState.getInt("time");
-            currentVideo = savedInstanceState.getInt(VIDEO_TAG);
+            currentVideoMillis = savedInstanceState.getInt(VIDEO_TAG);
+            currentVideo = savedInstanceState.getInt(VIDEO_NUM);
+            Log.v(LOG_TAG, "restore sec: " + currentVideoMillis + " video num " + currentVideo);
         }
     }
 
@@ -169,10 +171,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
             if (Utility.isFavorite(getContext(), mMovieObject)) {
-                //viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
                 Picasso.with(getContext()).load(R.drawable.bookmark_fav).into(viewHolder.favorite);
             } else {
-                //viewHolder.favorite.setImageResource(R.drawable.bookmark);
                 Picasso.with(getContext()).load(R.drawable.bookmark).into(viewHolder.favorite);
             }
 
@@ -249,7 +249,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 mMovieObject.setKeys(keys);
 
                 if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
-                    videoID = mMovieObject.getTrailers();
+                    trailersList = mMovieObject.getTrailers();
 
                     // If there are trailers - add their links to the share Intent
                     mMovie += "\nAlso check out the Trailers:\n";
@@ -330,6 +330,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
 
+        YPlayer = player;
         // Detect if display is in landscape mode and set YouTube layout height accordingly
         TypedValue tv = new TypedValue();
 
@@ -345,11 +346,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 layoutParams.width = Utility.screenSize(getContext())[0];
                 youtubeFrame.setLayoutParams(layoutParams);
             }
-
         }
-        this.YPlayer = player;
 
-        YPlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+        player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
 
@@ -357,7 +356,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onLoaded(String s) {
-                currentVideo = videoID.indexOf(s);
+                Log.v(LOG_TAG, "current video " + s + " trailers " + trailersList.size() + " curr video " + currentVideo + " pos " + trailersList.indexOf(s));
+                currentVideo = trailersList.indexOf(s);
             }
 
             @Override
@@ -381,20 +381,10 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             }
         });
         if(!wasRestored){
-            if (videoID != null) {
-                YPlayer.cueVideos(videoID, currentVideo, currentVideoMillis);
-            } else {
-                // hide youtube player if there is no video
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().hide(youTubePlayerSupportFragment).commit();
+            if (trailersList != null) {
+                YPlayer.cueVideos(trailersList, currentVideo, currentVideoMillis);
             }
         }
-    }
-
-    @Override
-    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult result) {
-        getFragmentManager().beginTransaction().hide(youTubePlayerSupportFragment).commit();
-        //Toast.makeText(this.getActivity(), "YouTubePlayer initialization failure: " + result.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -404,24 +394,34 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Save YouTube progress
         if (YPlayer != null) {
             saveInstanceState.putInt(VIDEO_TAG, YPlayer.getCurrentTimeMillis());
-            saveInstanceState.putInt("video", currentVideo);
+            saveInstanceState.putInt(VIDEO_NUM, currentVideo);
+            //Log.v(LOG_TAG, "save sec: " + currentVideoMillis + " current video " + currentVideo);
         }
 
     }
 
+    private static final int RECOVERY_DIALOG_REQUEST = 1;
+
     @Override
-    public void onPause() {
-        super.onPause();
-//        if (YPlayer != null) {
-//            YPlayer.release();
-//        }
+    public void onInitializationFailure(YouTubePlayer.Provider provider,
+                                        YouTubeInitializationResult errorReason) {
+        if (errorReason.isUserRecoverableError()) {
+            errorReason.getErrorDialog(getActivity(), RECOVERY_DIALOG_REQUEST).show();
+        } else {
+            Toast.makeText(getActivity(), "error", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //RefWatcher refWatcher = PopularMoviesApplication.getRefWatcher(getActivity());
-        //refWatcher.watch(this);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RECOVERY_DIALOG_REQUEST) {
+            // Retry initialization if user performed a recovery action
+            getYouTubePlayerProvider().initialize(BuildConfig.YOUTUBE_API_KEY, this);
+        }
+    }
+
+    protected YouTubePlayer.Provider getYouTubePlayerProvider() {
+        return (YouTubePlayerSupportFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
     }
 
 }
