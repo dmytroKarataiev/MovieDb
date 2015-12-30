@@ -1,6 +1,8 @@
 # PopularMovies
 App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies
 
+App has been published on Google Play: [Popular Movies - The Movie DB Client](https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies)
+
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
 * You can easily share info about chosen movie.
@@ -11,7 +13,6 @@ App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and 
 * Tablet Design
 
 ## Development plans
-* Fix leakage of memory
 * Design improvements
 
 ## API Keys
