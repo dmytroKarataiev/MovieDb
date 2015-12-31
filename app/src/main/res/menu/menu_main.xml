@@ -4,7 +4,7 @@
     tools:context="karataiev.dmytro.popularmovies.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
@@ -13,5 +13,21 @@
         android:title="@string/action_favorites"
         android:icon="@drawable/star"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/sort_popular"
+        android:orderInCategory="101"
+        android:title="@string/sort_popular"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sort_votes_average"
+        android:orderInCategory="102"
+        android:title="@string/sort_votes_average"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sort_release_date"
+        android:orderInCategory="103"
+        android:title="@string/sort_release_date"
+        app:showAsAction="never" />
 
 </menu>

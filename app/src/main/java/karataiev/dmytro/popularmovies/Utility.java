@@ -5,8 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -20,14 +18,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
@@ -214,11 +214,17 @@ public class Utility {
         final String PAGE_QUERY = "page";
         String PAGE = Integer.toString(currentPage);
 
+        if (getSort(context).contains("release_date")) {
+            Log.v(LOG_TAG, "release " + getInTheatersDate());
+        }
+
         // Gets preferred sort, by default: popularity.desc
         final String SORT = Utility.getSort(context);
 
         final String VOTERS = "vote_count.gte";
         final String VOTERS_MIN = "100";
+        final String RELEASE_DATE = "release_date.lte";
+        final String VOTES_COUNT = "vote_count.gte";
 
         // Don't forget to add API key to the gradle.properties file
         final String API_KEY = "api_key";
@@ -234,6 +240,12 @@ public class Utility {
             builtUri = builtUri.buildUpon()
                     .appendQueryParameter(VOTERS, VOTERS_MIN)
                     .build();
+        // Discard movies with less than 10 votes
+        } else if (SORT.contains("release_date.desc")) {
+            builtUri = builtUri.buildUpon()
+                    .appendQueryParameter(RELEASE_DATE, getInTheatersDate())
+                    .appendQueryParameter(VOTES_COUNT, "10")
+                    .build();
         }
 
         URL url = null;
@@ -243,6 +255,7 @@ public class Utility {
             Log.e("URL", "error " + e);
         }
 
+        //Log.v(LOG_TAG, "url: " + url.toString());
         return url;
     }
 
@@ -549,12 +562,12 @@ public class Utility {
      */
     public static byte[] makeByteArray(Drawable drawable) {
 
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        //Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        //ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
-        return stream.toByteArray();
-
+        //return stream.toByteArray();
+        return null;
     }
 
     /**
@@ -582,5 +595,20 @@ public class Utility {
             }
         }
         return null;
+    }
+
+    /**
+     * Method to get release date 2 weeks ahead of a current date
+     * @return current date + 2 weeks
+     */
+    public static String getInTheatersDate() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+
+
+        calendar.add(Calendar.DATE, 14);
+        return sdfDate.format(calendar.getTime());
+
     }
 }

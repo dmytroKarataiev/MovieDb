@@ -1,7 +1,9 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -102,6 +104,37 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
             }
+        }
+
+        // Sort buttons without going to the settings
+        if (id == R.id.sort_popular) {
+            // Add to Favorites Fragment Back button
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                    .commit();
+        }
+
+        if (id == R.id.sort_votes_average) {
+            // Add to Favorites Fragment Back button
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                    .commit();
+        }
+
+        if (id == R.id.sort_release_date) {
+            // Add to Favorites Fragment Back button
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                    .commit();
         }
 
         return super.onOptionsItemSelected(item);

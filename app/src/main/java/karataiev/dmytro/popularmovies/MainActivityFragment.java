@@ -331,4 +331,5 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     public void onAsyncProgress(boolean progress) {
         loadingMore = progress;
     }
+
 }

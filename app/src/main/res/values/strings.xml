@@ -50,4 +50,9 @@
     <string name="share">Share</string>
     <string name="search">Search&#8230;</string>
 
+    <string name="sort_popular">Most popular</string>
+    <string name="sort_votes_average">Highest rated</string>
+    <string name="sort_release_date">In theaters</string>
+
+
 </resources>
