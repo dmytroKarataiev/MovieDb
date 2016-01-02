@@ -240,7 +240,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
             } else if (movieList == null || movieList.isEmpty()) {
                 currentPage = 1;
                 // fetches new data
-                fetchMovies("");
+                fetchMovies(sort);
             } else if (addMovies || isClearedSearch) {
                 fetchMovies("");
             } else if (isSearch) {

@@ -108,33 +108,52 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
         // Sort buttons without going to the settings
         if (id == R.id.sort_popular) {
-            // Add to Favorites Fragment Back button
+
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
+            
+            if (mTwoPane) {
+                // Add to Favorites Fragment Back button
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                        .commit();
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                    .commit();
         }
 
         if (id == R.id.sort_votes_average) {
-            // Add to Favorites Fragment Back button
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                    .commit();
+            if (mTwoPane) {
+                // Add to Favorites Fragment Back button
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                        .commit();
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
+
         }
 
         if (id == R.id.sort_release_date) {
-            // Add to Favorites Fragment Back button
+
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
+            if (mTwoPane) {
+                // Add to Favorites Fragment Back button
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                        .commit();
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                    .commit();
         }
 
         return super.onOptionsItemSelected(item);
