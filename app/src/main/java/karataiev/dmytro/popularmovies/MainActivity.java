@@ -118,8 +118,10 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
                         .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
                         .commit();
             } else {
+                finish();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                return true;
             }
 
         }
@@ -134,8 +136,10 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
                         .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
                         .commit();
             } else {
+                finish();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                return true;
             }
 
         }
@@ -150,8 +154,10 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
                         .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
                         .commit();
             } else {
+                finish();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                return true;
             }
 
         }
