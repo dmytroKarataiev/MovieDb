@@ -41,7 +41,6 @@ class UtilityAsyncTask extends AsyncTask<Object, Void, Void> {
             case INSERT:
                 values = (ContentValues) params[1];
                 contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, values);
-                Log.v(LOG_TAG, "Inserted");
                 break;
             case UPDATE:
                 break;
@@ -50,10 +49,8 @@ class UtilityAsyncTask extends AsyncTask<Object, Void, Void> {
                 contentResolver.delete(MoviesContract.MovieEntry.CONTENT_URI,
                         MoviesContract.MovieEntry.COLUMN_TITLE + " = ?",
                         new String[]{values.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE)});
-                Log.v(LOG_TAG, "Deleted");
                 break;
             default:
-                Log.v(LOG_TAG, "Unknown");
                 break;
         }
 

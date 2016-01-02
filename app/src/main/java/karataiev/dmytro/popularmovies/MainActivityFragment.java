@@ -72,7 +72,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setActionbarTitle();
-        Log.v(LOG_TAG, "context onActCre " + Boolean.toString(getContext() != null));
         EditText editText = (EditText) (getActivity()).findViewById(R.id.searchBar);
 
         if (editText != null) {
@@ -91,16 +90,12 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
                     afterChange = s.toString();
                     currentPage = 1;
                     currentPosition = 1;
-                    Log.v(LOG_TAG, "search check: " + Boolean.toString(getContext() != null));
-                    Log.v(LOG_TAG, "current: " + searchParameter + " after: " + afterChange);
-                    Log.v(LOG_TAG, Boolean.toString(afterChange.length() < 4 && searchParameter.length() > 0));
+
                     if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
-                        Log.v(LOG_TAG, "first search");
                         searchParameter = s.toString();
                         isSearch = true;
                         updateMovieList();
                     } else if (afterChange.length() < 4 && searchParameter.length() > 0) {
-                        Log.v(LOG_TAG, "second search");
                         searchParameter = "";
                         isSearch = false;
                         isClearedSearch = true;
@@ -117,7 +112,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View rootview = inflater.inflate(R.layout.fragment_main, container, false);
-        Log.v(LOG_TAG, "context onCreatView " + Boolean.toString(getContext() != null));
 
         rv = (RecyclerView) rootview.findViewById(R.id.recyclerview);
 
@@ -167,7 +161,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, "context onCre " + Boolean.toString(getContext() != null));
 
         // Initializes global mSort with SharedPreferences of sort
         mSort = Utility.getSort(getContext());
@@ -223,9 +216,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
      * Method to update UI when settings changed
      */
     private void updateMovieList() {
-        Log.v(LOG_TAG, "context update " + Boolean.toString(getContext() != null));
 
-        Log.v(LOG_TAG, "isSearch: " + Boolean.toString(isSearch) + " isClearedSearch: " + Boolean.toString(isClearedSearch) + " param: " + searchParameter);
         String sort = Utility.getSort(getContext());
         if (isOnline(getContext())) {
             // Checks if settings were changed
@@ -246,7 +237,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
             } else if (isSearch) {
                 fetchMovies(searchParameter);
             } else if (networkRestored) {
-                Log.v(LOG_TAG, "network restored");
                 fetchMovies(sort);
                 networkRestored = false;
             }
@@ -257,7 +247,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     @Override
     public void onResume() {
         super.onResume();
-        Log.v(LOG_TAG, "context onResume " + Boolean.toString(getContext() != null));
 
         startListening();
         updateMovieList();
@@ -288,7 +277,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
             }, isSearch, currentPage);
 
             movies = fetchMovie.execute(sort).get();
-            Log.v(LOG_TAG, "movies on fetch: " + movies.size());
             if (sort.equals(mSort)) {
                 movieList = movies;
             } else if (movies == null) {
@@ -319,7 +307,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
 
         if (rv != null) {
             rv.swapAdapter(movieAdapter, false);
-            Log.v(LOG_TAG, "scroll to: " + currentPosition + " movies: " + movieList.size());
             rv.smoothScrollToPosition(currentPosition);
         }
     }

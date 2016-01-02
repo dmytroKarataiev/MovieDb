@@ -83,8 +83,6 @@ public class Utility {
                 break;
         }
 
-        //Log.v(LOG_TAG, "screenSize: " + screenSize(context)[2] + ", poster size: " + POSTER_SIZE + ", detailed: " + POSTER_SIZE_DETAIL);
-
         return new String[]{POSTER_SIZE, POSTER_SIZE_DETAIL};
     }
 
@@ -214,10 +212,6 @@ public class Utility {
         final String PAGE_QUERY = "page";
         String PAGE = Integer.toString(currentPage);
 
-        if (getSort(context).contains("release_date")) {
-            Log.v(LOG_TAG, "release " + getInTheatersDate());
-        }
-
         // Gets preferred sort, by default: popularity.desc
         final String SORT = Utility.getSort(context);
 
@@ -255,7 +249,6 @@ public class Utility {
             Log.e("URL", "error " + e);
         }
 
-        //Log.v(LOG_TAG, "url: " + url.toString());
         return url;
     }
 
@@ -276,7 +269,6 @@ public class Utility {
         int posterWidth = width / columns;
         int posterHeight = (int) (posterWidth * 1.5);
 
-        //Log.v(LOG_TAG, "width/density: " + width / density + ", height/density: " + height / density);
         if (width / density > 550 && height / density > 550) {
             columns = (int) Math.round(columns * 0.33);
             height = (int) Math.round(height * 0.66);
@@ -284,9 +276,6 @@ public class Utility {
             densityDpi = densityDpi * 2;
 
         }
-
-        //Log.v(LOG_TAG, "width: " + width + ", height: " + height + ", densityDpi: "
-        //        + densityDpi + ", columns: " + columns + ", posterW: " + posterWidth + ", posterH: " + posterHeight);
 
         return new int[] { width, height, densityDpi, columns, posterWidth, posterHeight };
     }

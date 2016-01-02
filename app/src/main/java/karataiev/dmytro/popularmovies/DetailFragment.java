@@ -105,7 +105,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             // Get video progress
             currentVideoMillis = savedInstanceState.getInt(VIDEO_TAG);
             currentVideo = savedInstanceState.getInt(VIDEO_NUM);
-            Log.v(LOG_TAG, "restore sec: " + currentVideoMillis + " video num " + currentVideo);
         }
     }
 
@@ -356,7 +355,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onLoaded(String s) {
-                Log.v(LOG_TAG, "current video " + s + " trailers " + trailersList.size() + " curr video " + currentVideo + " pos " + trailersList.indexOf(s));
                 currentVideo = trailersList.indexOf(s);
             }
 
@@ -395,7 +393,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         if (YPlayer != null) {
             saveInstanceState.putInt(VIDEO_TAG, YPlayer.getCurrentTimeMillis());
             saveInstanceState.putInt(VIDEO_NUM, currentVideo);
-            //Log.v(LOG_TAG, "save sec: " + currentVideoMillis + " current video " + currentVideo);
         }
 
     }

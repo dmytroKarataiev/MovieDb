@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
-            
+
             if (mTwoPane) {
                 // Add to Favorites Fragment Back button
                 getSupportFragmentManager().beginTransaction()

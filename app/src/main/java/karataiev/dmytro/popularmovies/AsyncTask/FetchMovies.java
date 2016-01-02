@@ -44,13 +44,11 @@ public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>>
     protected ArrayList<MovieObject> doInBackground(String... params) {
 
         URL url;
-        Log.v(LOG_TAG, "isSearch: " + Boolean.toString(isSearch));
         if (isSearch && params[0].length() > 0) {
             url = Utility.getSearchURL(params[0], currentPage);
         } else {
             url = Utility.getUrl(currentPage, mContext);
         }
-        Log.v(LOG_TAG, "url: " + url.toString());
 
         // Network Client
         OkHttpClient client = new OkHttpClient();
