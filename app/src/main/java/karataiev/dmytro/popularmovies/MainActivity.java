@@ -112,57 +112,30 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
 
-            if (mTwoPane) {
-                // Add to Favorites Fragment Back button
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                        .commit();
-            } else {
-
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
+            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            if (mainActivityFragment != null) {
+                mainActivityFragment.updateMovieList();
             }
-
         }
 
         if (id == R.id.sort_votes_average) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
 
-            if (mTwoPane) {
-                // Add to Favorites Fragment Back button
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                        .commit();
-            } else {
-
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
+            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            if (mainActivityFragment != null) {
+                mainActivityFragment.updateMovieList();
             }
-
         }
 
         if (id == R.id.sort_release_date) {
-
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
-            if (mTwoPane) {
-                // Add to Favorites Fragment Back button
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
-                        .commit();
-            } else {
 
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
+            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            if (mainActivityFragment != null) {
+                mainActivityFragment.updateMovieList();
             }
-
         }
 
         return super.onOptionsItemSelected(item);

@@ -91,7 +91,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
                     currentPage = 1;
                     currentPosition = 1;
 
-                    if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length()) {
+                    if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length() && afterChange.length() != 0) {
                         searchParameter = s.toString();
                         isSearch = true;
                         updateMovieList();
@@ -137,11 +137,11 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
                             || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
                             && isOnline(getContext()))) {
 
-                        if (isSearch) {
+                        if (searchParameter.length() > 0) {
                             currentPage++;
                             addSearchMovies = true;
                             updateMovieList();
-                        } else if (searchParameter.length() == 0) {
+                        } else {
                             currentPage++;
                             addMovies = true;
                             updateMovieList();
@@ -215,7 +215,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     /**
      * Method to update UI when settings changed
      */
-    private void updateMovieList() {
+    public void updateMovieList() {
 
         String sort = Utility.getSort(getContext());
         if (isOnline(getContext())) {
