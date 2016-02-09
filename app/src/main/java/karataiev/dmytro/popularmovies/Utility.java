@@ -69,6 +69,7 @@ public class Utility {
                 POSTER_SIZE = "w342";
                 POSTER_SIZE_DETAIL = "w500";
                 break;
+            case 560:
             case 640:
                 POSTER_SIZE = "w500";
                 POSTER_SIZE_DETAIL = "w780";
