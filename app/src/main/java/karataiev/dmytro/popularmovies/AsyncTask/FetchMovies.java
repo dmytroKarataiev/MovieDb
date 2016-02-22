@@ -34,7 +34,6 @@ public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>>
         this.currentPage = currentPage;
     }
 
-
     /**
      * AsyncTask to fetch data on background thread with listener to pass status of downloading
      *

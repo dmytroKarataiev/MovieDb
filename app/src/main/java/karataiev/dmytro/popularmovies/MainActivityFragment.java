@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import karataiev.dmytro.popularmovies.AsyncTask.FetchMovies;
 import karataiev.dmytro.popularmovies.AsyncTask.TaskCompleted;
@@ -28,7 +34,7 @@ import karataiev.dmytro.popularmovies.AsyncTask.TaskCompleted;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements TaskCompleted{
+public class MainActivityFragment extends Fragment implements TaskCompleted {
 
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
@@ -88,8 +94,12 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
                 @Override
                 public void afterTextChanged(Editable s) {
                     afterChange = s.toString();
-                    currentPage = 1;
-                    currentPosition = 1;
+
+                    // avoid page change when field if empty
+                    if (!beforeChange.equals(afterChange)) {
+                        currentPage = 1;
+                        currentPosition = 1;
+                    }
 
                     if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length() && afterChange.length() != 0) {
                         searchParameter = s.toString();
@@ -266,49 +276,14 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
      */
     private void fetchMovies(String sort) {
 
-        ArrayList<MovieObject> movies;
-
-        try {
-            FetchMovies fetchMovie = new FetchMovies(getContext(), new TaskCompleted() {
-                @Override
-                public void onAsyncProgress(boolean progress) {
-                    loadingMore = progress;
-                }
-            }, isSearch, currentPage);
-
-            movies = fetchMovie.execute(sort).get();
-            if (sort.equals(mSort)) {
-                movieList = movies;
-            } else if (movies == null) {
-                movieList = new ArrayList<>();
-            } else if (addMovies) {
-                movieList.addAll(movies);
-                addMovies = false;
-            } else if (addSearchMovies) {
-                if (movies.size() == 0) {
-                    isSearch = false;
-                } else {
-                    movieList.addAll(movies);
-                    addSearchMovies = false;
-                }
-            } else if (isSearch || movieList == null) {
-                movieList = movies;
-            } else if (sort.equals("") && isClearedSearch) {
-                movieList = movies;
-                isClearedSearch = false;
+        FetchMoviesFragment fetchMovie = new FetchMoviesFragment(getContext(), new TaskCompleted() {
+            @Override
+            public void onAsyncProgress(boolean progress) {
+                loadingMore = progress;
             }
-        } catch (ExecutionException e) {
-            Log.e(LOG_TAG, "error");
-        } catch (InterruptedException e2) {
-            Log.e(LOG_TAG, "error" + e2);
-        }
+        }, isSearch, currentPage);
 
-        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
-
-        if (rv != null) {
-            rv.swapAdapter(movieAdapter, false);
-            rv.smoothScrollToPosition(currentPosition);
-        }
+        fetchMovie.execute(sort);
     }
 
     /**
@@ -326,6 +301,112 @@ public class MainActivityFragment extends Fragment implements TaskCompleted{
     @Override
     public void onAsyncProgress(boolean progress) {
         loadingMore = progress;
+    }
+
+
+    /**
+     * Class to retrieve MovieObjects from JSON on background thread
+     */
+    public class FetchMoviesFragment extends AsyncTask<String, Void, ArrayList<MovieObject>> {
+
+        private final String LOG_TAG = FetchMovies.class.getSimpleName();
+        private Context mContext;
+        private TaskCompleted listener;
+        private boolean isSearch;
+        private int currentPage;
+        private String searchParams;
+
+        public FetchMoviesFragment(Context context, TaskCompleted listener, boolean isSearch, int currentPage) {
+            mContext = context;
+            this.listener = listener;
+            this.isSearch = isSearch;
+            this.currentPage = currentPage;
+        }
+
+        /**
+         * AsyncTask to fetch data on background thread with listener to pass status of downloading
+         *
+         * @param params receives request link from Utility class
+         * @return ArrayList of YouTube id's for trailers
+         */
+        protected ArrayList<MovieObject> doInBackground(String... params) {
+
+            URL url;
+            if (isSearch && params[0].length() > 0) {
+                url = Utility.getSearchURL(params[0], currentPage);
+            } else {
+                url = Utility.getUrl(currentPage, mContext);
+            }
+
+            // Network Client
+            OkHttpClient client = new OkHttpClient();
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr = "";
+
+            if (listener != null) {
+                listener.onAsyncProgress(true);
+            }
+
+            if (params[0] != null) {
+                searchParams = params[0];
+
+                try {
+                    //URL url = new URL(params[0]);
+                    // Create the request to movide db, and open the connection
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    Response responses = client.newCall(request).execute();
+                    movieJsonStr = responses.body().string();
+                    responses.body().close();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Error ", e);
+                } catch (NullPointerException e) {
+                    Log.e(LOG_TAG, "Null ", e);
+                }
+
+                return Utility.getMoviesGSON(mContext, movieJsonStr);
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
+            // Check the flag that activity is over
+            if (listener != null) {
+                listener.onAsyncProgress(false);
+            }
+
+            if (searchParams.equals(mSort)) {
+                movieList = movieObjects;
+            } else if (movieObjects == null) {
+                movieList = new ArrayList<>();
+            } else if (addMovies) {
+                movieList.addAll(movieObjects);
+                addMovies = false;
+            } else if (addSearchMovies) {
+                if (movieObjects.size() == 0) {
+                    isSearch = false;
+                } else {
+                    movieList.addAll(movieObjects);
+                    addSearchMovies = false;
+                }
+            } else if (isSearch || movieList == null) {
+                movieList = movieObjects;
+            } else if (searchParams.equals("") && isClearedSearch) {
+                movieList = movieObjects;
+                isClearedSearch = false;
+            }
+
+            movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+
+            if (rv != null) {
+                rv.swapAdapter(movieAdapter, false);
+                rv.smoothScrollToPosition(currentPosition);
+            }
+        }
     }
 
 }
