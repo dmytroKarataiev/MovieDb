@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -121,9 +122,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final View rootview = inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        rv = (RecyclerView) rootview.findViewById(R.id.recyclerview);
+        rv = (RecyclerView) rootView.findViewById(R.id.recyclerview);
 
         // Scale GridView according to the screen size
         int[] screenSize = Utility.screenSize(getContext());
@@ -165,7 +166,18 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         rv.setAdapter(movieAdapter);
         rv.scrollToPosition(currentPosition);
 
-        return rootview;
+        // iPhone-like scroll to the first position in the view on toolbar click
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rv.smoothScrollToPosition(0);
+                }
+            });
+        }
+
+        return rootView;
     }
 
     @Override
@@ -296,6 +308,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         if (actionBar != null) {
             actionBar.setTitle(Utility.getSortReadable(getContext()));
         }
+
+
+
     }
 
     @Override
