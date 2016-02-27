@@ -424,4 +424,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         }
     }
 
+    // sets a zero position when click on search method from actionbar
+    public void setPosition(int position) {
+        currentPosition = position;
+    }
+
 }

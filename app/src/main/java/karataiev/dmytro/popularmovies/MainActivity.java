@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
             MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
             if (mainActivityFragment != null) {
+                mainActivityFragment.setPosition(0);
                 mainActivityFragment.updateMovieList();
             }
         }
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
             MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
             if (mainActivityFragment != null) {
+                mainActivityFragment.setPosition(0);
                 mainActivityFragment.updateMovieList();
             }
         }
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
             MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
             if (mainActivityFragment != null) {
+                mainActivityFragment.setPosition(0);
                 mainActivityFragment.updateMovieList();
             }
         }

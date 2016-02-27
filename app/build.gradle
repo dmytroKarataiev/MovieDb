@@ -8,8 +8,8 @@ android {
         applicationId "karataiev.dmytro.popularmovies"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 5
-        versionName "1.13"
+        versionCode 6
+        versionName "1.14"
     }
     buildTypes {
         release {
