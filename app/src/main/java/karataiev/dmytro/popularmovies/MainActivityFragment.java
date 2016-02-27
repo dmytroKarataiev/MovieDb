@@ -164,7 +164,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         });
 
         rv.setAdapter(movieAdapter);
-        rv.scrollToPosition(currentPosition);
+        rv.smoothScrollToPosition(currentPosition);
 
         // iPhone-like scroll to the first position in the view on toolbar click
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
@@ -191,7 +191,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             updateMovieList();
         } else {
-
             movieList = savedInstanceState.getParcelableArrayList("movies");
             currentPosition = savedInstanceState.getInt("position");
             currentPage = savedInstanceState.getInt("page");
@@ -308,9 +307,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         if (actionBar != null) {
             actionBar.setTitle(Utility.getSortReadable(getContext()));
         }
-
-
-
     }
 
     @Override
@@ -419,7 +415,6 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
 
             if (rv != null) {
                 rv.swapAdapter(movieAdapter, false);
-                rv.smoothScrollToPosition(currentPosition);
             }
         }
     }
@@ -427,6 +422,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
     // sets a zero position when click on search method from actionbar
     public void setPosition(int position) {
         currentPosition = position;
+        rv.smoothScrollToPosition(position);
     }
 
 }

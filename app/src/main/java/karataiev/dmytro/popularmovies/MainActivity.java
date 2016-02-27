@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
         // Sort buttons without going to the settings
         if (id == R.id.sort_popular) {
-
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
 
