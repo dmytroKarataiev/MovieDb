@@ -80,8 +80,10 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         super.onActivityCreated(savedInstanceState);
         setActionbarTitle();
         EditText editText = (EditText) (getActivity()).findViewById(R.id.searchBar);
-
         if (editText != null) {
+
+            editText.setText(searchParameter);
+
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -194,6 +196,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
             movieList = savedInstanceState.getParcelableArrayList("movies");
             currentPosition = savedInstanceState.getInt("position");
             currentPage = savedInstanceState.getInt("page");
+            searchParameter = savedInstanceState.getString("search");
         }
 
         // BroadcastReceiver to get info about network connection
@@ -231,6 +234,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
         outState.putParcelableArrayList("movies", movieList);
         outState.putInt("position", currentPosition);
         outState.putInt("page", currentPage);
+        outState.putString("search", searchParameter);
     }
 
     /**
