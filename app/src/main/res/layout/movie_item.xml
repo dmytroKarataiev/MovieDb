@@ -5,6 +5,7 @@
 
     <ImageView
         android:id="@+id/movie_poster"
+        android:transitionName="@string/anim_poster"
         android:layout_width="match_parent"
         android:layout_height="@dimen/poster_height"
         android:scaleType="centerCrop"

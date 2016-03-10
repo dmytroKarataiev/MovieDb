@@ -1,5 +1,6 @@
 package karataiev.dmytro.popularmovies;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -161,9 +162,17 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
                     .commit();
 
         }  else {
+
+            // TODO: check for Android version
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                    this,
+                    mContent.getView().findViewWithTag(movieObject.getId()),
+                    mContent.getView().findViewById(R.id.movie_poster).getTransitionName())
+                    .toBundle();
+
             Intent intent = new Intent(this, DetailActivity.class)
                     .putExtra("movie", movieObject);
-            startActivity(intent);
+            startActivity(intent, bundle);
         }
     }
 

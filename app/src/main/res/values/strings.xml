@@ -54,5 +54,7 @@
     <string name="sort_votes_average">Highest rated</string>
     <string name="sort_release_date">In theaters</string>
 
+    <!-- Shared Transitions -->
+    <string name="anim_poster" translatable="false">poster</string>
 
 </resources>

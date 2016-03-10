@@ -40,7 +40,7 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(MovieObject movieObject);
+        void onItemSelected(MovieObject movieObject);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -90,11 +90,12 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
         final ContentValues favValue = Utility.makeContentValues(movieObject);
 
         holder.mBoundString = movieObject.getId();
-
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // Set a tag for a shared transition
+                holder.poster.setTag(movieObject.getId());
                 ((CallbackFromAdapter) mContext).onItemSelected(movieObject);
             }
         });
