@@ -3,6 +3,7 @@ package karataiev.dmytro.popularmovies;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -163,16 +164,21 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
         }  else {
 
-            // TODO: check for Android version
-            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                    this,
-                    mContent.getView().findViewWithTag(movieObject.getId()),
-                    mContent.getView().findViewById(R.id.movie_poster).getTransitionName())
-                    .toBundle();
-
             Intent intent = new Intent(this, DetailActivity.class)
                     .putExtra("movie", movieObject);
-            startActivity(intent, bundle);
+
+            // Check if a phone supports shared transitions
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                        this,
+                        mContent.getView().findViewWithTag(movieObject.getId()),
+                        mContent.getView().findViewById(R.id.movie_poster).getTransitionName())
+                        .toBundle();
+
+                startActivity(intent, bundle);
+            } else {
+                startActivity(intent);
+            }
         }
     }
 
