@@ -1,7 +1,8 @@
 # PopularMovies
-App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies
-
+App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies <br>
 App has been published on Google Play: [Popular Movies - The Movie DB Client](https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies)
+
+<img src="movies.gif">
 
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
@@ -17,10 +18,8 @@ App has been published on Google Play: [Popular Movies - The Movie DB Client](ht
 
 ## API Keys
 For this app to work you have to acquire API keys and put them into gradle.properties file. 
-Following lines should be added to the file:
-
-movieDbApiKey = "**YOUR API KEY**"
-
+Following lines should be added to the file: <br>
+movieDbApiKey = "**YOUR API KEY**" <br>
 youtubeApiKey = "**YOUR API KEY**"
 
 
