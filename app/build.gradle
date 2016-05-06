@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "karataiev.dmytro.popularmovies"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 6
         versionName "1.14"
@@ -38,7 +38,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     // download and parse data
-    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.okhttp:okhttp:2.7.0'
 
     // fix memory leaks if they are present

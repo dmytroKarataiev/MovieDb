@@ -1,10 +1,9 @@
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 
@@ -13,16 +12,16 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
  * Takes Objects as parameters
  * Created by karataev on 12/23/15.
  */
-class UtilityAsyncTask extends AsyncTask<Object, Void, Void> {
+public class DatabaseTasks extends AsyncTask<Object, Void, Void> {
 
-    private final String LOG_TAG = UtilityAsyncTask.class.getSimpleName();
+    private final String LOG_TAG = DatabaseTasks.class.getSimpleName();
     private final Context mContext;
     public static final int INSERT = 1;
     public static final int UPDATE = 2;
     public static final int DELETE = 3;
 
 
-    public UtilityAsyncTask(Context context) {
+    public DatabaseTasks(Context context) {
         mContext = context;
     }
 

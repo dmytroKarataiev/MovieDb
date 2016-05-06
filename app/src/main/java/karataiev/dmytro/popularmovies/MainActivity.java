@@ -7,14 +7,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements MovieObjectAdapter.CallbackFromAdapter, FavoritesActivityFragment.CallbackFromFavorites {
+import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
+import karataiev.dmytro.popularmovies.model.MovieObject;
+
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.CallbackFromAdapter, FavoritesFragment.CallbackFromFavorites, PopupMenu.OnMenuItemClickListener {
 
     private String LOG_TAG = MainActivity.class.getSimpleName();
-    private MainActivityFragment mContent;
+    private MainFragment mContent;
     private DetailFragment mDetailFragment;
     private final String FRAGMENT_TAG = "FFTAG";
     private final String DETAILFRAGMENT_TAG = "DFTAG";
@@ -34,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
 
         if (savedInstanceState == null) {
-            mContent = new MainActivityFragment();
+            mContent = new MainFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.container, mContent, FRAGMENT_TAG).commit();
         } else {
-            mContent = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            mContent = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
 
         if (findViewById(R.id.movie_detail_container) != null) {
@@ -68,80 +73,54 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-
-        if (id == R.id.action_favorites) {
-
-            if (mTwoPane) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new FavoritesActivityFragment(), FAVFRAGMENT_TAG)
-                        .commit();
-
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                }
-
-            } else {
-                startActivity(new Intent(this, FavoritesActivity.class));
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            }
+            case R.id.action_favorites:
+                if (mTwoPane) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new FavoritesFragment(), FAVFRAGMENT_TAG)
+                            .commit();
 
-        }
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    }
 
-        if (id == android.R.id.home) {
-
-            // Add to Favorites Fragment Back button
-            if (mTwoPane) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, mContent, FRAGMENT_TAG)
-                        .commit();
-
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                } else {
+                    startActivity(new Intent(this, FavoritesActivity.class));
+                    return true;
                 }
-            }
-        }
+                break;
+            case android.R.id.home:
+                // Add to Favorites Fragment Back button
+                if (mTwoPane) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, mContent, FRAGMENT_TAG)
+                            .commit();
 
-        // Sort buttons without going to the settings
-        if (id == R.id.sort_popular) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
-
-            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            if (mainActivityFragment != null) {
-                mainActivityFragment.setPosition(0);
-                mainActivityFragment.updateMovieList();
-            }
-        }
-
-        if (id == R.id.sort_votes_average) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
-
-            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            if (mainActivityFragment != null) {
-                mainActivityFragment.setPosition(0);
-                mainActivityFragment.updateMovieList();
-            }
-        }
-
-        if (id == R.id.sort_release_date) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
-
-            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            if (mainActivityFragment != null) {
-                mainActivityFragment.setPosition(0);
-                mainActivityFragment.updateMovieList();
-            }
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    }
+                }
+                break;
+            case R.id.action_filter:
+                showSortMenu(findViewById(R.id.action_filter));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Shows PopupMenu on Filter button click in ActionBar
+     * @param view of the button itself
+     */
+    public void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_filter_popup, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.show();
     }
 
     @Override
@@ -189,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
 
         if (fm.findFragmentByTag(FAVFRAGMENT_TAG) != null) {
             fm.beginTransaction()
-                    .replace(R.id.container, new MainActivityFragment(), FRAGMENT_TAG)
+                    .replace(R.id.container, new MainFragment(), FRAGMENT_TAG)
                     .commit();
 
             if (getSupportActionBar() != null) {
@@ -200,4 +179,35 @@ public class MainActivity extends AppCompatActivity implements MovieObjectAdapte
         }
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+
+        switch (item.getItemId()) {
+            case R.id.popup_filter_popular:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
+                if (mainFragment != null) {
+                    mainFragment.setPosition(0);
+                    mainFragment.updateMovieList();
+                }
+                return true;
+            case R.id.popup_filter_votes:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
+                if (mainFragment != null) {
+                    mainFragment.setPosition(0);
+                    mainFragment.updateMovieList();
+                }
+                return true;
+            case R.id.popup_filter_release:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
+                if (mainFragment != null) {
+                    mainFragment.setPosition(0);
+                    mainFragment.updateMovieList();
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
 }

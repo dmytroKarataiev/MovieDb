@@ -1,4 +1,4 @@
-package karataiev.dmytro.popularmovies.AsyncTask;
+package karataiev.dmytro.popularmovies.remote;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import karataiev.dmytro.popularmovies.MovieObject;
-import karataiev.dmytro.popularmovies.Utility;
+import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * Class to retrieve MovieObjects from JSON on background thread

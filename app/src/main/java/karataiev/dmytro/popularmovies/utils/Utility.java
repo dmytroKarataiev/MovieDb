@@ -1,4 +1,4 @@
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -28,8 +28,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
+import karataiev.dmytro.popularmovies.BuildConfig;
+import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.model.MovieObject;
 
 /**
  * Class with additional helper functions
@@ -156,7 +160,7 @@ public class Utility {
 
         int votesInt = Integer.parseInt(votes);
 
-        return String.format("%,d", votesInt);
+        return String.format(Locale.getDefault(), "%,d", votesInt);
     }
 
     /**
@@ -326,7 +330,6 @@ public class Utility {
         // Possible parameters are available at Movie DB API page, at
         // http://docs.themoviedb.apiary.io/
         String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/" + movie_id + "/videos";
-
 
         // Don't forget to add API key to the gradle.properties file
         final String API_KEY = "api_key";
@@ -518,7 +521,7 @@ public class Utility {
 
     /**
      * Method to create ContentValues from a MovieObject
-     * Called from MovieObjectAdapter, DetailFragment
+     * Called from MoviesAdapter, DetailFragment
      * @param movie with contents
      * @return ContentValues with contents from the MovieObject
      */
@@ -546,7 +549,7 @@ public class Utility {
 
     /**
      * Method to create byte[] from a Drawable to later put it into the database
-     * Called from MovieObjectAdapter, DetailFragment
+     * Called from MoviesAdapter, DetailFragment
      * @param drawable to convert
      * @return byte[] made from the Drawable
      */

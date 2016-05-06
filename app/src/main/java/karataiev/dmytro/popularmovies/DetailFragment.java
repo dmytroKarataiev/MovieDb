@@ -43,9 +43,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import karataiev.dmytro.popularmovies.AsyncTask.FetchJSON;
-import karataiev.dmytro.popularmovies.AsyncTask.FetchMovies;
+import karataiev.dmytro.popularmovies.remote.FetchJSON;
+import karataiev.dmytro.popularmovies.remote.FetchMovies;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.utils.Utility;
+import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
 
 /**
  * Detailed Movie Fragment with poster, rating, description.
@@ -176,9 +179,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
             if (Utility.isFavorite(getContext(), mMovieObject)) {
-                Picasso.with(getContext()).load(R.drawable.bookmark_fav).into(viewHolder.favorite);
+                Picasso.with(getContext()).load(R.drawable.ic_bookmark_fav).into(viewHolder.favorite);
             } else {
-                Picasso.with(getContext()).load(R.drawable.bookmark).into(viewHolder.favorite);
+                Picasso.with(getContext()).load(R.drawable.ic_bookmark).into(viewHolder.favorite);
             }
 
             // Callback inside of Picasso Call
@@ -219,17 +222,17 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                                 favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
                                 favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
 
-                                viewHolder.favorite.setImageResource(R.drawable.bookmark_fav);
+                                viewHolder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
 
                                 // Insert on background thread
-                                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
-                                utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
+                                DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
+                                databaseTasks.execute(DatabaseTasks.INSERT, favValue);
                             } else {
-                                viewHolder.favorite.setImageResource(R.drawable.bookmark);
+                                viewHolder.favorite.setImageResource(R.drawable.ic_bookmark);
 
                                 // Delete on background thread
-                                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(getContext());
-                                utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
+                                DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
+                                databaseTasks.execute(DatabaseTasks.DELETE, favValue);
                             }
                         }
                     });

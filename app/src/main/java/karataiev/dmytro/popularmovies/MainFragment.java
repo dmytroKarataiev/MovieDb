@@ -29,18 +29,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import karataiev.dmytro.popularmovies.AsyncTask.FetchMovies;
-import karataiev.dmytro.popularmovies.AsyncTask.TaskCompleted;
+import karataiev.dmytro.popularmovies.remote.FetchMovies;
+import karataiev.dmytro.popularmovies.remote.TaskCompleted;
+import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
+import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements TaskCompleted {
+public class MainFragment extends Fragment implements TaskCompleted {
 
-    private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     // Couldn't find more efficient way to use following variable then to make them global
-    private MovieObjectAdapter movieAdapter;
+    private MoviesAdapter movieAdapter;
     private ArrayList<MovieObject> movieList;
     private String mSort;
     private RecyclerView rv;
@@ -60,7 +63,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
     private String beforeChange;
     private String afterChange;
 
-    public MainActivityFragment() {
+    public MainFragment() {
     }
 
     // Network status variables and methods (to stop fetching the data if the phone is offline
@@ -136,9 +139,9 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
 
         rv.setLayoutManager(gridLayoutManager);
 
-        movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+        movieAdapter = new MoviesAdapter(getActivity(), movieList);
 
-        rv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -415,7 +418,7 @@ public class MainActivityFragment extends Fragment implements TaskCompleted {
                 isClearedSearch = false;
             }
 
-            movieAdapter = new MovieObjectAdapter(getActivity(), movieList);
+            movieAdapter = new MoviesAdapter(getActivity(), movieList);
 
             if (rv != null) {
                 rv.swapAdapter(movieAdapter, false);

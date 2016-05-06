@@ -1,4 +1,4 @@
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.adapters;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,37 +14,36 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
 
 /**
  * Adapter to the DB
  * Created by karataev on 12/22/15.
  */
-class FavoritesAdapter extends CursorAdapter {
+public class FavoritesAdapter extends CursorAdapter {
 
-    private static final String LOG_TAG = FavoritesAdapter.class.getSimpleName();
     private final Context mContext;
-    private static int sLoaderID;
 
     public static class ViewHolder {
-        public final ImageView imageView;
-        public final TextView textView;
-        public final ProgressBar spinner;
-        public final ImageView favImage;
+        public final ImageView mPosterImage;
+        public final TextView mPosterText;
+        public final ProgressBar mProgressSpinner;
+        public final ImageView mFavImage;
 
         public ViewHolder(View view){
-            imageView = (ImageView) view.findViewById(R.id.movie_poster);
-            textView = (TextView) view.findViewById(R.id.movie_poster_text);
-            spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
-            favImage = (ImageView) view.findViewById(R.id.movie_poster_favorite);
+            mPosterImage = (ImageView) view.findViewById(R.id.movie_poster);
+            mPosterText = (TextView) view.findViewById(R.id.movie_poster_text);
+            mProgressSpinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
+            mFavImage = (ImageView) view.findViewById(R.id.movie_poster_favorite);
 
         }
     }
 
-    public FavoritesAdapter(Context context, Cursor c, int flags, int loaderID){
+    public FavoritesAdapter(Context context, Cursor c, int flags){
         super(context, c, flags);
         mContext = context;
-        sLoaderID = loaderID;
     }
 
     @Override
@@ -65,39 +64,39 @@ class FavoritesAdapter extends CursorAdapter {
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
-        //viewHolder.textView.setText(versionName);
+        //viewHolder.mPosterText.setText(versionName);
 
-        //viewHolder.favImage.setImageResource(R.drawable.bookmark_fav);
-        Picasso.with(context).load(R.drawable.bookmark_fav).into(viewHolder.favImage);
+        //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark_fav);
+        Picasso.with(context).load(R.drawable.ic_bookmark_fav).into(viewHolder.mFavImage);
 
         // On favorite icon click
-        viewHolder.favImage.setOnClickListener(new View.OnClickListener() {
+        viewHolder.mFavImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Toast.makeText(context, "Not favorite anymore", Toast.LENGTH_LONG).show();
 
-                //viewHolder.favImage.setImageResource(R.drawable.bookmark);
-                Picasso.with(context).load(R.drawable.bookmark).into(viewHolder.favImage);
+                //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark);
+                Picasso.with(context).load(R.drawable.ic_bookmark).into(viewHolder.mFavImage);
                 // Temp way to delete data from the db
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, versionName);
 
                 // Deletion on background thread
-                UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
-                utilityAsyncTask.execute(UtilityAsyncTask.DELETE, contentValues);
+                DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+                databaseTasks.execute(DatabaseTasks.DELETE, contentValues);
             }
         });
 
-        viewHolder.spinner.setVisibility(View.GONE);
+        viewHolder.mProgressSpinner.setVisibility(View.GONE);
 
         // gets image from Picasso cache, instead of db
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
         //byte[] image = cursor.getBlob(imageIndex);
         String image = cursor.getString(imageIndex);
         if (image != null) {
-            Picasso.with(context).load(image).into(viewHolder.imageView);
-        //    viewHolder.imageView.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+            Picasso.with(context).load(image).into(viewHolder.mPosterImage);
+        //    viewHolder.mPosterImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         }
 
     }

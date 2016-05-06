@@ -1,4 +1,4 @@
-package karataiev.dmytro.popularmovies.AsyncTask;
+package karataiev.dmytro.popularmovies.remote;
 
 /**
  * Interface to pass status of downloading to prevent skipping of pages

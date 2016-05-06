@@ -1,10 +1,12 @@
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.model;
 
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * Class for movies fetched from movieDB API

@@ -12,14 +12,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import karataiev.dmytro.popularmovies.adapters.FavoritesAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FavoritesActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class FavoritesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    private static final String LOG_TAG = FavoritesActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = FavoritesFragment.class.getSimpleName();
 
     // Cursor loader variables
     private FavoritesAdapter movieAdapter;
@@ -47,7 +50,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         void onItemSelected(MovieObject movieObject);
     }
 
-    public FavoritesActivityFragment() { }
+    public FavoritesFragment() { }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -73,7 +76,7 @@ public class FavoritesActivityFragment extends Fragment implements LoaderManager
         gridView.setColumnWidth(posterWidth);
 
         // Adapter which adds movies to the grid
-        movieAdapter = new FavoritesAdapter(getActivity(), null, 0, CURSOR_LOADER_ID);
+        movieAdapter = new FavoritesAdapter(getActivity(), null, 0);
 
         // onClick activity which launches detailed view
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

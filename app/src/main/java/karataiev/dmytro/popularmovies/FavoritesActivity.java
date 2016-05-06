@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import karataiev.dmytro.popularmovies.model.MovieObject;
+
 /**
  * Class to start DetailActivityFragment
  * Created by karataev on 12/15/15.
  */
-public class FavoritesActivity extends AppCompatActivity implements FavoritesActivityFragment.CallbackFromFavorites{
+public class FavoritesActivity extends AppCompatActivity implements FavoritesFragment.CallbackFromFavorites{
 
     private String LOG_TAG = FavoritesActivity.class.getSimpleName();
 

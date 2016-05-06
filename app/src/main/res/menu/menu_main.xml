@@ -7,27 +7,18 @@
         android:orderInCategory="200"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item android:id="@+id/action_filter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/menu_sort"
+        android:orderInCategory="150"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_favorites"
         android:orderInCategory="100"
         android:title="@string/action_favorites"
-        android:icon="@drawable/star"
+        android:icon="@drawable/ic_star"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/sort_popular"
-        android:orderInCategory="101"
-        android:title="@string/sort_popular"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sort_votes_average"
-        android:orderInCategory="102"
-        android:title="@string/sort_votes_average"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sort_release_date"
-        android:orderInCategory="103"
-        android:title="@string/sort_release_date"
-        app:showAsAction="never" />
 
 </menu>

@@ -55,7 +55,7 @@
                     android:layout_width="@dimen/favorite_width"
                     android:layout_height="@dimen/favorite_height"
                     android:layout_gravity="left|top"
-                    android:src="@drawable/bookmark" />
+                    android:src="@drawable/ic_bookmark" />
 
             </FrameLayout>
 
@@ -84,7 +84,7 @@
                         android:layout_marginEnd="@dimen/star_margin"
                         android:layout_marginRight="@dimen/star_margin"
                         android:contentDescription="@string/star_votes"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/ic_star" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"

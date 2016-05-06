@@ -26,7 +26,7 @@
         android:id="@+id/movie_poster_favorite"
         android:layout_width="@dimen/favorite_width"
         android:layout_height="@dimen/favorite_height"
-        android:src="@drawable/bookmark"
+        android:src="@drawable/ic_bookmark"
         android:layout_gravity="left|top"/>
 
 </FrameLayout>

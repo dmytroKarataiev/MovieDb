@@ -1,4 +1,4 @@
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.adapters;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,13 +17,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.R;
+import karataiev.dmytro.popularmovies.utils.Utility;
+import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
+
 /**
  * Adapter with MovieObjects
  * Created by karataev on 12/14/15.
  */
-class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHolder> {
+public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-    private final String LOG_TAG = MovieObjectAdapter.class.getSimpleName();
+    private final String LOG_TAG = MoviesAdapter.class.getSimpleName();
 
     private final TypedValue mTypedValue = new TypedValue();
     private final int mBackground;
@@ -67,7 +72,7 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
         }
     }
 
-    public MovieObjectAdapter(Context context, List<MovieObject> items) {
+    public MoviesAdapter(Context context, List<MovieObject> items) {
         context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mBackground = mTypedValue.resourceId;
         mValues = items;
@@ -104,11 +109,11 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
 
         // set favorites icon
         if (Utility.isFavorite(holder.favorite.getContext(), movieObject)) {
-            //holder.favorite.setImageResource(R.drawable.bookmark_fav);
-            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark_fav).into(holder.favorite);
+            //holder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
+            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.favorite);
         } else {
-            //holder.favorite.setImageResource(R.drawable.bookmark);
-            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark).into(holder.favorite);
+            //holder.favorite.setImageResource(R.drawable.ic_bookmark);
+            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark).into(holder.favorite);
         }
 
         // Scale posters correctly
@@ -140,17 +145,17 @@ class MovieObjectAdapter extends RecyclerView.Adapter<MovieObjectAdapter.ViewHol
                             // save byte array of an image to the database
                             //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
 
-                            //holder.favorite.setImageResource(R.drawable.bookmark_fav);
-                            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark_fav).into(holder.favorite);
+                            //holder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
+                            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.favorite);
                             // Insert on background thread
-                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
-                            utilityAsyncTask.execute(UtilityAsyncTask.INSERT, favValue);
+                            DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+                            databaseTasks.execute(DatabaseTasks.INSERT, favValue);
                         } else {
-                            //holder.favorite.setImageResource(R.drawable.bookmark);
-                            Picasso.with(holder.favorite.getContext()).load(R.drawable.bookmark).into(holder.favorite);
+                            //holder.favorite.setImageResource(R.drawable.ic_bookmark);
+                            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark).into(holder.favorite);
                             // Delete on background thread
-                            UtilityAsyncTask utilityAsyncTask = new UtilityAsyncTask(mContext);
-                            utilityAsyncTask.execute(UtilityAsyncTask.DELETE, favValue);
+                            DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+                            databaseTasks.execute(DatabaseTasks.DELETE, favValue);
                         }
                     }
                 });
