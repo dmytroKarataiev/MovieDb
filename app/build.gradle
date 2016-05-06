@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "karataiev.dmytro.popularmovies"
@@ -23,15 +23,25 @@ android {
     }
 }
 
+ext {
+    compatLibVersion = '23.1.1'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
+    compile "com.android.support:appcompat-v7:$compatLibVersion"
+    compile "com.android.support:design:$compatLibVersion"
+    compile "com.android.support:palette-v7:23.3.0"
+
+    // image downloader
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // download and parse data
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.squareup.okhttp:okhttp:2.7.0'
 
+    // fix memory leaks if they are present
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
 }

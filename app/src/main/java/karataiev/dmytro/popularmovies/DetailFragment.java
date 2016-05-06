@@ -3,13 +3,17 @@ package karataiev.dmytro.popularmovies;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,8 +24,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,21 +82,21 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         public final ImageView posterView;
         public final ProgressBar spinner;
         public final ImageView favorite;
-        public final TextView movieName;
         public final TextView movieReleaseDate;
         public final TextView movieRating;
         public final TextView movieDescription;
         public final TextView movieVotes;
+        public final LinearLayout mLinearBackground;
 
         public ViewHolder(View view) {
             favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
             posterView = (ImageView) view.findViewById(R.id.movie_poster);
             spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
-            movieName = (TextView) view.findViewById(R.id.movie_name);
             movieReleaseDate = (TextView) view.findViewById(R.id.detail_releasedate_textview);
             movieRating = (TextView) view.findViewById(R.id.detail_rating_textview);
             movieDescription = (TextView) view.findViewById(R.id.detail_description_textview);
             movieVotes = (TextView) view.findViewById(R.id.detail_votecount_textview);
+            mLinearBackground = (LinearLayout) view.findViewById(R.id.detail_background);
         }
     }
 
@@ -163,7 +170,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             }
             final ImageView backdrop = tempForBackdrop;
 
-            viewHolder.movieName.setText(mMovieObject.getTitle());
             viewHolder.movieDescription.setText(mMovieObject.getOverview());
             viewHolder.movieRating.setText(mMovieObject.getVoteAverage());
             viewHolder.movieReleaseDate.setText(mMovieObject.getReleaseDate());
@@ -181,6 +187,18 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 public void onSuccess() {
                     viewHolder.spinner.setVisibility(View.GONE);
                     viewHolder.favorite.setVisibility(View.VISIBLE);
+
+                    Palette palette = Palette.from(((BitmapDrawable) viewHolder.posterView.getDrawable()).getBitmap()).generate();
+                    viewHolder.mLinearBackground.setBackgroundColor(palette.getLightVibrantColor(0));
+                    CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) ((DetailActivity) getActivity()).findViewById(R.id.collapsing_toolbar);
+                    collapsingToolbarLayout.setContentScrimColor(palette.getVibrantColor(0));
+
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        Window window = getActivity().getWindow();
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                        window.setStatusBarColor(palette.getDarkVibrantColor(0));
+                    }
 
                     // On favorite icon click
                     viewHolder.favorite.setOnClickListener(new View.OnClickListener() {
@@ -333,7 +351,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // Detect if display is in landscape mode and set YouTube layout height accordingly
         TypedValue tv = new TypedValue();
 
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) && (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) &&
+                (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
 

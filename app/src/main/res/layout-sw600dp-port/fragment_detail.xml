@@ -8,6 +8,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/detail_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,17 +20,6 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop" />
-
-        <!-- Header: Movie Title -->
-        <TextView
-            android:id="@+id/movie_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorLighter"
-            android:padding="@dimen/fab_margin"
-            android:textColor="@color/white"
-            android:textSize="@dimen/movie_name" />
-
 
         <!-- Main content: rating, votes, year -->
         <LinearLayout

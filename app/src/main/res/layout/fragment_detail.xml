@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detail_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <!-- Header: Movie Title -->
-    <TextView
-        android:id="@+id/movie_name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorLighter"
-        android:padding="@dimen/fab_margin"
-        android:textColor="@color/white"
-        android:textSize="@dimen/movie_name" />
-
 
     <!-- Main content: rating, votes, year -->
     <LinearLayout
