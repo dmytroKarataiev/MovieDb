@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:transitionGroup="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/detail_background"
     android:layout_width="match_parent"
@@ -17,6 +23,7 @@
             android:layout_height="@dimen/poster_height">
 
             <ImageView
+                android:transitionName="@string/anim_poster"
                 android:id="@+id/movie_poster"
                 android:layout_width="@dimen/poster_width"
                 android:layout_height="@dimen/poster_height"
@@ -35,6 +42,8 @@
                 android:progressDrawable="@drawable/circular_progress_bar" />
 
             <ImageView
+                android:transitionName="@string/anim_fav"
+                android:contentDescription="@string/favorites_icon"
                 android:id="@+id/movie_poster_favorite"
                 android:layout_width="@dimen/favorite_width"
                 android:layout_height="@dimen/favorite_height"
@@ -126,4 +135,4 @@
 </LinearLayout>
 
 
-
+</android.support.v4.widget.NestedScrollView>

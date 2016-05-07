@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
+import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -28,26 +31,38 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-import karataiev.dmytro.popularmovies.remote.FetchMovies;
-import karataiev.dmytro.popularmovies.remote.TaskCompleted;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.remote.FetchMovies;
+import karataiev.dmytro.popularmovies.remote.TaskCompleted;
+import karataiev.dmytro.popularmovies.utils.CoreNullnessUtils;
 import karataiev.dmytro.popularmovies.utils.Utility;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainFragment extends Fragment implements TaskCompleted {
 
-    private static final String LOG_TAG = MainFragment.class.getSimpleName();
+    private static final String TAG = MainFragment.class.getSimpleName();
 
     // Couldn't find more efficient way to use following variable then to make them global
     private MoviesAdapter movieAdapter;
     private ArrayList<MovieObject> movieList;
     private String mSort;
-    private RecyclerView rv;
+
+    @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
+    Unbinder mUnbinder;
+
     private GridLayoutManager gridLayoutManager;
+
     private BroadcastReceiver networkStateReceiver;
     private boolean networkRestored;
 
@@ -63,29 +78,19 @@ public class MainFragment extends Fragment implements TaskCompleted {
     private String beforeChange;
     private String afterChange;
 
+    // RxAndroid EditText Subscription
+    private Subscription _subscription;
+
     public MainFragment() {
-    }
-
-    // Network status variables and methods (to stop fetching the data if the phone is offline
-    private boolean isOnline(Context context) {
-
-        if (context != null) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        }
-
-        return false;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setActionbarTitle();
-        EditText editText = (EditText) (getActivity()).findViewById(R.id.searchBar);
-        if (editText != null) {
 
-            editText.setText(searchParameter);
+        EditText editText = ButterKnife.findById(getActivity(), R.id.searchBar);
+        if (editText != null) {
 
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -107,11 +112,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
                         currentPosition = 1;
                     }
 
-                    if (afterChange.length() > beforeChange.length() || afterChange.length() + 3 < searchParameter.length() && afterChange.length() != 0) {
-                        searchParameter = s.toString();
-                        isSearch = true;
-                        updateMovieList();
-                    } else if (afterChange.length() < 4 && searchParameter.length() > 0) {
+                   if (afterChange.length() < 4 && searchParameter.length() > 0) {
                         searchParameter = "";
                         isSearch = false;
                         isClearedSearch = true;
@@ -120,8 +121,40 @@ public class MainFragment extends Fragment implements TaskCompleted {
                     }
                 }
             });
+
+            // TODO: 5/6/16 use this instead of the above logic
+            _subscription = RxTextView.textChangeEvents(editText)
+                    .debounce(400, TimeUnit.MILLISECONDS)
+                    .filter(textViewTextChangeEvent -> {
+                        Log.d(TAG, "Pre return: " + editText.getText().toString());
+                        return CoreNullnessUtils.isNotNullOrEmpty(editText.getText().toString());
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(_getSearchObserver());
         }
 
+    }
+
+    private Observer<TextViewTextChangeEvent> _getSearchObserver() {
+        return new Observer<TextViewTextChangeEvent>() {
+            @Override
+            public void onCompleted() {
+                Log.d(TAG, "--------- onComplete");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "--------- Woops on error!");
+            }
+
+            @Override
+            public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
+                Log.d(TAG, "Searching for: " + onTextChangeEvent.text().toString());
+                searchParameter = onTextChangeEvent.text().toString();
+                isSearch = true;
+                updateMovieList();
+            }
+        };
     }
 
     @Override
@@ -129,19 +162,17 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        rv = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        mUnbinder = ButterKnife.bind(this, rootView);
 
         // Scale GridView according to the screen size
-        int[] screenSize = Utility.screenSize(getContext());
-        int columns = screenSize[3];
+        gridLayoutManager = new GridLayoutManager(mRecyclerView.getContext(),
+                Utility.screenSize(getContext())[3]);
 
-        gridLayoutManager = new GridLayoutManager(rv.getContext(), columns);
-
-        rv.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
 
         movieAdapter = new MoviesAdapter(getActivity(), movieList);
 
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -151,7 +182,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
                     if (((gridLayoutManager.findFirstCompletelyVisibleItemPosition() >= movieList.size() - 8
                             || gridLayoutManager.findLastVisibleItemPosition() >= movieList.size() - 8)
-                            && isOnline(getContext()))) {
+                            && Utility.isOnline(getContext()))) {
 
                         if (searchParameter.length() > 0) {
                             currentPage++;
@@ -168,18 +199,13 @@ public class MainFragment extends Fragment implements TaskCompleted {
             }
         });
 
-        rv.setAdapter(movieAdapter);
-        rv.smoothScrollToPosition(currentPosition);
+        mRecyclerView.setAdapter(movieAdapter);
+        mRecyclerView.smoothScrollToPosition(currentPosition);
 
         // iPhone-like scroll to the first position in the view on toolbar click
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = ButterKnife.findById(getActivity(), R.id.toolbar);
         if (toolbar != null) {
-            toolbar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rv.smoothScrollToPosition(0);
-                }
-            });
+            toolbar.setOnClickListener(v -> mRecyclerView.smoothScrollToPosition(0));
         }
 
         return rootView;
@@ -246,7 +272,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
     public void updateMovieList() {
 
         String sort = Utility.getSort(getContext());
-        if (isOnline(getContext())) {
+        if (Utility.isOnline(getContext())) {
             // Checks if settings were changed
             if (!sort.equals(mSort)) {
                 mSort = sort;
@@ -294,12 +320,8 @@ public class MainFragment extends Fragment implements TaskCompleted {
      */
     private void fetchMovies(String sort) {
 
-        FetchMoviesFragment fetchMovie = new FetchMoviesFragment(getContext(), new TaskCompleted() {
-            @Override
-            public void onAsyncProgress(boolean progress) {
-                loadingMore = progress;
-            }
-        }, isSearch, currentPage);
+        FetchMoviesFragment fetchMovie = new FetchMoviesFragment(getContext(), progress ->
+                loadingMore = progress, isSearch, currentPage);
 
         fetchMovie.execute(sort);
     }
@@ -309,7 +331,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
      */
     private void setActionbarTitle() {
 
-        android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         if (actionBar != null) {
             actionBar.setTitle(Utility.getSortReadable(getContext()));
@@ -420,8 +442,8 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
             movieAdapter = new MoviesAdapter(getActivity(), movieList);
 
-            if (rv != null) {
-                rv.swapAdapter(movieAdapter, false);
+            if (mRecyclerView != null) {
+                mRecyclerView.swapAdapter(movieAdapter, false);
             }
         }
     }
@@ -429,7 +451,13 @@ public class MainFragment extends Fragment implements TaskCompleted {
     // sets a zero position when click on search method from actionbar
     public void setPosition(int position) {
         currentPosition = position;
-        rv.smoothScrollToPosition(position);
+        mRecyclerView.smoothScrollToPosition(position);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        _subscription.unsubscribe();
+        mUnbinder.unbind();
+    }
 }

@@ -56,6 +56,9 @@
 
     <!-- Shared Transitions -->
     <string name="anim_poster" translatable="false">poster</string>
+    <string name="anim_fav" translatable="false">fav</string>
+
     <string name="menu_sort">Sort by</string>
+    <string name="favorites_icon">Favorites icon</string>
 
 </resources>

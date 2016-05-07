@@ -13,6 +13,9 @@ import karataiev.dmytro.popularmovies.utils.Utility;
  * Created by karataev on 12/14/15.
  */
 public class MovieObject implements Parcelable {
+
+    public static final String MOVIE_OBJECT = "movie";
+
     private String adult;
     private String backdrop_path;
     private ArrayList<String> genre_ids;

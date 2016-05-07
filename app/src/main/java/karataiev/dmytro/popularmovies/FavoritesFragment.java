@@ -9,9 +9,11 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.FavoritesAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.model.MovieObject;
@@ -20,23 +22,16 @@ import karataiev.dmytro.popularmovies.utils.Utility;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FavoritesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    private static final String LOG_TAG = FavoritesFragment.class.getSimpleName();
+public class FavoritesFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // Cursor loader variables
-    private FavoritesAdapter movieAdapter;
+    private FavoritesAdapter mFavoritesAdapter;
     private static final int CURSOR_LOADER_ID = 0;
 
     // Couldn't find more efficient way to use following variable then to make them global
-    private GridView gridView;
-
-//    // Network status variables and methods (to stop fetching the data if the phone is offline
-//    private boolean isOnline(Context context) {
-//        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-//    }
+    @BindView(R.id.movies_grid) GridView mGridView;
+    Unbinder mUnbinder;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -64,46 +59,42 @@ public class FavoritesFragment extends Fragment implements LoaderManager.LoaderC
 
         View rootview = inflater.inflate(R.layout.fragment_favorites, container, false);
 
-        // Main object on the screen - grid with posters
-        gridView = (GridView) rootview.findViewById(R.id.movies_grid);
+        mUnbinder = ButterKnife.bind(this, rootview);
 
         // Scale GridView according to the screen size
         int[] screenSize = Utility.screenSize(getContext());
         int columns = screenSize[3];
         int posterWidth = screenSize[4];
 
-        gridView.setNumColumns(columns);
-        gridView.setColumnWidth(posterWidth);
+        mGridView.setNumColumns(columns);
+        mGridView.setColumnWidth(posterWidth);
 
         // Adapter which adds movies to the grid
-        movieAdapter = new FavoritesAdapter(getActivity(), null, 0);
+        mFavoritesAdapter = new FavoritesAdapter(getActivity(), null, 0);
 
         // onClick activity which launches detailed view
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mGridView.setOnItemClickListener((parent, view, position, id) -> {
 
-                Cursor cursor = (Cursor) gridView.getItemAtPosition(position);
+            Cursor cursor = (Cursor) mGridView.getItemAtPosition(position);
 
-                MovieObject movie = Utility.makeMovieFromCursor(cursor);
+            MovieObject movie = Utility.makeMovieFromCursor(cursor);
 
-                //int posterIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
-                //int backdropIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE);
-                //byte[] posterBytes = cursor.getBlob(posterIndex);
-                //byte[] backdropBytes = cursor.getBlob(backdropIndex);
+            //  int posterIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_IMAGE);
+            //  int backdropIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE);
+            //  byte[] posterBytes = cursor.getBlob(posterIndex);
+            //  byte[] backdropBytes = cursor.getBlob(backdropIndex);
 
-                ((CallbackFromFavorites) getContext()).onItemSelected(movie);
+            ((CallbackFromFavorites) getContext()).onItemSelected(movie);
 
-//                Intent intent = new Intent(getActivity(), DetailActivity.class)
-//                        .putExtra("movie", movie)
-//                        .putExtra("poster", posterBytes)
-//                        .putExtra("backdrop", backdropBytes);
-//                startActivity(intent);
+            //  Intent intent = new Intent(getActivity(), DetailActivity.class)
+            //      .putExtra("movie", movie)
+            //      .putExtra("poster", posterBytes)
+            //      .putExtra("backdrop", backdropBytes);
+            //  startActivity(intent);
 
-            }
         });
 
-        gridView.setAdapter(movieAdapter);
+        mGridView.setAdapter(mFavoritesAdapter);
 
         return rootview;
     }
@@ -128,13 +119,18 @@ public class FavoritesFragment extends Fragment implements LoaderManager.LoaderC
     // Set the cursor in our CursorAdapter once the Cursor is loaded
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        movieAdapter.swapCursor(data);
+        mFavoritesAdapter.swapCursor(data);
     }
 
     // reset CursorAdapter on Loader Reset
     @Override
     public void onLoaderReset(Loader<Cursor> loader){
-        movieAdapter.swapCursor(null);
+        mFavoritesAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mUnbinder.unbind();
+    }
 }

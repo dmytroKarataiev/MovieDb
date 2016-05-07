@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,12 +44,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import karataiev.dmytro.popularmovies.remote.FetchJSON;
-import karataiev.dmytro.popularmovies.remote.FetchMovies;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.model.MovieObject;
-import karataiev.dmytro.popularmovies.utils.Utility;
+import karataiev.dmytro.popularmovies.remote.FetchJSON;
+import karataiev.dmytro.popularmovies.remote.FetchMovies;
 import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * Detailed Movie Fragment with poster, rating, description.
@@ -56,7 +60,7 @@ import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
  */
 public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
 
-    private final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private final String TAG = DetailFragment.class.getSimpleName();
 
     // String which is used in share intent
     private String mMovie;
@@ -76,32 +80,17 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     private YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
-    /**
-     * Cache of the children views
-     * Little optimization to access views faster (not sure if it's applicable in this particular case)
-     */
-    public static class ViewHolder {
-
-        public final ImageView posterView;
-        public final ProgressBar spinner;
-        public final ImageView favorite;
-        public final TextView movieReleaseDate;
-        public final TextView movieRating;
-        public final TextView movieDescription;
-        public final TextView movieVotes;
-        public final LinearLayout mLinearBackground;
-
-        public ViewHolder(View view) {
-            favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
-            posterView = (ImageView) view.findViewById(R.id.movie_poster);
-            spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
-            movieReleaseDate = (TextView) view.findViewById(R.id.detail_releasedate_textview);
-            movieRating = (TextView) view.findViewById(R.id.detail_rating_textview);
-            movieDescription = (TextView) view.findViewById(R.id.detail_description_textview);
-            movieVotes = (TextView) view.findViewById(R.id.detail_votecount_textview);
-            mLinearBackground = (LinearLayout) view.findViewById(R.id.detail_background);
-        }
-    }
+    @BindView(R.id.movie_poster) ImageView mImagePoster;
+    @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
+    @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
+    @BindView(R.id.detail_releasedate_textview) TextView mTextRelease;
+    @BindView(R.id.detail_rating_textview) TextView mTextRating;
+    @BindView(R.id.detail_description_textview) TextView mTextDescription;
+    @BindView(R.id.detail_votecount_textview) TextView mTextVotes;
+    @BindView(R.id.detail_background) LinearLayout mLinearBackground;
+    @BindView(R.id.detail_reviews_textview) TextView mTextReviews;
+    @Nullable @BindView(R.id.backdrop) ImageView mImageBackdrop;
+    Unbinder mUnbinder;
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -125,11 +114,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mMovieObject = arguments.getParcelable("movie");
+            mMovieObject = arguments.getParcelable(MovieObject.MOVIE_OBJECT);
         } else {
             // Gets data from intent (using parcelable) and populates views
             intent = this.getActivity().getIntent();
-            mMovieObject = intent.getParcelableExtra("movie");
+            mMovieObject = intent.getParcelableExtra(MovieObject.MOVIE_OBJECT);
             if (mMovieObject == null) {
                 try {
                     FetchMovies fetchFirstMovie = new FetchMovies(getContext(), null, false, 1);
@@ -139,166 +128,22 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         mMovieObject = temporary.get(0);
                     }
                 } catch (ExecutionException e) {
-                    Log.e(LOG_TAG, "error");
+                    Log.e(TAG, "error");
                 } catch (InterruptedException e2) {
-                    Log.e(LOG_TAG, "error" + e2);
+                    Log.e(TAG, "error" + e2);
                 }
             }
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        final ViewHolder viewHolder = new ViewHolder(rootView);
+        mUnbinder = ButterKnife.bind(this, rootView);
 
         if (mMovieObject != null) {
-            // Maybe it increases chance of OOM
-            // Files from db to load into ImageViews
-//        byte[] posterLoad = intent.getByteArrayExtra("poster");
-//        byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
-//        File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
-//        File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
-
-            // ActionBar title and image adding
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-            if (actionBar != null) {
-                actionBar.setTitle(mMovieObject.getTitle());
-            }
-
-            ImageView tempForBackdrop;
-            if (rootView.findViewById(R.id.backdrop) == null) {
-                tempForBackdrop = (ImageView) getActivity().findViewById(R.id.backdrop);
-            } else {
-                tempForBackdrop = (ImageView) rootView.findViewById(R.id.backdrop);
-            }
-            final ImageView backdrop = tempForBackdrop;
-
-            viewHolder.movieDescription.setText(mMovieObject.getOverview());
-            viewHolder.movieRating.setText(mMovieObject.getVoteAverage());
-            viewHolder.movieReleaseDate.setText(mMovieObject.getReleaseDate());
-            viewHolder.movieVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
-
-            if (Utility.isFavorite(getContext(), mMovieObject)) {
-                Picasso.with(getContext()).load(R.drawable.ic_bookmark_fav).into(viewHolder.favorite);
-            } else {
-                Picasso.with(getContext()).load(R.drawable.ic_bookmark).into(viewHolder.favorite);
-            }
-
-            // Callback inside of Picasso Call
-            Callback callback = new Callback() {
-                @Override
-                public void onSuccess() {
-                    viewHolder.spinner.setVisibility(View.GONE);
-                    viewHolder.favorite.setVisibility(View.VISIBLE);
-
-                    Palette palette = Palette.from(((BitmapDrawable) viewHolder.posterView.getDrawable()).getBitmap()).generate();
-                    viewHolder.mLinearBackground.setBackgroundColor(palette.getLightVibrantColor(0));
-                    CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) ((DetailActivity) getActivity()).findViewById(R.id.collapsing_toolbar);
-                    collapsingToolbarLayout.setContentScrimColor(palette.getVibrantColor(0));
-
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        Window window = getActivity().getWindow();
-                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                        window.setStatusBarColor(palette.getDarkVibrantColor(0));
-                    }
-
-                    // On favorite icon click
-                    viewHolder.favorite.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            ContentValues favValue = Utility.makeContentValues(mMovieObject);
-
-                            Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
-
-                            if (!Utility.isFavorite(getContext(), mMovieObject)) {
-
-                                // Save drawable for later usage
-                                byte[] bitmapData = Utility.makeByteArray(viewHolder.posterView.getDrawable());
-                                byte[] backdropBitmap = Utility.makeByteArray(backdrop.getDrawable());
-
-                                // save byte array of an image to the database
-                                favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
-                                favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
-
-                                viewHolder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
-
-                                // Insert on background thread
-                                DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
-                                databaseTasks.execute(DatabaseTasks.INSERT, favValue);
-                            } else {
-                                viewHolder.favorite.setImageResource(R.drawable.ic_bookmark);
-
-                                // Delete on background thread
-                                DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
-                                databaseTasks.execute(DatabaseTasks.DELETE, favValue);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onError() {
-                    viewHolder.posterView.setBackgroundResource(R.color.white);
-                    viewHolder.spinner.setVisibility(View.GONE);
-                    viewHolder.favorite.setVisibility(View.GONE);
-                }
-            };
-
-            // Not sure if it increases risk of OOM error
-//        if (posterFile != null && backdropFile != null) {
-//            Picasso.with(getContext()).load(backdropFile).into(backdrop);
-//            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
-//        } else if (backdropFile == null && posterFile != null) {
-//            Picasso.with(getContext()).load(posterFile).into(viewHolder.posterView, callback);
-//            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
-//        } else {
-            Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
-            Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(viewHolder.posterView, callback);
-            //}
-
-            // Initializes mMovie with info about a movie
-            mMovie = mMovieObject.getTitle() + "\n" + mMovieObject.getReleaseDate() + "\n" + mMovieObject.getVoteAverage() + "\n" + mMovieObject.getOverview();
-
-            try {
-                // get from AsyncTask trailers
-                FetchJSON fetchJSON = new FetchJSON();
-
-                ArrayList<String> keys = fetchJSON.execute(mMovieObject.getTrailerPath()).get();
-                mMovieObject.setKeys(keys);
-
-                if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
-                    trailersList = mMovieObject.getTrailers();
-
-                    // If there are trailers - add their links to the share Intent
-                    mMovie += "\nAlso check out the Trailers:\n";
-                    for (String each : mMovieObject.getTrailers()) {
-                        mMovie += "https://www.youtube.com/watch?v=" + each + "\n";
-                    }
-                }
-
-                // Get Reviews from AsyncTask and put them in a simple TextView
-                FetchJSON fetchJSONReviews = new FetchJSON();
-                TextView reviews = (TextView) rootView.findViewById(R.id.detail_reviews_textview);
-
-                ArrayList<String> reviewsArrayList = fetchJSONReviews
-                        .execute(Utility.getReviewsURL(mMovieObject.getId()).toString())
-                        .get();
-
-                if (reviewsArrayList != null) {
-                    reviews.setText(TextUtils.join("\n", reviewsArrayList));
-                }
-
-            } catch (ExecutionException e) {
-                Log.e(LOG_TAG, "error");
-            } catch (InterruptedException e2) {
-                Log.e(LOG_TAG, "error" + e2);
-            }
+            loadData();
         }
 
         return rootView;
-
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -324,13 +169,12 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         MenuItem item = menu.findItem(R.id.share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(movieIntent());
-        }
-        else {
-            Log.e(LOG_TAG, "fail");
+        if (actionProvider != null) {
+            actionProvider.setShareIntent(movieIntent());
+        } else {
+            Log.e(TAG, "fail to set a share intent");
         }
     }
 
@@ -441,6 +285,164 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     protected YouTubePlayer.Provider getYouTubePlayerProvider() {
         return (YouTubePlayerSupportFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mUnbinder.unbind();
+        if (YPlayer != null) {
+            YPlayer.release();
+        }
+    }
+
+    /**
+     * Loads data
+     */
+    private void loadData() {
+
+        // Maybe it increases chance of OOM
+        // Files from db to load into ImageViews
+        // byte[] posterLoad = intent.getByteArrayExtra("poster");
+        // byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
+        // File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
+        // File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
+
+        // ActionBar title and image adding
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle(mMovieObject.getTitle());
+        }
+
+        ImageView tempForBackdrop;
+        if (mImageBackdrop == null) {
+            mImageBackdrop = ButterKnife.findById(getActivity(), R.id.backdrop);
+        }
+
+        mTextDescription.setText(mMovieObject.getOverview());
+        mTextRating.setText(mMovieObject.getVoteAverage());
+        mTextRelease.setText(mMovieObject.getReleaseDate());
+        mTextVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
+
+        if (Utility.isFavorite(getContext(), mMovieObject)) {
+            Picasso.with(getContext()).load(R.drawable.ic_bookmark_fav).into(mImageFavorite);
+        } else {
+            Picasso.with(getContext()).load(R.drawable.ic_bookmark).into(mImageFavorite);
+        }
+
+        // Callback inside of Picasso Call
+        Callback callback = new Callback() {
+            @Override
+            public void onSuccess() {
+                mProgressSpinner.setVisibility(View.GONE);
+                mImageFavorite.setVisibility(View.VISIBLE);
+
+                Palette palette = Palette.from(((BitmapDrawable) mImagePoster.getDrawable()).getBitmap()).generate();
+                mLinearBackground.setBackgroundColor(palette.getLightVibrantColor(0));
+                CollapsingToolbarLayout toolbarLayout = ButterKnife.findById(getActivity(), R.id.collapsing_toolbar);
+                toolbarLayout.setContentScrimColor(palette.getVibrantColor(0));
+
+                if (Build.VERSION.SDK_INT >= 21) {
+                    Window window = getActivity().getWindow();
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    window.setStatusBarColor(palette.getDarkVibrantColor(0));
+                }
+
+                // On mImageFavorite icon click
+                mImageFavorite.setOnClickListener(v -> {
+
+                    ContentValues favValue = Utility.makeContentValues(mMovieObject);
+
+                    Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
+
+                    if (!Utility.isFavorite(getContext(), mMovieObject)) {
+
+                        // Save drawable for later usage
+                        byte[] bitmapData = Utility.makeByteArray(mImagePoster.getDrawable());
+                        byte[] backdropBitmap = Utility.makeByteArray(mImageBackdrop.getDrawable());
+
+                        // save byte array of an image to the database
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+                        favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
+
+                        mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
+
+                        // Insert on background thread
+                        DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
+                        databaseTasks.execute(DatabaseTasks.INSERT, favValue);
+                    } else {
+                        mImageFavorite.setImageResource(R.drawable.ic_bookmark);
+
+                        // Delete on background thread
+                        DatabaseTasks databaseTasks = new DatabaseTasks(getContext());
+                        databaseTasks.execute(DatabaseTasks.DELETE, favValue);
+                    }
+                });
+            }
+
+            @Override
+            public void onError() {
+                mImagePoster.setBackgroundResource(R.color.white);
+                mProgressSpinner.setVisibility(View.GONE);
+                mImageFavorite.setVisibility(View.GONE);
+            }
+        };
+
+        // Not sure if it increases risk of OOM error
+        // if (posterFile != null && backdropFile != null) {
+        //     Picasso.with(getContext()).load(backdropFile).into(backdrop);
+        //     Picasso.with(getContext()).load(posterFile).into(viewHolder.mImagePoster, callback);
+        // } else if (backdropFile == null && posterFile != null) {
+        //     Picasso.with(getContext()).load(posterFile).into(viewHolder.mImagePoster, callback);
+        //     Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
+        // } else {
+        Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(mImageBackdrop);
+        Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(mImagePoster, callback);
+        // }
+
+        // Initializes mMovie with info about a movie
+        mMovie = mMovieObject.getTitle() +
+                "\n" + mMovieObject.getReleaseDate() +
+                "\n" + mMovieObject.getVoteAverage() +
+                "\n" + mMovieObject.getOverview();
+
+        try {
+            // get from AsyncTask trailers
+            FetchJSON fetchJSON = new FetchJSON();
+
+            ArrayList<String> keys = fetchJSON.execute(mMovieObject.getTrailerPath()).get();
+            mMovieObject.setKeys(keys);
+
+            if (mMovieObject.getTrailers() != null && mMovieObject.getTrailers().size() > 0) {
+                trailersList = mMovieObject.getTrailers();
+
+                // If there are trailers - add their links to the share Intent
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("\nAlso check out the Trailers:\n");
+                for (String each : mMovieObject.getTrailers()) {
+                    stringBuilder.append("https://www.youtube.com/watch?v=").append(each).append("\n");
+                }
+                mMovie += stringBuilder.toString();
+            }
+
+            // Get Reviews from AsyncTask and put them in a simple TextView
+            FetchJSON fetchJSONReviews = new FetchJSON();
+
+            ArrayList<String> reviewsArrayList = fetchJSONReviews
+                    .execute(Utility.getReviewsURL(mMovieObject.getId()).toString())
+                    .get();
+
+            if (reviewsArrayList != null) {
+                mTextReviews.setText(TextUtils.join("\n", reviewsArrayList));
+            }
+
+        } catch (ExecutionException e) {
+            Log.e(TAG, "error");
+        } catch (InterruptedException e2) {
+            Log.e(TAG, "error" + e2);
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
     public void onItemSelected(MovieObject movieObject) {
         if (mTwoPane) {
             Bundle args = new Bundle();
-            args.putParcelable("movie", movieObject);
+            args.putParcelable(MovieObject.MOVIE_OBJECT, movieObject);
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(args);
@@ -144,14 +145,18 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
         }  else {
 
             Intent intent = new Intent(this, DetailActivity.class)
-                    .putExtra("movie", movieObject);
+                    .putExtra(MovieObject.MOVIE_OBJECT, movieObject);
 
             // Check if a phone supports shared transitions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                // TODO: 5/6/16 fix sometimes incorrectly appearing poster
                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                         this,
-                        mContent.getView().findViewWithTag(movieObject.getId()),
-                        mContent.getView().findViewById(R.id.movie_poster).getTransitionName())
+                        new Pair<>(mContent.getView().findViewWithTag(movieObject.getId()),
+                                mContent.getView().findViewById(R.id.movie_poster).getTransitionName()),
+                        new Pair<>(mContent.getView().findViewWithTag(movieObject.getId() + "1"),
+                                mContent.getView().findViewById(R.id.movie_poster_favorite).getTransitionName()))
                         .toBundle();
 
                 startActivity(intent, bundle);

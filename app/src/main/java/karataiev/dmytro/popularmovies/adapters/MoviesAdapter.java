@@ -17,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.utils.Utility;
@@ -27,8 +29,6 @@ import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
  * Created by karataev on 12/14/15.
  */
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
-
-    private final String LOG_TAG = MoviesAdapter.class.getSimpleName();
 
     private final TypedValue mTypedValue = new TypedValue();
     private final int mBackground;
@@ -51,24 +51,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public String mBoundString;
-        public final View mView;
-        public final ImageView poster;
-        public final ImageView favorite;
-        public final ProgressBar spinner;
-        public final TextView mTextView;
+        @BindView(R.id.movie_poster) ImageView mImagePoster;
+        @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
+        @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
+        @BindView(R.id.movie_poster_text) TextView mPosterText;
 
         public ViewHolder(View view) {
             super(view);
-            mView = view;
-            poster = (ImageView) view.findViewById(R.id.movie_poster);
-            favorite = (ImageView) view.findViewById(R.id.movie_poster_favorite);
-            spinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
-            mTextView = (TextView) view.findViewById(R.id.movie_poster_text);
+            ButterKnife.bind(this, view);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mTextView.getText();
+            return super.toString() + " '" + mPosterText.getText();
         }
     }
 
@@ -95,88 +90,82 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         final ContentValues favValue = Utility.makeContentValues(movieObject);
 
         holder.mBoundString = movieObject.getId();
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener(v -> {
 
-                // Set a tag for a shared transition
-                holder.poster.setTag(movieObject.getId());
-                ((CallbackFromAdapter) mContext).onItemSelected(movieObject);
-            }
+            // Set a tag for a shared transition
+            holder.mImagePoster.setTag(movieObject.getId());
+            holder.mImageFavorite.setTag(movieObject.getId() + "1");
+            ((CallbackFromAdapter) mContext).onItemSelected(movieObject);
         });
 
-        Picasso.with(holder.poster.getContext()).load(mValues.get(position).getPosterPath()).into(holder.poster);
+        Picasso.with(holder.mImagePoster.getContext()).load(mValues.get(position).getPosterPath()).into(holder.mImagePoster);
 
         // set favorites icon
-        if (Utility.isFavorite(holder.favorite.getContext(), movieObject)) {
-            //holder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
-            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.favorite);
+        if (Utility.isFavorite(holder.mImageFavorite.getContext(), movieObject)) {
+            //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
+            Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.mImageFavorite);
         } else {
-            //holder.favorite.setImageResource(R.drawable.ic_bookmark);
-            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark).into(holder.favorite);
+            //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark);
+            Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark).into(holder.mImageFavorite);
         }
 
         // Scale posters correctly
-        holder.poster.getLayoutParams().height = Utility.screenSize(mContext)[5];
-        holder.spinner.getLayoutParams().height = Utility.screenSize(mContext)[5];
-        holder.favorite.getLayoutParams().height = (int) Math.round(Utility.screenSize(mContext)[5] * 0.2);
+        holder.mImagePoster.getLayoutParams().height = Utility.screenSize(mContext)[5];
+        holder.mProgressSpinner.getLayoutParams().height = Utility.screenSize(mContext)[5];
+        holder.mImageFavorite.getLayoutParams().height = (int) Math.round(Utility.screenSize(mContext)[5] * 0.2);
 
-        holder.spinner.setVisibility(View.VISIBLE);
-        holder.favorite.setVisibility(View.GONE);
+        holder.mProgressSpinner.setVisibility(View.VISIBLE);
+        holder.mImageFavorite.setVisibility(View.GONE);
 
-        Picasso.with(mContext).load(movieObject.getPosterPath()).into(holder.poster, new Callback() {
+        Picasso.with(mContext).load(movieObject.getPosterPath()).into(holder.mImagePoster, new Callback() {
             @Override
             public void onSuccess() {
-                holder.spinner.setVisibility(View.GONE);
-                holder.favorite.setVisibility(View.VISIBLE);
+                holder.mProgressSpinner.setVisibility(View.GONE);
+                holder.mImageFavorite.setVisibility(View.VISIBLE);
 
-                // On favorite icon click
-                holder.favorite.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                // On mImageFavorite icon click
+                holder.mImageFavorite.setOnClickListener(v -> {
 
-                        Toast.makeText(mContext, movieObject.getTitle(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, movieObject.getTitle(), Toast.LENGTH_LONG).show();
 
-                        if (!Utility.isFavorite(mContext, movieObject)) {
+                    if (!Utility.isFavorite(mContext, movieObject)) {
 
-                            // Save drawable for later usage
-                            //byte[] bitmapData = Utility.makeByteArray(holder.poster.getDrawable());
+                        // Save drawable for later usage
+                        //byte[] bitmapData = Utility.makeByteArray(holder.mImagePoster.getDrawable());
 
-                            // save byte array of an image to the database
-                            //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
+                        // save byte array of an image to the database
+                        //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
 
-                            //holder.favorite.setImageResource(R.drawable.ic_bookmark_fav);
-                            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.favorite);
-                            // Insert on background thread
-                            DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
-                            databaseTasks.execute(DatabaseTasks.INSERT, favValue);
-                        } else {
-                            //holder.favorite.setImageResource(R.drawable.ic_bookmark);
-                            Picasso.with(holder.favorite.getContext()).load(R.drawable.ic_bookmark).into(holder.favorite);
-                            // Delete on background thread
-                            DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
-                            databaseTasks.execute(DatabaseTasks.DELETE, favValue);
-                        }
+                        //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
+                        Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.mImageFavorite);
+                        // Insert on background thread
+                        DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+                        databaseTasks.execute(DatabaseTasks.INSERT, favValue);
+                    } else {
+                        //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark);
+                        Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark).into(holder.mImageFavorite);
+                        // Delete on background thread
+                        DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+                        databaseTasks.execute(DatabaseTasks.DELETE, favValue);
                     }
                 });
             }
 
             @Override
             public void onError() {
-                holder.poster.setBackgroundResource(R.color.white);
-                holder.spinner.setVisibility(View.GONE);
-                holder.favorite.setVisibility(View.GONE);
+                holder.mImagePoster.setBackgroundResource(R.color.white);
+                holder.mProgressSpinner.setVisibility(View.GONE);
+                holder.mImageFavorite.setVisibility(View.GONE);
             }
         });
 
         // If movie doesn't have an image - uses text instead
-        if (movieObject.getPosterPath().contains("null"))
-        {
-            holder.mTextView.setText(movieObject.getTitle());
+        if (movieObject.getPosterPath().contains("null")) {
+            holder.mPosterText.setText(movieObject.getTitle());
         } else {
-            holder.mTextView.setText("");
+            holder.mPosterText.setText("");
         }
-        holder.poster.setContentDescription(movieObject.getTitle());
+        holder.mImagePoster.setContentDescription(movieObject.getTitle());
 
     }
 

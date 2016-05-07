@@ -23,6 +23,8 @@
         android:progressDrawable="@drawable/circular_progress_bar"/>
 
     <ImageView
+        android:transitionName="@string/anim_fav"
+        android:contentDescription="@string/favorites_icon"
         android:id="@+id/movie_poster_favorite"
         android:layout_width="@dimen/favorite_width"
         android:layout_height="@dimen/favorite_height"

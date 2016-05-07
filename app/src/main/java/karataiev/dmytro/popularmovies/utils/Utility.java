@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -603,5 +605,17 @@ public class Utility {
         calendar.add(Calendar.DATE, 14);
         return sdfDate.format(calendar.getTime());
 
+    }
+
+    // Network status variables and methods (to stop fetching the data if the phone is offline
+    public static boolean isOnline(Context context) {
+
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+
+        return false;
     }
 }

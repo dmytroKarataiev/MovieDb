@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
@@ -27,17 +29,13 @@ public class FavoritesAdapter extends CursorAdapter {
     private final Context mContext;
 
     public static class ViewHolder {
-        public final ImageView mPosterImage;
-        public final TextView mPosterText;
-        public final ProgressBar mProgressSpinner;
-        public final ImageView mFavImage;
+        @BindView(R.id.movie_poster) ImageView mPosterImage;
+        @BindView(R.id.movie_poster_text) TextView mPosterText;
+        @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
+        @BindView(R.id.movie_poster_favorite) ImageView mFavImage;
 
-        public ViewHolder(View view){
-            mPosterImage = (ImageView) view.findViewById(R.id.movie_poster);
-            mPosterText = (TextView) view.findViewById(R.id.movie_poster_text);
-            mProgressSpinner = (ProgressBar) view.findViewById(R.id.movie_item_spinner);
-            mFavImage = (ImageView) view.findViewById(R.id.movie_poster_favorite);
-
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -48,9 +46,7 @@ public class FavoritesAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
-        int layoutId = R.layout.movie_item;
-
-        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.movie_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
 
@@ -64,28 +60,24 @@ public class FavoritesAdapter extends CursorAdapter {
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
-        //viewHolder.mPosterText.setText(versionName);
 
         //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark_fav);
         Picasso.with(context).load(R.drawable.ic_bookmark_fav).into(viewHolder.mFavImage);
 
-        // On favorite icon click
-        viewHolder.mFavImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // On mImageFavorite icon click
+        viewHolder.mFavImage.setOnClickListener(v -> {
 
-                Toast.makeText(context, "Not favorite anymore", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Not mImageFavorite anymore", Toast.LENGTH_LONG).show();
 
-                //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark);
-                Picasso.with(context).load(R.drawable.ic_bookmark).into(viewHolder.mFavImage);
-                // Temp way to delete data from the db
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, versionName);
+            //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark);
+            Picasso.with(context).load(R.drawable.ic_bookmark).into(viewHolder.mFavImage);
+            // Temp way to delete data from the db
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, versionName);
 
-                // Deletion on background thread
-                DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
-                databaseTasks.execute(DatabaseTasks.DELETE, contentValues);
-            }
+            // Deletion on background thread
+            DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
+            databaseTasks.execute(DatabaseTasks.DELETE, contentValues);
         });
 
         viewHolder.mProgressSpinner.setVisibility(View.GONE);

@@ -5,19 +5,24 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Class to start DetailActivityFragment
  * Created by karataev on 12/15/15.
  */
 public class DetailActivity extends AppCompatActivity {
 
-    private String LOG_TAG = DetailActivity.class.getSimpleName();
+    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_detail);
+
+        ButterKnife.bind(this);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -26,10 +31,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         // Initialize a custom toolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
-
-        // Get a support ActionBar corresponding to this toolbar
+        setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
 
         // Enable the Up button
