@@ -1,3 +1,27 @@
+/*
+ *  The MIT License (MIT)
+ *
+ *  Copyright (c) 2016. Dmytro Karataiev
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
+
 package karataiev.dmytro.popularmovies;
 
 import android.content.BroadcastReceiver;
@@ -14,8 +38,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +53,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -38,9 +61,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.model.MovieObject;
-import karataiev.dmytro.popularmovies.remote.FetchMovies;
 import karataiev.dmytro.popularmovies.remote.TaskCompleted;
-import karataiev.dmytro.popularmovies.utils.CoreNullnessUtils;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import rx.Observer;
 import rx.Subscription;
@@ -55,7 +76,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
     // Couldn't find more efficient way to use following variable then to make them global
     private MoviesAdapter movieAdapter;
-    private ArrayList<MovieObject> movieList;
+    private List<MovieObject> movieList;
     private String mSort;
 
     @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
@@ -70,13 +91,11 @@ public class MainFragment extends Fragment implements TaskCompleted {
     private boolean loadingMore;
     private int currentPage = 1;
     private int currentPosition;
-    private boolean addMovies = false;
-    private boolean isSearch = false;
-    private boolean addSearchMovies = false;
-    private boolean isClearedSearch = false;
+    private boolean addMovies;
+    private boolean isSearch;
+    private boolean addSearchMovies;
+    private boolean isClearedSearch;
     private String searchParameter = "";
-    private String beforeChange;
-    private String afterChange;
 
     // RxAndroid EditText Subscription
     private Subscription _subscription;
@@ -92,43 +111,12 @@ public class MainFragment extends Fragment implements TaskCompleted {
         EditText editText = ButterKnife.findById(getActivity(), R.id.searchBar);
         if (editText != null) {
 
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    beforeChange = s.toString();
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    afterChange = s.toString();
-
-                    // avoid page change when field if empty
-                    if (!beforeChange.equals(afterChange)) {
-                        currentPage = 1;
-                        currentPosition = 1;
-                    }
-
-                   if (afterChange.length() < 4 && searchParameter.length() > 0) {
-                        searchParameter = "";
-                        isSearch = false;
-                        isClearedSearch = true;
-
-                        updateMovieList();
-                    }
-                }
-            });
-
-            // TODO: 5/6/16 use this instead of the above logic
             _subscription = RxTextView.textChangeEvents(editText)
                     .debounce(400, TimeUnit.MILLISECONDS)
-                    .filter(textViewTextChangeEvent -> {
-                        Log.d(TAG, "Pre return: " + editText.getText().toString());
-                        return CoreNullnessUtils.isNotNullOrEmpty(editText.getText().toString());
-                    })
+                    // filters onCreate event when there was nothing in the EditText,
+                    // so the list of movies won't be updated
+                    .filter(textViewTextChangeEvent -> !(textViewTextChangeEvent.count() == 0 &&
+                            textViewTextChangeEvent.before() == 0))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(_getSearchObserver());
         }
@@ -152,7 +140,16 @@ public class MainFragment extends Fragment implements TaskCompleted {
                 Log.d(TAG, "Searching for: " + onTextChangeEvent.text().toString());
                 searchParameter = onTextChangeEvent.text().toString();
                 isSearch = true;
+
+                if (onTextChangeEvent.count() < 4) {
+                    searchParameter = "";
+                    isSearch = false;
+                    isClearedSearch = true;
+                }
+                currentPage = 1;
+                currentPosition = 1;
                 updateMovieList();
+
             }
         };
     }
@@ -161,6 +158,19 @@ public class MainFragment extends Fragment implements TaskCompleted {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        // Initializes global mSort with SharedPreferences of sort
+        mSort = Utility.getSort(getContext());
+
+        // If movies were fetched - re-uses data
+        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+            updateMovieList();
+        } else {
+            movieList = savedInstanceState.getParcelableArrayList("movies");
+            currentPosition = savedInstanceState.getInt("position");
+            currentPage = savedInstanceState.getInt("page");
+            searchParameter = savedInstanceState.getString("search");
+        }
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
@@ -185,17 +195,14 @@ public class MainFragment extends Fragment implements TaskCompleted {
                             && Utility.isOnline(getContext()))) {
 
                         if (searchParameter.length() > 0) {
-                            currentPage++;
                             addSearchMovies = true;
-                            updateMovieList();
                         } else {
-                            currentPage++;
                             addMovies = true;
-                            updateMovieList();
                         }
+                        currentPage++;
+                        updateMovieList();
                     }
                 }
-
             }
         });
 
@@ -206,26 +213,6 @@ public class MainFragment extends Fragment implements TaskCompleted {
         Toolbar toolbar = ButterKnife.findById(getActivity(), R.id.toolbar);
         if (toolbar != null) {
             toolbar.setOnClickListener(v -> mRecyclerView.smoothScrollToPosition(0));
-        }
-
-        return rootView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Initializes global mSort with SharedPreferences of sort
-        mSort = Utility.getSort(getContext());
-
-        // If movies were fetched - re-uses data
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            updateMovieList();
-        } else {
-            movieList = savedInstanceState.getParcelableArrayList("movies");
-            currentPosition = savedInstanceState.getInt("position");
-            currentPage = savedInstanceState.getInt("page");
-            searchParameter = savedInstanceState.getString("search");
         }
 
         // BroadcastReceiver to get info about network connection
@@ -244,6 +231,8 @@ public class MainFragment extends Fragment implements TaskCompleted {
         };
         // Starts receiver
         startListening();
+
+        return rootView;
     }
 
     /**
@@ -260,7 +249,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
         super.onSaveInstanceState(outState);
 
         // Saves movies so we don't need to re-download them
-        outState.putParcelableArrayList("movies", movieList);
+        outState.putParcelableArrayList("movies", (ArrayList<MovieObject>) movieList);
         outState.putInt("position", currentPosition);
         outState.putInt("page", currentPage);
         outState.putString("search", searchParameter);
@@ -270,6 +259,13 @@ public class MainFragment extends Fragment implements TaskCompleted {
      * Method to update UI when settings changed
      */
     public void updateMovieList() {
+        Log.d(TAG, "updateMovieList: " + mSort
+                + ", addMovies: " + addMovies
+                + ", isSearch: " + isSearch
+                + ", isClearedSearch: " + isClearedSearch
+                + ", searchParameter: " + searchParameter
+                + ", currPage: " + currentPage
+                + ", currPosition: " + currentPosition);
 
         String sort = Utility.getSort(getContext());
         if (Utility.isOnline(getContext())) {
@@ -301,9 +297,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
     @Override
     public void onResume() {
         super.onResume();
-
         startListening();
-        updateMovieList();
     }
 
     @Override
@@ -320,7 +314,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
      */
     private void fetchMovies(String sort) {
 
-        FetchMoviesFragment fetchMovie = new FetchMoviesFragment(getContext(), progress ->
+        FetchMovies fetchMovie = new FetchMovies(progress ->
                 loadingMore = progress, isSearch, currentPage);
 
         fetchMovie.execute(sort);
@@ -347,17 +341,15 @@ public class MainFragment extends Fragment implements TaskCompleted {
     /**
      * Class to retrieve MovieObjects from JSON on background thread
      */
-    public class FetchMoviesFragment extends AsyncTask<String, Void, ArrayList<MovieObject>> {
+    public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
-        private Context mContext;
         private TaskCompleted listener;
         private boolean isSearch;
         private int currentPage;
         private String searchParams;
 
-        public FetchMoviesFragment(Context context, TaskCompleted listener, boolean isSearch, int currentPage) {
-            mContext = context;
+        public FetchMovies(TaskCompleted listener, boolean isSearch, int currentPage) {
             this.listener = listener;
             this.isSearch = isSearch;
             this.currentPage = currentPage;
@@ -375,7 +367,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
             if (isSearch && params[0].length() > 0) {
                 url = Utility.getSearchURL(params[0], currentPage);
             } else {
-                url = Utility.getUrl(currentPage, mContext);
+                url = Utility.getUrl(currentPage, getContext());
             }
 
             // Network Client
@@ -406,7 +398,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
                     Log.e(LOG_TAG, "Null ", e);
                 }
 
-                return Utility.getMoviesGSON(mContext, movieJsonStr);
+                return Utility.getMoviesGSON(getContext(), movieJsonStr);
 
             }
             return null;
@@ -421,7 +413,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
             if (searchParams.equals(mSort)) {
                 movieList = movieObjects;
-            } else if (movieObjects == null) {
+            } else if (movieObjects == null || movieList == null) {
                 movieList = new ArrayList<>();
             } else if (addMovies) {
                 movieList.addAll(movieObjects);
@@ -433,18 +425,16 @@ public class MainFragment extends Fragment implements TaskCompleted {
                     movieList.addAll(movieObjects);
                     addSearchMovies = false;
                 }
-            } else if (isSearch || movieList == null) {
+            } else if (isSearch) {
                 movieList = movieObjects;
-            } else if (searchParams.equals("") && isClearedSearch) {
-                movieList = movieObjects;
+            } else if (isClearedSearch) {
                 isClearedSearch = false;
+                movieList = movieObjects;
             }
 
             movieAdapter = new MoviesAdapter(getActivity(), movieList);
+            mRecyclerView.swapAdapter(movieAdapter, false);
 
-            if (mRecyclerView != null) {
-                mRecyclerView.swapAdapter(movieAdapter, false);
-            }
         }
     }
 
