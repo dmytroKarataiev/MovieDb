@@ -22,45 +22,29 @@
  *  SOFTWARE.
  */
 
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.remote;
 
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import karataiev.dmytro.popularmovies.BuildConfig;
+import karataiev.dmytro.popularmovies.model.MovieCredits;
+import karataiev.dmytro.popularmovies.model.MovieReviews;
+import karataiev.dmytro.popularmovies.model.MovieTrailers;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import rx.Observable;
 
 /**
- * Class to start DetailActivityFragment
- * Created by karataev on 12/15/15.
+ * Created by karataev on 5/8/16.
  */
-public class DetailActivity extends AppCompatActivity {
+public interface MoviesService {
 
-    @BindView(R.id.toolbar) Toolbar mToolbar;
+    String API_KEY = "?api_key=" + BuildConfig.MOVIE_DB_API_KEY;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @GET("movie/{id}/credits" + API_KEY)
+    Observable<MovieCredits> getMovieCredits(@Path("id") String movieId);
 
-        setContentView(R.layout.activity_detail);
+    @GET("movie/{id}/videos" + API_KEY)
+    Observable<MovieTrailers> getMovieVideos(@Path("id") String movieId);
 
-        ButterKnife.bind(this);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
-                    .commit();
-        }
-
-        // Initialize a custom toolbar
-        setSupportActionBar(mToolbar);
-        ActionBar ab = getSupportActionBar();
-
-        // Enable the Up button
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-    }
+    @GET("movie/{id}/reviews" + API_KEY)
+    Observable<MovieReviews> getMovieReviews(@Path("id") String movieId);
 }

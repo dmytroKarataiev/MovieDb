@@ -137,11 +137,11 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
             @Override
             public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                Log.d(TAG, "Searching for: " + onTextChangeEvent.text().toString());
-                searchParameter = onTextChangeEvent.text().toString();
+                searchParameter = onTextChangeEvent.view().getText().toString();
+                Log.d(TAG, "Searching for: " + searchParameter);
                 isSearch = true;
 
-                if (onTextChangeEvent.count() < 4) {
+                if (onTextChangeEvent.view().getText().length() < 4) {
                     searchParameter = "";
                     isSearch = false;
                     isClearedSearch = true;
@@ -149,7 +149,6 @@ public class MainFragment extends Fragment implements TaskCompleted {
                 currentPage = 1;
                 currentPosition = 1;
                 updateMovieList();
-
             }
         };
     }
@@ -447,7 +446,9 @@ public class MainFragment extends Fragment implements TaskCompleted {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        _subscription.unsubscribe();
+        if (_subscription != null && !_subscription.isUnsubscribed()) {
+            _subscription.unsubscribe();
+        }
         mUnbinder.unbind();
     }
 }

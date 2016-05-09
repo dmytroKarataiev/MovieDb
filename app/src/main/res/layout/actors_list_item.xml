@@ -22,36 +22,22 @@
   ~  SOFTWARE.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/fab_margin"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/movie_poster"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/poster_height"
-        android:contentDescription="@string/movie_poster"
-        android:scaleType="centerCrop"
-        android:transitionName="@string/anim_poster" />
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/actor_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop" />
 
     <TextView
-        android:id="@+id/movie_poster_text"
+        android:id="@+id/actor_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <ProgressBar
-        android:id="@+id/movie_item_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/poster_height"
-        android:progressDrawable="@drawable/circular_progress_bar" />
-
-    <ImageView
-        android:id="@+id/movie_poster_favorite"
-        android:layout_width="@dimen/favorite_width"
-        android:layout_height="@dimen/favorite_height"
-        android:layout_gravity="left|top"
-        android:contentDescription="@string/favorites_icon"
-        android:src="@drawable/ic_bookmark"
-        android:transitionName="@string/anim_fav" />
-
-</FrameLayout>
+</LinearLayout>

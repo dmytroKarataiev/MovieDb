@@ -22,45 +22,28 @@
  *  SOFTWARE.
  */
 
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.remote;
 
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Class to start DetailActivityFragment
- * Created by karataev on 12/15/15.
+ * Created by karataev on 5/8/16.
  */
-public class DetailActivity extends AppCompatActivity {
+public class ApiManager {
 
-    @BindView(R.id.toolbar) Toolbar mToolbar;
+    private final String BASE_URL = "http://api.themoviedb.org/3/";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private final Retrofit MOVIES_ADAPTER = new Retrofit.Builder()
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build();
 
-        setContentView(R.layout.activity_detail);
+    private final MoviesService MOVIES_SERVICE = MOVIES_ADAPTER.create(MoviesService.class);
 
-        ButterKnife.bind(this);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
-                    .commit();
-        }
-
-        // Initialize a custom toolbar
-        setSupportActionBar(mToolbar);
-        ActionBar ab = getSupportActionBar();
-
-        // Enable the Up button
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
+    public MoviesService getMoviesService() {
+        return MOVIES_SERVICE;
     }
 }

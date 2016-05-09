@@ -22,45 +22,57 @@
  *  SOFTWARE.
  */
 
-package karataiev.dmytro.popularmovies;
+package karataiev.dmytro.popularmovies.model;
 
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Class to start DetailActivityFragment
- * Created by karataev on 12/15/15.
- */
-public class DetailActivity extends AppCompatActivity {
+public class MovieTrailers {
 
-    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("results")
+    @Expose
+    private List<Trailer> trailers = new ArrayList<>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_detail);
-
-        ButterKnife.bind(this);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
-                    .commit();
-        }
-
-        // Initialize a custom toolbar
-        setSupportActionBar(mToolbar);
-        ActionBar ab = getSupportActionBar();
-
-        // Enable the Up button
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
+    /**
+     *
+     * @return
+     * The id
+     */
+    public Integer getId() {
+        return id;
     }
+
+    /**
+     *
+     * @param id
+     * The id
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     *
+     * @return
+     * The results
+     */
+    public List<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    /**
+     *
+     * @param results
+     * The results
+     */
+    public void setTrailers(List<Trailer> results) {
+        this.trailers = results;
+    }
+
 }

@@ -1,8 +1,9 @@
 # PopularMovies
-App uses [The Movie Database API](https://www.themoviedb.org) to fetch data and show movies <br>
-App has been published on Google Play: [Popular Movies - The Movie DB Client](https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies)
+<a href="https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" width="185" height="60"/></a><br>
 
-<img src="movies.gif">
+![Animation of a current state](movies.gif)
+
+A fast and easy to use client to [The Movie Database API](https://www.themoviedb.org) with data persistance, youtube trailers inside the app, sharing functionality.
 
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
@@ -32,7 +33,6 @@ movieDbApiKey = "**YOUR API KEY**" <br>
 youtubeApiKey = "**YOUR API KEY**"
 
 ## Content from the internet and other sources
-* App icon: http://www.veryicon.com/icon/png/System/Agua/Movies.png
 * Some technics and ideas were taken from the Udacity Course [Developing Android Apps](https://www.udacity.com/course/viewer#!/c-ud853-nd)
 * And useful WebCasts from Android NanoDegree: https://plus.google.com/u/0/107950612876685287140/posts
 

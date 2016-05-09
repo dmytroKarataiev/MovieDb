@@ -29,6 +29,8 @@ import android.content.Context;
 
 import com.squareup.leakcanary.RefWatcher;
 
+import karataiev.dmytro.popularmovies.remote.ApiManager;
+
 /**
  * Application to start if necessary leak watcher
  * Created by karataev on 12/28/15.
@@ -42,6 +44,15 @@ public class App extends Application {
 
     private RefWatcher refWatcher;
 
+    private static ApiManager sApiManager;
+
+    // Singleton Retrofit for Earthquakes
+    public static ApiManager getApiManager() {
+        if (sApiManager == null) {
+            sApiManager = new ApiManager();
+        }
+        return sApiManager;
+    }
 
     @Override
     public void onCreate() {

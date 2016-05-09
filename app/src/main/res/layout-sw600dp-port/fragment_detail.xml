@@ -158,6 +158,8 @@
             android:padding="@dimen/fab_margin"
             android:visibility="visible" />
 
+        <include layout="@layout/actors_list" />
+
         <!-- Reviews TextView -->
         <TextView
             android:id="@+id/detail_reviews_textview"
