@@ -84,5 +84,6 @@
 
     <string name="menu_sort">Sort by</string>
     <string name="favorites_icon">Favorites icon</string>
+    <string name="title_activity_actor">ActorActivity</string>
 
 </resources>

@@ -75,6 +75,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.ActorsAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.Review;
@@ -93,7 +94,7 @@ import rx.subscriptions.CompositeSubscription;
  * Detailed Movie Fragment with poster, rating, description.
  * Created by karataev on 12/15/15.
  */
-public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
+public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener, ItemClickListener<String, View> {
 
     private final String TAG = DetailFragment.class.getSimpleName();
 
@@ -513,6 +514,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         public void onNext(MovieCredits movieCredits) {
                             mActorsAdapter = new ActorsAdapter(getContext(), movieCredits);
                             mRecyclerActors.setAdapter(mActorsAdapter);
+                            mActorsAdapter.setData(DetailFragment.this);
                         }
                     })
         );
@@ -579,8 +581,13 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                     }
                 })
         );
-
-
     }
 
+    @Override
+    public void onItemClicked(String item, View view) {
+        Intent intent = new Intent(getContext(), ActorActivity.class);
+        // TODO: 5/25/16 constant 
+        intent.putExtra("actor_id", item);
+        startActivity(intent);
+    }
 }

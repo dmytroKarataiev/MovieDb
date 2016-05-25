@@ -37,15 +37,23 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.R;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 
 /**
+ * Adapter which shows actors and their names in a recyclerview
  * Created by karataev on 5/8/16.
  */
 public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder> {
 
     private MovieCredits mMovieCredits;
     private Context mContext;
+    private ItemClickListener<String, View> mListener;
+
+    public void setData(ItemClickListener<String, View> listener) {
+        mListener = listener;
+    }
 
     public ActorsAdapter(Context context, MovieCredits movieCredits) {
         super();
@@ -73,18 +81,25 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
+        MovieCast movieCast = mMovieCredits.getCast().get(position);
+
         Picasso.with(mContext)
+                // TODO: 5/25/16 constant 
                 .load("http://image.tmdb.org/t/p/w185" + mMovieCredits.getCast().get(position).getProfilePath())
                 .into(holder.mImageActor);
         holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
+
+        holder.itemView.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onItemClicked(movieCast.getName(), holder.itemView);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if (mMovieCredits != null) {
-            return mMovieCredits.getCast().size();
-        }
-        return 0;
+        return mMovieCredits != null ? mMovieCredits.getCast().size() : 0;
     }
 
 
