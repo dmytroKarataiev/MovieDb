@@ -54,7 +54,7 @@ android {
 }
 
 ext {
-    compatLibVersion = '23.3.0'
+    compatLibVersion = '23.4.0'
 }
 
 dependencies {
@@ -75,7 +75,7 @@ dependencies {
 
     // download and parse data
     compile 'com.google.code.gson:gson:2.6.2'
-    compile 'com.squareup.okhttp:okhttp:2.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
 
     // data fetching and converting to objects
     compile 'com.squareup.retrofit2:retrofit:2.0.2'

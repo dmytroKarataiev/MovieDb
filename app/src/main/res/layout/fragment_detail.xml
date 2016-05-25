@@ -24,12 +24,14 @@
 
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:fillViewport="true"
     android:transitionGroup="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:targetApi="lollipop">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -70,7 +72,7 @@
                     android:id="@+id/movie_poster_favorite"
                     android:layout_width="@dimen/favorite_width"
                     android:layout_height="@dimen/favorite_height"
-                    android:layout_gravity="left|top"
+                    android:layout_gravity="start|top"
                     android:contentDescription="@string/favorites_icon"
                     android:src="@drawable/ic_bookmark"
                     android:transitionName="@string/anim_fav" />
@@ -129,12 +131,19 @@
 
         </LinearLayout>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_below="@id/main_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
         <!-- Movie Description -->
         <TextView
             android:id="@+id/detail_description_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/main_content"
+            android:layout_below="@id/recyclerview"
             android:paddingLeft="@dimen/fab_margin"
             android:paddingRight="@dimen/fab_margin" />
 
@@ -149,26 +158,17 @@
             android:padding="@dimen/fab_margin"
             android:visibility="visible" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/youtube_fragment"
-            android:padding="@dimen/fab_margin"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
         <!-- Reviews TextView -->
         <TextView
             android:id="@+id/detail_reviews_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/recyclerview"
+            android:layout_below="@id/youtube_fragment"
             android:paddingBottom="@dimen/fab_margin"
             android:paddingLeft="@dimen/fab_margin"
             android:paddingRight="@dimen/fab_margin" />
 
     </RelativeLayout>
-
 
 </android.support.v4.widget.NestedScrollView>
 

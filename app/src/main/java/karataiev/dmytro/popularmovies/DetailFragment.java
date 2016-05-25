@@ -493,7 +493,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setLayoutManager(layoutManager);
         mRecyclerActors.setAdapter(mActorsAdapter);
         mRecyclerActors.setNestedScrollingEnabled(true);
-        mRecyclerActors.setHasFixedSize(true);
 
         _subscriptions.add(
                 mMoviesService.getMovieCredits(mMovieObject.getId())

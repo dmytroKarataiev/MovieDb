@@ -76,7 +76,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
         Picasso.with(mContext)
                 .load("http://image.tmdb.org/t/p/w185" + mMovieCredits.getCast().get(position).getProfilePath())
                 .into(holder.mImageActor);
-        holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName());
+        holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
     }
 
     @Override
