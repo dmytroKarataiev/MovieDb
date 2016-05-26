@@ -25,6 +25,9 @@
 package karataiev.dmytro.popularmovies.remote;
 
 import karataiev.dmytro.popularmovies.BuildConfig;
+import karataiev.dmytro.popularmovies.model.Actor;
+import karataiev.dmytro.popularmovies.model.ActorCredits;
+import karataiev.dmytro.popularmovies.model.ActorImage;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieReviews;
 import karataiev.dmytro.popularmovies.model.MovieTrailers;
@@ -47,4 +50,13 @@ public interface MoviesService {
 
     @GET("movie/{id}/reviews" + API_KEY)
     Observable<MovieReviews> getMovieReviews(@Path("id") String movieId);
+
+    @GET("person/{id}" + API_KEY)
+    Observable<Actor> getActor(@Path("id") String actorId);
+
+    @GET("person/{id}/images" + API_KEY)
+    Observable<ActorImage> getActorImages(@Path("id") String actorId);
+
+    @GET("person/{id}/movie_credits" + API_KEY)
+    Observable<ActorCredits> getActorCredits(@Path("id") String actorId);
 }

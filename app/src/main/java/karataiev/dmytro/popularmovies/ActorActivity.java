@@ -34,7 +34,7 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ActorActivity extends AppCompatActivity {
+public class ActorActivity extends AppCompatActivity implements ActorFragment.OnFragmentInteraction {
 
     @BindView(R.id.fab)
     FloatingActionButton mFab;
@@ -52,6 +52,7 @@ public class ActorActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        // TODO: 5/26/16
         mFab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
     }
@@ -69,5 +70,12 @@ public class ActorActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDataReceive(String title) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 }

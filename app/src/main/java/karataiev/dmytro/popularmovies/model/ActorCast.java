@@ -24,17 +24,17 @@
 
 package karataiev.dmytro.popularmovies.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MovieCast implements Parcelable {
+/**
+ * Created by karataev on 5/26/16.
+ */
+public class ActorCast {
 
-    @SerializedName("cast_id")
+    @SerializedName("adult")
     @Expose
-    private Integer castId;
+    private boolean adult;
     @SerializedName("character")
     @Expose
     private String character;
@@ -43,33 +43,36 @@ public class MovieCast implements Parcelable {
     private String creditId;
     @SerializedName("id")
     @Expose
-    private Integer id;
-    @SerializedName("name")
+    private long id;
+    @SerializedName("original_title")
     @Expose
-    private String name;
-    @SerializedName("order")
+    private String originalTitle;
+    @SerializedName("poster_path")
     @Expose
-    private Integer order;
-    @SerializedName("profile_path")
+    private String posterPath;
+    @SerializedName("release_date")
     @Expose
-    private String profilePath;
+    private String releaseDate;
+    @SerializedName("title")
+    @Expose
+    private String title;
 
     /**
      *
      * @return
-     * The castId
+     * The adult
      */
-    public Integer getCastId() {
-        return castId;
+    public boolean isAdult() {
+        return adult;
     }
 
     /**
      *
-     * @param castId
-     * The cast_id
+     * @param adult
+     * The adult
      */
-    public void setCastId(Integer castId) {
-        this.castId = castId;
+    public void setAdult(boolean adult) {
+        this.adult = adult;
     }
 
     /**
@@ -113,7 +116,7 @@ public class MovieCast implements Parcelable {
      * @return
      * The id
      */
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
@@ -122,102 +125,80 @@ public class MovieCast implements Parcelable {
      * @param id
      * The id
      */
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     /**
      *
      * @return
-     * The name
+     * The originalTitle
      */
-    public String getName() {
-        return name;
+    public String getOriginalTitle() {
+        return originalTitle;
     }
 
     /**
      *
-     * @param name
-     * The name
+     * @param originalTitle
+     * The original_title
      */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     *
-     * @return
-     * The order
-     */
-    public Integer getOrder() {
-        return order;
-    }
-
-    /**
-     *
-     * @param order
-     * The order
-     */
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
     }
 
     /**
      *
      * @return
-     * The profilePath
+     * The posterPath
      */
-    public String getProfilePath() {
-        return profilePath;
+    public String getPosterPath() {
+        return posterPath;
     }
 
     /**
      *
-     * @param profilePath
-     * The profile_path
+     * @param posterPath
+     * The poster_path
      */
-    public void setProfilePath(String profilePath) {
-        this.profilePath = profilePath;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    /**
+     *
+     * @return
+     * The releaseDate
+     */
+    public String getReleaseDate() {
+        return releaseDate;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.castId);
-        dest.writeString(this.character);
-        dest.writeString(this.creditId);
-        dest.writeValue(this.id);
-        dest.writeString(this.name);
-        dest.writeValue(this.order);
-        dest.writeString(this.profilePath);
+    /**
+     *
+     * @param releaseDate
+     * The release_date
+     */
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
-    public MovieCast() {
+    /**
+     *
+     * @return
+     * The title
+     */
+    public String getTitle() {
+        return title;
     }
 
-    protected MovieCast(Parcel in) {
-        this.castId = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.character = in.readString();
-        this.creditId = in.readString();
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.name = in.readString();
-        this.order = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.profilePath = in.readString();
+    /**
+     *
+     * @param title
+     * The title
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public static final Parcelable.Creator<MovieCast> CREATOR = new Parcelable.Creator<MovieCast>() {
-        @Override
-        public MovieCast createFromParcel(Parcel source) {
-            return new MovieCast(source);
-        }
-
-        @Override
-        public MovieCast[] newArray(int size) {
-            return new MovieCast[size];
-        }
-    };
 }

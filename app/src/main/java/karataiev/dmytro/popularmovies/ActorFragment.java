@@ -24,16 +24,28 @@
 
 package karataiev.dmytro.popularmovies;
 
-import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import karataiev.dmytro.popularmovies.model.Consts;
+import karataiev.dmytro.popularmovies.model.Actor;
+import karataiev.dmytro.popularmovies.model.MovieCast;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -42,7 +54,45 @@ public class ActorFragment extends Fragment {
 
     @BindView(R.id.actor_id)
     TextView mTextId;
+    @BindView(R.id.actor_photo)
+    ImageView mImagePhoto;
+    @BindView(R.id.actor_name)
+    TextView mTextName;
+    @BindView(R.id.actor_bioghraphy)
+    TextView mTextBio;
+    @BindView(R.id.actor_birthday)
+    TextView mTextBirthday;
+    @BindView(R.id.actor_deathday)
+    TextView mTextDeathday;
+    @BindView(R.id.actor_homepage)
+    TextView mTextHomepage;
+    @BindView(R.id.actor_birthplace)
+    TextView mTextBirthplace;
+
     private Unbinder mUnbinder;
+    private Subscription _subscription;
+
+    private OnFragmentInteraction mListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteraction) {
+            mListener = (OnFragmentInteraction) context;
+        } else {
+            throw new RuntimeException(context.toString() +
+                    " must implement " + OnFragmentInteraction.class.getSimpleName());
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+        if (_subscription != null && !_subscription.isUnsubscribed()) {
+            _subscription.unsubscribe();
+        }
+    }
 
     public ActorFragment() {
     }
@@ -54,18 +104,66 @@ public class ActorFragment extends Fragment {
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
-        if (getActivity().getIntent() != null) {
-            // TODO: 5/25/16 constant 
-            String id = getActivity().getIntent().getStringExtra("actor_id");
-            mTextId.setText(id);
-        }
-
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (getActivity().getIntent() != null) {
+            setData(getActivity().getIntent()
+                    .getParcelableExtra(Consts.ACTOR_EXTRA));
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mUnbinder.unbind();
+    }
+
+    public void setData(MovieCast movieCast) {
+
+        _subscription = App.getApiManager().getMoviesService()
+                .getActor(String.valueOf(movieCast.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Actor>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Actor actor) {
+                        mTextBio.setText(actor.getBiography());
+                        mTextBirthday.setText(actor.getBirthday());
+                        mTextDeathday.setText(actor.getDeathday());
+                        mTextHomepage.setText(actor.getHomepage());
+                        mTextBirthplace.setText(actor.getPlaceOfBirth());
+                    }
+                });
+
+        Picasso.with(getContext())
+                .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
+                .into(mImagePhoto);
+
+        mTextName.setText(movieCast.getName());
+        mTextId.setText(String.valueOf(movieCast.getId()));
+
+        // send a title to an activity's actionBar
+        if (mListener != null) {
+            mListener.onDataReceive(movieCast.getName());
+        }
+    }
+
+    public interface OnFragmentInteraction {
+        void onDataReceive(String title);
     }
 }

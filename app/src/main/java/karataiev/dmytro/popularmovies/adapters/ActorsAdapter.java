@@ -38,6 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 
@@ -49,9 +50,9 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
     private MovieCredits mMovieCredits;
     private Context mContext;
-    private ItemClickListener<String, View> mListener;
+    private ItemClickListener<MovieCast, View> mListener;
 
-    public void setData(ItemClickListener<String, View> listener) {
+    public void setData(ItemClickListener<MovieCast, View> listener) {
         mListener = listener;
     }
 
@@ -85,14 +86,13 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
         MovieCast movieCast = mMovieCredits.getCast().get(position);
 
         Picasso.with(mContext)
-                // TODO: 5/25/16 constant 
-                .load("http://image.tmdb.org/t/p/w185" + mMovieCredits.getCast().get(position).getProfilePath())
+                .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + mMovieCredits.getCast().get(position).getProfilePath())
                 .into(holder.mImageActor);
         holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {
-                mListener.onItemClicked(movieCast.getName(), holder.itemView);
+                mListener.onItemClicked(movieCast, holder.itemView);
             }
         });
     }
@@ -101,6 +101,5 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
     public int getItemCount() {
         return mMovieCredits != null ? mMovieCredits.getCast().size() : 0;
     }
-
 
 }

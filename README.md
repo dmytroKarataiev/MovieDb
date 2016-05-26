@@ -15,7 +15,10 @@ A fast and easy to use client to [The Movie Database API](https://www.themoviedb
 * Tablet Design.
 
 ## Development plans
-* Design improvements
+* Popular TV Series.
+* Popular Actors.
+* Design improvements.
+* Actors Activity: Photos, List of Movies.
 
 ## Used Technologies
 * RxAndroid, RxJava (EditText observable).

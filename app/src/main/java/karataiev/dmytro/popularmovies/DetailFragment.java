@@ -76,6 +76,8 @@ import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.ActorsAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.model.Consts;
+import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.Review;
@@ -94,7 +96,7 @@ import rx.subscriptions.CompositeSubscription;
  * Detailed Movie Fragment with poster, rating, description.
  * Created by karataev on 12/15/15.
  */
-public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener, ItemClickListener<String, View> {
+public class DetailFragment extends Fragment implements YouTubePlayer.OnInitializedListener, ItemClickListener<MovieCast, View> {
 
     private final String TAG = DetailFragment.class.getSimpleName();
 
@@ -584,10 +586,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     }
 
     @Override
-    public void onItemClicked(String item, View view) {
+    public void onItemClicked(MovieCast movieCast, View view) {
         Intent intent = new Intent(getContext(), ActorActivity.class);
-        // TODO: 5/25/16 constant 
-        intent.putExtra("actor_id", item);
+        intent.putExtra(Consts.ACTOR_EXTRA, movieCast);
         startActivity(intent);
     }
 }

@@ -24,32 +24,44 @@
 
 package karataiev.dmytro.popularmovies.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MovieCast implements Parcelable {
+import java.util.ArrayList;
+import java.util.List;
 
-    @SerializedName("cast_id")
+/**
+ * Created by karataev on 5/26/16.
+ */
+public class Actor {
+
+    @SerializedName("adult")
     @Expose
-    private Integer castId;
-    @SerializedName("character")
+    private boolean adult;
+    @SerializedName("also_known_as")
     @Expose
-    private String character;
-    @SerializedName("credit_id")
+    private List<Object> alsoKnownAs = new ArrayList<Object>();
+    @SerializedName("biography")
     @Expose
-    private String creditId;
+    private String biography;
+    @SerializedName("birthday")
+    @Expose
+    private String birthday;
+    @SerializedName("deathday")
+    @Expose
+    private String deathday;
+    @SerializedName("homepage")
+    @Expose
+    private String homepage;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private long id;
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("order")
+    @SerializedName("place_of_birth")
     @Expose
-    private Integer order;
+    private String placeOfBirth;
     @SerializedName("profile_path")
     @Expose
     private String profilePath;
@@ -57,55 +69,109 @@ public class MovieCast implements Parcelable {
     /**
      *
      * @return
-     * The castId
+     * The adult
      */
-    public Integer getCastId() {
-        return castId;
+    public boolean isAdult() {
+        return adult;
     }
 
     /**
      *
-     * @param castId
-     * The cast_id
+     * @param adult
+     * The adult
      */
-    public void setCastId(Integer castId) {
-        this.castId = castId;
-    }
-
-    /**
-     *
-     * @return
-     * The character
-     */
-    public String getCharacter() {
-        return character;
-    }
-
-    /**
-     *
-     * @param character
-     * The character
-     */
-    public void setCharacter(String character) {
-        this.character = character;
+    public void setAdult(boolean adult) {
+        this.adult = adult;
     }
 
     /**
      *
      * @return
-     * The creditId
+     * The alsoKnownAs
      */
-    public String getCreditId() {
-        return creditId;
+    public List<Object> getAlsoKnownAs() {
+        return alsoKnownAs;
     }
 
     /**
      *
-     * @param creditId
-     * The credit_id
+     * @param alsoKnownAs
+     * The also_known_as
      */
-    public void setCreditId(String creditId) {
-        this.creditId = creditId;
+    public void setAlsoKnownAs(List<Object> alsoKnownAs) {
+        this.alsoKnownAs = alsoKnownAs;
+    }
+
+    /**
+     *
+     * @return
+     * The biography
+     */
+    public String getBiography() {
+        return biography;
+    }
+
+    /**
+     *
+     * @param biography
+     * The biography
+     */
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
+
+    /**
+     *
+     * @return
+     * The birthday
+     */
+    public String getBirthday() {
+        return birthday;
+    }
+
+    /**
+     *
+     * @param birthday
+     * The birthday
+     */
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    /**
+     *
+     * @return
+     * The deathday
+     */
+    public String getDeathday() {
+        return deathday;
+    }
+
+    /**
+     *
+     * @param deathday
+     * The deathday
+     */
+    public void setDeathday(String deathday) {
+        this.deathday = deathday;
+    }
+
+    /**
+     *
+     * @return
+     * The homepage
+     */
+    public String getHomepage() {
+        return homepage;
+    }
+
+    /**
+     *
+     * @param homepage
+     * The homepage
+     */
+    public void setHomepage(String homepage) {
+        this.homepage = homepage;
     }
 
     /**
@@ -113,7 +179,7 @@ public class MovieCast implements Parcelable {
      * @return
      * The id
      */
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
@@ -122,7 +188,7 @@ public class MovieCast implements Parcelable {
      * @param id
      * The id
      */
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -147,19 +213,19 @@ public class MovieCast implements Parcelable {
     /**
      *
      * @return
-     * The order
+     * The placeOfBirth
      */
-    public Integer getOrder() {
-        return order;
+    public String getPlaceOfBirth() {
+        return placeOfBirth;
     }
 
     /**
      *
-     * @param order
-     * The order
+     * @param placeOfBirth
+     * The place_of_birth
      */
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setPlaceOfBirth(String placeOfBirth) {
+        this.placeOfBirth = placeOfBirth;
     }
 
     /**
@@ -180,44 +246,4 @@ public class MovieCast implements Parcelable {
         this.profilePath = profilePath;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.castId);
-        dest.writeString(this.character);
-        dest.writeString(this.creditId);
-        dest.writeValue(this.id);
-        dest.writeString(this.name);
-        dest.writeValue(this.order);
-        dest.writeString(this.profilePath);
-    }
-
-    public MovieCast() {
-    }
-
-    protected MovieCast(Parcel in) {
-        this.castId = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.character = in.readString();
-        this.creditId = in.readString();
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.name = in.readString();
-        this.order = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.profilePath = in.readString();
-    }
-
-    public static final Parcelable.Creator<MovieCast> CREATOR = new Parcelable.Creator<MovieCast>() {
-        @Override
-        public MovieCast createFromParcel(Parcel source) {
-            return new MovieCast(source);
-        }
-
-        @Override
-        public MovieCast[] newArray(int size) {
-            return new MovieCast[size];
-        }
-    };
 }
