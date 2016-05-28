@@ -25,9 +25,12 @@
 package karataiev.dmytro.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,18 +42,21 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import karataiev.dmytro.popularmovies.model.Consts;
+import karataiev.dmytro.popularmovies.adapters.ThumbnailsAdapter;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Actor;
+import karataiev.dmytro.popularmovies.model.ActorCredits;
+import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ActorFragment extends Fragment {
+public class ActorFragment extends Fragment implements ItemClickListener<String, View> {
 
     @BindView(R.id.actor_id)
     TextView mTextId;
@@ -68,9 +74,13 @@ public class ActorFragment extends Fragment {
     TextView mTextHomepage;
     @BindView(R.id.actor_birthplace)
     TextView mTextBirthplace;
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerView;
+
+    private ThumbnailsAdapter mThumbnailsAdapter;
 
     private Unbinder mUnbinder;
-    private Subscription _subscription;
+    private CompositeSubscription _subscription;
 
     private OnFragmentInteraction mListener;
 
@@ -110,7 +120,7 @@ public class ActorFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        _subscription = new CompositeSubscription();
         if (getActivity().getIntent() != null) {
             setData(getActivity().getIntent()
                     .getParcelableExtra(Consts.ACTOR_EXTRA));
@@ -125,7 +135,14 @@ public class ActorFragment extends Fragment {
 
     public void setData(MovieCast movieCast) {
 
-        _subscription = App.getApiManager().getMoviesService()
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        mThumbnailsAdapter = new ThumbnailsAdapter(getContext());
+
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mThumbnailsAdapter);
+        mRecyclerView.setNestedScrollingEnabled(true);
+
+        _subscription.add(App.getApiManager().getMoviesService()
                 .getActor(String.valueOf(movieCast.getId()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -148,7 +165,29 @@ public class ActorFragment extends Fragment {
                         mTextHomepage.setText(actor.getHomepage());
                         mTextBirthplace.setText(actor.getPlaceOfBirth());
                     }
-                });
+                }));
+
+        _subscription.add(App.getApiManager().getMoviesService()
+                .getActorCredits(String.valueOf(movieCast.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<ActorCredits>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ActorCredits actorCredits) {
+                        mThumbnailsAdapter.setData(ActorFragment.this, actorCredits);
+                        mThumbnailsAdapter.notifyDataSetChanged();
+                    }
+                }));
 
         Picasso.with(getContext())
                 .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
@@ -165,5 +204,12 @@ public class ActorFragment extends Fragment {
 
     public interface OnFragmentInteraction {
         void onDataReceive(String title);
+    }
+
+    @Override
+    public void onItemClicked(String movieId, View view) {
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra(Consts.MOVIE_ID, movieId);
+        startActivity(intent);
     }
 }

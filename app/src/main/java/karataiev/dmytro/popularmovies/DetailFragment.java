@@ -82,12 +82,13 @@ import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.Review;
 import karataiev.dmytro.popularmovies.model.Trailer;
+import karataiev.dmytro.popularmovies.remote.ApiService;
 import karataiev.dmytro.popularmovies.remote.FetchMovies;
-import karataiev.dmytro.popularmovies.remote.MoviesService;
 import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -118,25 +119,37 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     // list of videos
     private List<String> mTrailersList;
     private List<String> mReviewsList;
-    
-    @BindView(R.id.movie_poster) ImageView mImagePoster;
-    @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
-    @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
-    @BindView(R.id.detail_releasedate_textview) TextView mTextRelease;
-    @BindView(R.id.detail_rating_textview) TextView mTextRating;
-    @BindView(R.id.detail_description_textview) TextView mTextDescription;
-    @BindView(R.id.detail_votecount_textview) TextView mTextVotes;
-    @BindView(R.id.detail_background) NestedScrollView mLinearBackground;
-    @BindView(R.id.detail_reviews_textview) TextView mTextReviews;
-    @Nullable @BindView(R.id.backdrop) ImageView mImageBackdrop;
+
+    @BindView(R.id.movie_poster)
+    ImageView mImagePoster;
+    @BindView(R.id.movie_item_spinner)
+    ProgressBar mProgressSpinner;
+    @BindView(R.id.movie_poster_favorite)
+    ImageView mImageFavorite;
+    @BindView(R.id.detail_releasedate_textview)
+    TextView mTextRelease;
+    @BindView(R.id.detail_rating_textview)
+    TextView mTextRating;
+    @BindView(R.id.detail_description_textview)
+    TextView mTextDescription;
+    @BindView(R.id.detail_votecount_textview)
+    TextView mTextVotes;
+    @BindView(R.id.detail_background)
+    NestedScrollView mLinearBackground;
+    @BindView(R.id.detail_reviews_textview)
+    TextView mTextReviews;
+    @Nullable
+    @BindView(R.id.backdrop)
+    ImageView mImageBackdrop;
     Unbinder mUnbinder;
 
     // Actors RecyclerList view
-    @BindView(R.id.recyclerview) RecyclerView mRecyclerActors;
-    ActorsAdapter mActorsAdapter;
-    
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerActors;
+    private ActorsAdapter mActorsAdapter;
+
     // RxJava
-    private MoviesService mMoviesService;
+    private ApiService mApiService;
     private CompositeSubscription _subscriptions;
 
     // Callback inside of Picasso Call
@@ -222,7 +235,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMoviesService = App.getApiManager().getMoviesService();
+        mApiService = App.getApiManager().getMoviesService();
         _subscriptions = new CompositeSubscription();
 
         mReviewsList = new ArrayList<>();
@@ -239,6 +252,32 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         Bundle arguments = getArguments();
         if (arguments != null) {
             mMovieObject = arguments.getParcelable(MovieObject.MOVIE_OBJECT);
+        } else if (getActivity().getIntent().hasExtra(Consts.MOVIE_ID)) {
+            String movieId = getActivity().getIntent().getStringExtra(Consts.MOVIE_ID);
+            _subscriptions.add(App.getApiManager().getMoviesService()
+                    .getMovie(movieId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<MovieObject>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(MovieObject movieObject) {
+                            // TODO: 5/28/16 refactor
+                            mMovieObject = movieObject;
+                            mMovieObject.makeNice(getContext());
+                            loadData();
+                            initRecycler();
+                        }
+                    }));
         } else {
             // Gets data from intent (using parcelable) and populates views
             intent = this.getActivity().getIntent();
@@ -282,6 +321,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
 
+        // TODO: 5/28/16 refactor
         if (mMovieObject != null) {
             loadData();
             initRecycler();
@@ -310,6 +350,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     /**
      * Method to populate Intent with data
+     *
      * @return Intent with data to external apps
      */
     private Intent movieIntent() {
@@ -330,7 +371,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
         if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) &&
                 (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)) {
-            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
 
             if (getView() != null) {
                 FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
@@ -374,7 +415,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             }
         });
-        if(!wasRestored){
+        if (!wasRestored) {
             if (mTrailersList != null && mTrailersList.size() > 0) {
                 Log.d(TAG, "onInitializationSuccess: ");
                 mYouTubePlayer.cueVideos(mTrailersList, currentVideo, currentVideoMillis);
@@ -498,31 +539,31 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setNestedScrollingEnabled(true);
 
         _subscriptions.add(
-                mMoviesService.getMovieCredits(mMovieObject.getId())
+                mApiService.getMovieCredits(mMovieObject.getId())
                         .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<MovieCredits>() {
-                        @Override
-                        public void onCompleted() {
-                            Log.d(TAG, "onCompleted: ");
-                        }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<MovieCredits>() {
+                            @Override
+                            public void onCompleted() {
+                                Log.d(TAG, "onCompleted: ");
+                            }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.e(TAG, "onError: ", e);
-                        }
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "onError: ", e);
+                            }
 
-                        @Override
-                        public void onNext(MovieCredits movieCredits) {
-                            mActorsAdapter = new ActorsAdapter(getContext(), movieCredits);
-                            mRecyclerActors.setAdapter(mActorsAdapter);
-                            mActorsAdapter.setData(DetailFragment.this);
-                        }
-                    })
+                            @Override
+                            public void onNext(MovieCredits movieCredits) {
+                                mActorsAdapter = new ActorsAdapter(getContext(), movieCredits);
+                                mRecyclerActors.setAdapter(mActorsAdapter);
+                                mActorsAdapter.setData(DetailFragment.this);
+                            }
+                        })
         );
 
         _subscriptions.add(
-                mMoviesService.getMovieVideos(mMovieObject.getId())
+                mApiService.getMovieVideos(mMovieObject.getId())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(movieTrailers -> Observable.from(movieTrailers.getTrailers()))
@@ -559,29 +600,29 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         _subscriptions.add(
-                mMoviesService.getMovieReviews(mMovieObject.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(reviews -> Observable.from(reviews.getReviews()))
-                .subscribe(new Observer<Review>() {
-                    @Override
-                    public void onCompleted() {
-                        if (mReviewsList != null) {
-                            mTextReviews.setText(TextUtils.join("\n", mReviewsList));
-                        }
-                        Log.d(TAG, "reviews completed");
-                    }
+                mApiService.getMovieReviews(mMovieObject.getId())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(reviews -> Observable.from(reviews.getReviews()))
+                        .subscribe(new Observer<Review>() {
+                            @Override
+                            public void onCompleted() {
+                                if (mReviewsList != null) {
+                                    mTextReviews.setText(TextUtils.join("\n", mReviewsList));
+                                }
+                                Log.d(TAG, "reviews completed");
+                            }
 
-                    @Override
-                    public void onError(Throwable e) {
+                            @Override
+                            public void onError(Throwable e) {
 
-                    }
+                            }
 
-                    @Override
-                    public void onNext(Review review) {
-                        mReviewsList.add(review.getAuthor() + "\n" + review.getContent());
-                    }
-                })
+                            @Override
+                            public void onNext(Review review) {
+                                mReviewsList.add(review.getAuthor() + "\n" + review.getContent());
+                            }
+                        })
         );
     }
 

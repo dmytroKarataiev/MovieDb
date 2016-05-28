@@ -41,9 +41,9 @@ public class ApiManager {
             .baseUrl(BASE_URL)
             .build();
 
-    private final MoviesService MOVIES_SERVICE = MOVIES_ADAPTER.create(MoviesService.class);
+    private final ApiService MOVIES_SERVICE = MOVIES_ADAPTER.create(ApiService.class);
 
-    public MoviesService getMoviesService() {
+    public ApiService getMoviesService() {
         return MOVIES_SERVICE;
     }
 }

@@ -30,6 +30,7 @@ package karataiev.dmytro.popularmovies.model;
 public class Consts {
 
     public static final String ACTOR_EXTRA = "actor_id";
+    public static final String MOVIE_ID = "movie_id";
 
     public static final String IMAGE_URL = "http://image.tmdb.org/t/p/";
     public static final String ACTOR_THUMB = "w185";

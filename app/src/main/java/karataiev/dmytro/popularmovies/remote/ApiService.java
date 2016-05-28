@@ -29,6 +29,7 @@ import karataiev.dmytro.popularmovies.model.Actor;
 import karataiev.dmytro.popularmovies.model.ActorCredits;
 import karataiev.dmytro.popularmovies.model.ActorImage;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
+import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.MovieReviews;
 import karataiev.dmytro.popularmovies.model.MovieTrailers;
 import retrofit2.http.GET;
@@ -38,9 +39,12 @@ import rx.Observable;
 /**
  * Created by karataev on 5/8/16.
  */
-public interface MoviesService {
+public interface ApiService {
 
     String API_KEY = "?api_key=" + BuildConfig.MOVIE_DB_API_KEY;
+
+    @GET("movie/{id}" + API_KEY)
+    Observable<MovieObject> getMovie(@Path("id") String movieId);
 
     @GET("movie/{id}/credits" + API_KEY)
     Observable<MovieCredits> getMovieCredits(@Path("id") String movieId);
