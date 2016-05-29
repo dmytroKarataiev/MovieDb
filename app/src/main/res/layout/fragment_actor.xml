@@ -22,7 +22,7 @@
   ~  SOFTWARE.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -45,16 +45,10 @@
             android:contentDescription="@string/actor_photo_desc" />
 
         <TextView
-            android:id="@+id/actor_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/actor_photo" />
-
-        <TextView
             android:id="@+id/actor_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/actor_id" />
+            android:layout_below="@id/actor_photo" />
 
         <TextView
             android:id="@+id/actor_bioghraphy"
@@ -86,13 +80,20 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/actor_homepage" />
 
+        <TextView
+            android:id="@+id/actor_known"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/actor_birthplace"
+            android:text="@string/actor_known" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/actor_birthplace" />
+            android:layout_below="@id/actor_known" />
 
 
     </RelativeLayout>
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

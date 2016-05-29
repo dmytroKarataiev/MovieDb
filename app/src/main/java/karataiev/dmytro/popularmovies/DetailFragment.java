@@ -138,10 +138,10 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     NestedScrollView mLinearBackground;
     @BindView(R.id.detail_reviews_textview)
     TextView mTextReviews;
-    @Nullable
-    @BindView(R.id.backdrop)
+    @Nullable @BindView(R.id.backdrop)
     ImageView mImageBackdrop;
-    Unbinder mUnbinder;
+
+    private Unbinder mUnbinder;
 
     // Actors RecyclerList view
     @BindView(R.id.recyclerview)

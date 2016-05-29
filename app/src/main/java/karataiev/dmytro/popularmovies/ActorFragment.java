@@ -31,6 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -46,6 +49,7 @@ import karataiev.dmytro.popularmovies.adapters.ThumbnailsAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Actor;
 import karataiev.dmytro.popularmovies.model.ActorCredits;
+import karataiev.dmytro.popularmovies.model.ActorTagged;
 import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import rx.Subscriber;
@@ -58,8 +62,6 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ActorFragment extends Fragment implements ItemClickListener<String, View> {
 
-    @BindView(R.id.actor_id)
-    TextView mTextId;
     @BindView(R.id.actor_photo)
     ImageView mImagePhoto;
     @BindView(R.id.actor_name)
@@ -76,6 +78,8 @@ public class ActorFragment extends Fragment implements ItemClickListener<String,
     TextView mTextBirthplace;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
+    @Nullable @BindView(R.id.backdrop)
+    ImageView mImageBackdrop;
 
     private ThumbnailsAdapter mThumbnailsAdapter;
 
@@ -189,12 +193,41 @@ public class ActorFragment extends Fragment implements ItemClickListener<String,
                     }
                 }));
 
+        _subscription.add(App.getApiManager().getMoviesService()
+                .getActorTagged(String.valueOf(movieCast.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<ActorTagged>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("ActorFragment", "e:" + e);
+                    }
+
+                    @Override
+                    public void onNext(ActorTagged actorImage) {
+                        if (mImageBackdrop == null) {
+                            mImageBackdrop = ButterKnife.findById(getActivity(), R.id.backdrop);
+                        }
+                        if (actorImage.getResults() != null && actorImage.getResults().size() > 0) {
+                            Picasso.with(getContext())
+                                    .load(Consts.IMAGE_URL + Consts.ACTOR_BACKDROP + actorImage.getResults()
+                                            .get(new Random().nextInt(actorImage.getResults().size())).getFilePath())
+                                    .into(mImageBackdrop);
+                        }
+
+                    }
+                }));
+
         Picasso.with(getContext())
                 .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
                 .into(mImagePhoto);
 
         mTextName.setText(movieCast.getName());
-        mTextId.setText(String.valueOf(movieCast.getId()));
 
         // send a title to an activity's actionBar
         if (mListener != null) {
@@ -212,4 +245,5 @@ public class ActorFragment extends Fragment implements ItemClickListener<String,
         intent.putExtra(Consts.MOVIE_ID, movieId);
         startActivity(intent);
     }
+
 }

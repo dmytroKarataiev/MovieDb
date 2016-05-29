@@ -34,4 +34,6 @@ public class Consts {
 
     public static final String IMAGE_URL = "http://image.tmdb.org/t/p/";
     public static final String ACTOR_THUMB = "w185";
+    public static final String ACTOR_BACKDROP = "w500";
+
 }

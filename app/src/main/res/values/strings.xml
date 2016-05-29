@@ -86,5 +86,7 @@
     <string name="favorites_icon">Favorites icon</string>
     <string name="title_activity_actor">ActorActivity</string>
     <string name="actor_photo_desc">Actor\'s photo</string>
+    <string name="actor_description">Actor\'s photo</string>
+    <string name="actor_known">Known for:</string>
 
 </resources>
