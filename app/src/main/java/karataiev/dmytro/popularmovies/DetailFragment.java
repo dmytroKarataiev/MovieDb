@@ -319,6 +319,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        /*
         // YouTube view initialization
         youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
         youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, this);
@@ -326,7 +327,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
-
+        */
         // TODO: 5/28/16 refactor
         if (mMovieObject != null) {
             loadData();
@@ -558,7 +559,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
                     @Override
                     public void onNext(MovieObject movieObject) {
-
                         StringBuilder productions = new StringBuilder();
                         StringBuilder genres = new StringBuilder();
 
@@ -612,6 +612,15 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         .subscribe(new Observer<Trailer>() {
                             @Override
                             public void onCompleted() {
+                                if (mTrailersList.size() > 0) {
+                                    // YouTube view initialization
+                                    youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
+                                    youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, DetailFragment.this);
+
+                                    FragmentManager fragmentManager = getFragmentManager();
+                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                    transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
+                                }
                                 if (mYouTubePlayer != null) {
                                     mYouTubePlayer.cueVideos(mTrailersList);
                                 }
