@@ -431,19 +431,21 @@ public class Utility {
         int voteCount = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT);
         int fullPosterPath = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH);
 
-        movie.setAdult(cursor.getString(adult));
+        // TODO: 6/1/16  fix db
+
+        movie.setAdult(Boolean.getBoolean(cursor.getString(adult)));
         movie.setBackdropPath(cursor.getString(backdropPath));
-        movie.setId(cursor.getString(id));
+        movie.setId(Long.getLong(cursor.getString(id)));
         movie.setOriginalLanguage(cursor.getString(originalLanguage));
         movie.setOriginalTitle(cursor.getString(originalTitle));
         movie.setOverview(cursor.getString(overview));
         movie.setReleaseDate(cursor.getString(releaseDate));
         movie.setPosterPath(cursor.getString(posterPath));
-        movie.setPopularity(cursor.getString(popularity));
+        movie.setPopularity(Double.parseDouble(cursor.getString(popularity)));
         movie.setTitle(cursor.getString(title));
-        movie.setVideo(cursor.getString(video));
-        movie.setVoteAverage(cursor.getString(voteAverage));
-        movie.setVoteCount(cursor.getString(voteCount));
+        movie.setVideo(Boolean.getBoolean(cursor.getString(video)));
+        movie.setVoteAverage(Double.parseDouble(cursor.getString(voteAverage)));
+        movie.setVoteCount(Long.getLong(cursor.getString(voteCount)));
         movie.setFullPosterPath(cursor.getString(fullPosterPath));
 
         // Separate call
@@ -462,7 +464,7 @@ public class Utility {
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(MoviesContract.MovieEntry.COLUMN_ADULT, movie.getAdult());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_ADULT, String.valueOf(movie.isAdult()));
         contentValues.put(MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_ID, movie.getId());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
@@ -472,7 +474,7 @@ public class Utility {
         contentValues.put(MoviesContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
-        contentValues.put(MoviesContract.MovieEntry.COLUMN_VIDEO, movie.getVideo());
+        contentValues.put(MoviesContract.MovieEntry.COLUMN_VIDEO, String.valueOf(movie.isVideo()));
         contentValues.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_VOTE_COUNT, movie.getVoteCount());
         contentValues.put(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH, movie.getFullPosterPath());

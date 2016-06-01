@@ -165,6 +165,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             updateMovieList();
         } else {
+            // TODO: 6/1/16 fix consts
             movieList = savedInstanceState.getParcelableArrayList("movies");
             currentPosition = savedInstanceState.getInt("position");
             currentPage = savedInstanceState.getInt("page");
@@ -248,6 +249,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
         super.onSaveInstanceState(outState);
 
         // Saves movies so we don't need to re-download them
+        // TODO: 6/1/16 fix consts
         outState.putParcelableArrayList("movies", (ArrayList<MovieObject>) movieList);
         outState.putInt("position", currentPosition);
         outState.putInt("page", currentPage);
@@ -258,14 +260,6 @@ public class MainFragment extends Fragment implements TaskCompleted {
      * Method to update UI when settings changed
      */
     public void updateMovieList() {
-        Log.d(TAG, "updateMovieList: " + mSort
-                + ", addMovies: " + addMovies
-                + ", isSearch: " + isSearch
-                + ", isClearedSearch: " + isClearedSearch
-                + ", searchParameter: " + searchParameter
-                + ", currPage: " + currentPage
-                + ", currPosition: " + currentPosition);
-
         String sort = Utility.getSort(getContext());
         if (Utility.isOnline(getContext())) {
             // Checks if settings were changed

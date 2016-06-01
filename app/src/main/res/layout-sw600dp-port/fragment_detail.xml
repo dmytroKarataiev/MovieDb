@@ -132,6 +132,18 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/detail_runtime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1h 30m" />
+
+                    <TextView
+                        android:id="@+id/detail_other"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Other" />
+
                 </LinearLayout>
 
             </LinearLayout>

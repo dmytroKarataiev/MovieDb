@@ -77,9 +77,11 @@ import karataiev.dmytro.popularmovies.adapters.ActorsAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Consts;
+import karataiev.dmytro.popularmovies.model.Genre;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.model.ProductionCompany;
 import karataiev.dmytro.popularmovies.model.Review;
 import karataiev.dmytro.popularmovies.model.Trailer;
 import karataiev.dmytro.popularmovies.remote.ApiService;
@@ -138,8 +140,13 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     NestedScrollView mLinearBackground;
     @BindView(R.id.detail_reviews_textview)
     TextView mTextReviews;
-    @Nullable @BindView(R.id.backdrop)
+    @Nullable
+    @BindView(R.id.backdrop)
     ImageView mImageBackdrop;
+    @BindView(R.id.detail_runtime)
+    TextView mTextRuntime;
+    @BindView(R.id.detail_other)
+    TextView mTextOther;
 
     private Unbinder mUnbinder;
 
@@ -282,7 +289,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             // Gets data from intent (using parcelable) and populates views
             intent = this.getActivity().getIntent();
             mMovieObject = intent.getParcelableExtra(MovieObject.MOVIE_OBJECT);
-            Log.d("DetailFragment", "(mMovieObject != null):" + (mMovieObject != null));
             if (mMovieObject == null) {
                 try {
                     FetchMovies fetchFirstMovie = new FetchMovies(getContext(), null, false, 1);
@@ -391,7 +397,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
             @Override
             public void onLoaded(String s) {
-                Log.d(TAG, "onLoaded: ");
                 currentVideo = mTrailersList.indexOf(s);
             }
 
@@ -417,7 +422,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         });
         if (!wasRestored) {
             if (mTrailersList != null && mTrailersList.size() > 0) {
-                Log.d(TAG, "onInitializationSuccess: ");
                 mYouTubePlayer.cueVideos(mTrailersList, currentVideo, currentVideoMillis);
             }
         }
@@ -538,6 +542,44 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setAdapter(mActorsAdapter);
         mRecyclerActors.setNestedScrollingEnabled(true);
 
+        _subscriptions.add(mApiService.getMovie(mMovieObject.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<MovieObject>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(MovieObject movieObject) {
+
+                        StringBuilder productions = new StringBuilder();
+                        StringBuilder genres = new StringBuilder();
+
+                        for (ProductionCompany each : movieObject.getProductionCompanies()) {
+                            productions.append(each.getName()).append(", ");
+                        }
+
+                        for (Genre each : movieObject.getGenres()) {
+                            genres.append(each.getName()).append(", ");
+                        }
+
+                        // TODO: 6/1/16 fix 
+                        mTextRuntime.setText(String.valueOf(movieObject.getRuntime()));
+                        mTextOther.setText("Budget: " + movieObject.getBudget()
+                                + "\n Tagline: " + movieObject.getTagline()
+                                + "\n Imdb: " + movieObject.getImdbId()
+                                + "\n Genres: " + genres
+                                + "\n Production Company: " + productions.toString());
+                    }
+                }));
+
         _subscriptions.add(
                 mApiService.getMovieCredits(mMovieObject.getId())
                         .subscribeOn(Schedulers.io())
@@ -570,7 +612,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         .subscribe(new Observer<Trailer>() {
                             @Override
                             public void onCompleted() {
-                                Log.d(TAG, "Trailers onCompleted: ");
                                 if (mYouTubePlayer != null) {
                                     mYouTubePlayer.cueVideos(mTrailersList);
                                 }
@@ -610,7 +651,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                                 if (mReviewsList != null) {
                                     mTextReviews.setText(TextUtils.join("\n", mReviewsList));
                                 }
-                                Log.d(TAG, "reviews completed");
                             }
 
                             @Override

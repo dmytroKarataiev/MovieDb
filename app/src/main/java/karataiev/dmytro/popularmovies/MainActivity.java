@@ -41,7 +41,8 @@ import android.view.View;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.CallbackFromAdapter, FavoritesFragment.CallbackFromFavorites, PopupMenu.OnMenuItemClickListener {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.CallbackFromAdapter,
+        FavoritesFragment.CallbackFromFavorites, PopupMenu.OnMenuItemClickListener {
 
     private String LOG_TAG = MainActivity.class.getSimpleName();
     private MainFragment mContent;

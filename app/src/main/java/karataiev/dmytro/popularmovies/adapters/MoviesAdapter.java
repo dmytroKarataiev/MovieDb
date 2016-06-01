@@ -105,11 +105,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         final MovieObject movieObject = mValues.get(position);
 
-        final ContentValues favValue = Utility.makeContentValues(movieObject);
-
         holder.mBoundString = movieObject.getId();
         holder.itemView.setOnClickListener(v -> {
-
             // Set a tag for a shared transition
             holder.mImagePoster.setTag(movieObject.getId());
             holder.mImageFavorite.setTag(movieObject.getId() + "1");
@@ -143,6 +140,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
                 // On mImageFavorite icon click
                 holder.mImageFavorite.setOnClickListener(v -> {
+                    ContentValues favValue = Utility.makeContentValues(movieObject);
 
                     Toast.makeText(mContext, movieObject.getTitle(), Toast.LENGTH_LONG).show();
 
