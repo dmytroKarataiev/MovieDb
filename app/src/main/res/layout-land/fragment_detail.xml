@@ -126,31 +126,33 @@
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/detail_runtime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1h 30m" />
-
-                    <TextView
-                        android:id="@+id/detail_other"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other" />
-
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/detail_runtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1h 30m" />
+
+                <TextView
+                    android:id="@+id/detail_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other" />
 
             </LinearLayout>
 
-            <!-- Movie Description -->
-            <TextView
-                android:id="@+id/detail_description_textview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/fab_margin"
-                android:paddingRight="@dimen/fab_margin" />
-
         </LinearLayout>
+
+        <!-- Movie Description -->
+        <TextView
+            android:id="@+id/detail_description_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/fab_margin"
+            android:paddingRight="@dimen/fab_margin" />
+
+        <include layout="@layout/actors_list" />
 
         <!-- YouTube Frame -->
         <FrameLayout
@@ -162,8 +164,6 @@
             android:padding="@dimen/fab_margin"
             android:visibility="visible" />
 
-        <include layout="@layout/actors_list" />
-
         <!-- Reviews TextView -->
         <TextView
             android:id="@+id/detail_reviews_textview"
@@ -174,6 +174,5 @@
             android:paddingRight="@dimen/fab_margin" />
 
     </LinearLayout>
-
 
 </android.support.v4.widget.NestedScrollView>

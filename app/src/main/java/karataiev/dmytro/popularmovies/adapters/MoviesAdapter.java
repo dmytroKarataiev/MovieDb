@@ -71,7 +71,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public String mBoundString;
+        public long mBoundString;
         @BindView(R.id.movie_poster) ImageView mImagePoster;
         @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
         @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
@@ -105,6 +105,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         final MovieObject movieObject = mValues.get(position);
 
+        // TODO: 6/2/16 wtf is bound string? 
         holder.mBoundString = movieObject.getId();
         holder.itemView.setOnClickListener(v -> {
             // Set a tag for a shared transition
@@ -153,13 +154,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                         //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
 
                         //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
-                        Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark_fav).into(holder.mImageFavorite);
+                        Picasso.with(holder.mImageFavorite.getContext())
+                                .load(R.drawable.ic_bookmark_fav)
+                                .into(holder.mImageFavorite);
+
                         // Insert on background thread
                         DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
                         databaseTasks.execute(DatabaseTasks.INSERT, favValue);
                     } else {
                         //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark);
-                        Picasso.with(holder.mImageFavorite.getContext()).load(R.drawable.ic_bookmark).into(holder.mImageFavorite);
+                        Picasso.with(holder.mImageFavorite.getContext())
+                                .load(R.drawable.ic_bookmark)
+                                .into(holder.mImageFavorite);
+
                         // Delete on background thread
                         DatabaseTasks databaseTasks = new DatabaseTasks(mContext);
                         databaseTasks.execute(DatabaseTasks.DELETE, favValue);

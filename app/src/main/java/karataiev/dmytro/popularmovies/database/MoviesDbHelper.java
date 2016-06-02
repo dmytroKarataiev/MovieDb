@@ -35,7 +35,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 class MoviesDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String DATABASE_NAME = "movies.db";
 
@@ -51,7 +51,7 @@ class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 // the ID of the location entry associated with this weather com.example.android.sunshine.app.data
-                MoviesContract.MovieEntry.COLUMN_ID + " TEXT, " +
+                MoviesContract.MovieEntry.COLUMN_ID + " INTEGER, " +
                 MoviesContract.MovieEntry.COLUMN_ADULT + " TEXT, " +
                 MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH + " TEXT, " +
                 MoviesContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE + " TEXT, " +
@@ -63,8 +63,8 @@ class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesContract.MovieEntry.COLUMN_POPULARITY + " TEXT, " +
                 MoviesContract.MovieEntry.COLUMN_TITLE + " TEXT, " +
                 MoviesContract.MovieEntry.COLUMN_VIDEO + " TEXT, " +
-                MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE + " TEXT, " +
-                MoviesContract.MovieEntry.COLUMN_VOTE_COUNT + " TEXT, " +
+                MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL, " +
+                MoviesContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER, " +
                 MoviesContract.MovieEntry.COLUMN_IMAGE + " BLOB, " +
                 MoviesContract.MovieEntry.COLUMN_FULL_IMAGE + " BLOB" +
                 ");";

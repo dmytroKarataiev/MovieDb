@@ -331,6 +331,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
     }
 
 
+    // TODO: 6/2/16 change to Rx 
     /**
      * Class to retrieve MovieObjects from JSON on background thread
      */
@@ -425,8 +426,10 @@ public class MainFragment extends Fragment implements TaskCompleted {
                 movieList = movieObjects;
             }
 
-            movieAdapter = new MoviesAdapter(getActivity(), movieList);
-            mRecyclerView.swapAdapter(movieAdapter, false);
+            if (mRecyclerView != null) {
+                movieAdapter = new MoviesAdapter(getActivity(), movieList);
+                mRecyclerView.swapAdapter(movieAdapter, false);
+            }
 
         }
     }

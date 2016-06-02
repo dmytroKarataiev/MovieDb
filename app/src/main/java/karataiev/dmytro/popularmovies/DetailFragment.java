@@ -517,7 +517,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // }
 
         mTextDescription.setText(mMovieObject.getOverview());
-        mTextRating.setText(mMovieObject.getVoteAverage());
+        mTextRating.setText(String.valueOf(mMovieObject.getVoteAverage()));
         mTextRelease.setText(mMovieObject.getReleaseDate());
         mTextVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
@@ -536,14 +536,17 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     }
 
     private void initRecycler() {
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                RecyclerView.HORIZONTAL, false);
         mActorsAdapter = new ActorsAdapter(getContext(), null);
 
         mRecyclerActors.setLayoutManager(layoutManager);
         mRecyclerActors.setAdapter(mActorsAdapter);
         mRecyclerActors.setNestedScrollingEnabled(true);
 
-        _subscriptions.add(mApiService.getMovie(mMovieObject.getId())
+        Log.d("DetailFragment", "" + mMovieObject.getId());
+
+        _subscriptions.add(mApiService.getMovie(String.valueOf(mMovieObject.getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<MovieObject>() {
@@ -581,7 +584,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 }));
 
         _subscriptions.add(
-                mApiService.getMovieCredits(mMovieObject.getId())
+                mApiService.getMovieCredits(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<MovieCredits>() {
@@ -605,7 +608,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         _subscriptions.add(
-                mApiService.getMovieVideos(mMovieObject.getId())
+                mApiService.getMovieVideos(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(movieTrailers -> Observable.from(movieTrailers.getTrailers()))
@@ -650,7 +653,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         _subscriptions.add(
-                mApiService.getMovieReviews(mMovieObject.getId())
+                mApiService.getMovieReviews(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(reviews -> Observable.from(reviews.getReviews()))

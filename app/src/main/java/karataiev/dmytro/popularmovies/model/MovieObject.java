@@ -245,8 +245,8 @@ public class MovieObject implements Parcelable {
      * @return
      * The id
      */
-    public String getId() {
-        return String.valueOf(id);
+    public long getId() {
+        return id;
     }
 
     /**
@@ -551,8 +551,8 @@ public class MovieObject implements Parcelable {
      * @return
      * The voteAverage
      */
-    public String getVoteAverage() {
-        return String.valueOf(voteAverage);
+    public double getVoteAverage() {
+        return voteAverage;
     }
 
     /**

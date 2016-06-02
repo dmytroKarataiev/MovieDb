@@ -91,7 +91,7 @@ public class FavoritesAdapter extends CursorAdapter {
         // On mImageFavorite icon click
         viewHolder.mFavImage.setOnClickListener(v -> {
 
-            Toast.makeText(context, "Not mImageFavorite anymore", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Not Favorite anymore", Toast.LENGTH_LONG).show();
 
             //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark);
             Picasso.with(context).load(R.drawable.ic_bookmark).into(viewHolder.mFavImage);

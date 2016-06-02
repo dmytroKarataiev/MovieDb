@@ -92,6 +92,7 @@ public class FavoritesFragment extends Fragment
 
         mGridView.setNumColumns(columns);
         mGridView.setColumnWidth(posterWidth);
+        mGridView.setMinimumHeight((int) (posterWidth * 1.5));
 
         // Adapter which adds movies to the grid
         mFavoritesAdapter = new FavoritesAdapter(getActivity(), null, 0);

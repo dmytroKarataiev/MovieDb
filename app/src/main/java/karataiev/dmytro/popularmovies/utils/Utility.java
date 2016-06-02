@@ -217,7 +217,7 @@ public class Utility {
                     JsonObject movie = movies.get(i).getAsJsonObject();
                     MovieObject current = gson.fromJson(movie, MovieObject.class);
                     current.makeNice(context);
-                    current.setTrailerPath(getTrailersURL(current.getId()).toString());
+                    current.setTrailerPath(getTrailersURL(String.valueOf(current.getId())).toString());
 
                     movieObjects.add(current);
                 }
@@ -324,11 +324,11 @@ public class Utility {
         Cursor currentPoster = null;
 
         // if a movie is in the database - make it favorite
-        if (movie.getId() != null) {
+        if (movie.getId() != 0) {
             currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
                     null,
                     MoviesContract.MovieEntry.COLUMN_ID + " = ?",
-                    new String[]{movie.getId()},
+                    new String[]{ String.valueOf(movie.getId()) },
                     null);
         }
 
@@ -336,7 +336,9 @@ public class Utility {
             currentPoster.moveToFirst();
             int index = currentPoster.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ID);
 
-            if (currentPoster.getCount() > 0 && currentPoster.getString(index).equals(movie.getId())) {
+            if (currentPoster.getCount() > 0 &&
+                    currentPoster.getLong(index) == movie.getId()) {
+
                 currentPoster.close();
                 return true;
             }
@@ -432,24 +434,24 @@ public class Utility {
         int fullPosterPath = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH);
 
         // TODO: 6/1/16  fix db
-
         movie.setAdult(Boolean.getBoolean(cursor.getString(adult)));
         movie.setBackdropPath(cursor.getString(backdropPath));
-        movie.setId(Long.getLong(cursor.getString(id)));
+        movie.setId(cursor.getLong(id));
         movie.setOriginalLanguage(cursor.getString(originalLanguage));
         movie.setOriginalTitle(cursor.getString(originalTitle));
         movie.setOverview(cursor.getString(overview));
         movie.setReleaseDate(cursor.getString(releaseDate));
         movie.setPosterPath(cursor.getString(posterPath));
-        movie.setPopularity(Double.parseDouble(cursor.getString(popularity)));
+        movie.setPopularity(Double.valueOf(cursor.getString(popularity)));
         movie.setTitle(cursor.getString(title));
         movie.setVideo(Boolean.getBoolean(cursor.getString(video)));
-        movie.setVoteAverage(Double.parseDouble(cursor.getString(voteAverage)));
-        movie.setVoteCount(Long.getLong(cursor.getString(voteCount)));
+        movie.setVoteAverage(cursor.getDouble(voteAverage));
+        movie.setVoteCount(cursor.getLong(voteCount));
         movie.setFullPosterPath(cursor.getString(fullPosterPath));
 
         // Separate call
-        movie.setTrailerPath(Utility.getTrailersURL(movie.getId()).toString());
+        movie.setTrailerPath(Utility.getTrailersURL(String.valueOf(movie.getId()))
+                .toString());
 
         return movie;
     }

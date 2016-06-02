@@ -30,6 +30,7 @@
         android:id="@+id/movie_poster"
         android:layout_width="match_parent"
         android:layout_height="@dimen/poster_height"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/movie_poster"
         android:scaleType="centerCrop"
         android:transitionName="@string/anim_poster" />
