@@ -29,13 +29,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Consts;
@@ -64,7 +64,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.actor_photo) ImageView mImageActor;
+        @BindView(R.id.actor_photo) CircleImageView mImageActor;
         @BindView(R.id.actor_name) TextView mTextActor;
 
         public ViewHolder(View view) {
@@ -87,6 +87,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
         Picasso.with(mContext)
                 .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + mMovieCredits.getCast().get(position).getProfilePath())
+                .noFade()
                 .into(holder.mImageActor);
         holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
 
