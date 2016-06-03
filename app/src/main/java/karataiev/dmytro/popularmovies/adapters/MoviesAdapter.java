@@ -71,7 +71,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public long mBoundString;
         @BindView(R.id.movie_poster) ImageView mImagePoster;
         @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
         @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
@@ -105,8 +104,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         final MovieObject movieObject = mValues.get(position);
 
-        // TODO: 6/2/16 wtf is bound string? 
-        holder.mBoundString = movieObject.getId();
         holder.itemView.setOnClickListener(v -> {
             // Set a tag for a shared transition
             holder.mImagePoster.setTag(movieObject.getId());

@@ -68,6 +68,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
@@ -76,6 +77,7 @@ import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.ActorsAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.model.Backdrops;
 import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.Genre;
 import karataiev.dmytro.popularmovies.model.MovieCast;
@@ -512,7 +514,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         //     Picasso.with(getContext()).load(posterFile).into(viewHolder.mImagePoster, callback);
         //     Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
         // } else {
-        Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(mImageBackdrop);
+
+        // Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(mImageBackdrop);
+
         Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(mImagePoster, callback);
         // }
 
@@ -543,8 +547,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setLayoutManager(layoutManager);
         mRecyclerActors.setAdapter(mActorsAdapter);
         mRecyclerActors.setNestedScrollingEnabled(true);
-
-        Log.d("DetailFragment", "" + mMovieObject.getId());
 
         _subscriptions.add(mApiService.getMovie(String.valueOf(mMovieObject.getId()))
                 .subscribeOn(Schedulers.io())
@@ -582,6 +584,36 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                                 + "\n Production Company: " + productions.toString());
                     }
                 }));
+
+        _subscriptions.add(
+                mApiService.getMovieImages(String.valueOf(mMovieObject.getId()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Backdrops>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Backdrops backdrops) {
+                        final String[] POSTER_SIZE = Utility.posterSize(getContext());
+
+                        String path = "https://image.tmdb.org/t/p/" + POSTER_SIZE[1]
+                                + backdrops.getBackdrops().get(new Random()
+                                .nextInt(backdrops.getBackdrops().size())).getFilePath();
+
+                        Picasso.with(getContext())
+                                .load(path)
+                                .into(mImageBackdrop);
+                    }
+                })
+        );
 
         _subscriptions.add(
                 mApiService.getMovieCredits(String.valueOf(mMovieObject.getId()))

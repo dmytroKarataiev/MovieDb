@@ -29,6 +29,7 @@ import karataiev.dmytro.popularmovies.model.Actor;
 import karataiev.dmytro.popularmovies.model.ActorCredits;
 import karataiev.dmytro.popularmovies.model.ActorImage;
 import karataiev.dmytro.popularmovies.model.ActorTagged;
+import karataiev.dmytro.popularmovies.model.Backdrops;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.MovieReviews;
@@ -49,6 +50,9 @@ public interface ApiService {
 
     @GET("movie/{id}/credits" + API_KEY)
     Observable<MovieCredits> getMovieCredits(@Path("id") String movieId);
+
+    @GET("movie/{id}/images" + API_KEY)
+    Observable<Backdrops> getMovieImages(@Path("id") String movieId);
 
     @GET("movie/{id}/videos" + API_KEY)
     Observable<MovieTrailers> getMovieVideos(@Path("id") String movieId);
