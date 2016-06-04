@@ -168,34 +168,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             mProgressSpinner.setVisibility(View.GONE);
             mImageFavorite.setVisibility(View.VISIBLE);
 
-            Palette palette = Palette.from(((BitmapDrawable) mImagePoster.getDrawable()).getBitmap()).generate();
-
-            int lightVibrantColor = palette.getLightVibrantColor(0);
-            if (lightVibrantColor == 0) {
-                lightVibrantColor = palette.getLightMutedColor(0);
-            }
-
-            int vibrantColor = palette.getVibrantColor(0);
-            if (vibrantColor == 0) {
-                vibrantColor = palette.getMutedColor(0);
-            }
-
-            int darkVibrantColor = palette.getDarkVibrantColor(0);
-            if (darkVibrantColor == 0) {
-                darkVibrantColor = palette.getDarkMutedColor(0);
-            }
-
-            mLinearBackground.setBackgroundColor(lightVibrantColor);
-            CollapsingToolbarLayout toolbarLayout = ButterKnife.findById(getActivity(), R.id.collapsing_toolbar);
-            toolbarLayout.setContentScrimColor(vibrantColor);
-
-            if (Build.VERSION.SDK_INT >= 21) {
-                Window window = getActivity().getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                window.setStatusBarColor(darkVibrantColor);
-            }
-
             // On mImageFavorite icon click
             mImageFavorite.setOnClickListener(v -> {
 
@@ -548,6 +520,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setAdapter(mActorsAdapter);
         mRecyclerActors.setNestedScrollingEnabled(true);
 
+        // downloads all the details about a movie
         _subscriptions.add(mApiService.getMovie(String.valueOf(mMovieObject.getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -585,6 +558,9 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                     }
                 }));
 
+        // downloads links to images for a movie, takes one at random
+        // and makes it as a CollapsingToolbar Background,
+        // then extracts palette and colors Detail Activity
         _subscriptions.add(
                 mApiService.getMovieImages(String.valueOf(mMovieObject.getId()))
                 .subscribeOn(Schedulers.io())
@@ -608,9 +584,50 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                                 + backdrops.getBackdrops().get(new Random()
                                 .nextInt(backdrops.getBackdrops().size())).getFilePath();
 
-                        Picasso.with(getContext())
-                                .load(path)
-                                .into(mImageBackdrop);
+                        if (mImageBackdrop != null) {
+                            Picasso.with(getContext())
+                                    .load(path)
+                                    .into(mImageBackdrop, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                            // makes detail view colored according to the image palette
+                                            Palette palette = Palette.from(((BitmapDrawable) mImageBackdrop.getDrawable()).getBitmap()).generate();
+
+                                            int lightVibrantColor = palette.getLightVibrantColor(0);
+                                            if (lightVibrantColor == 0) {
+                                                lightVibrantColor = palette.getLightMutedColor(0);
+                                            }
+
+                                            int vibrantColor = palette.getVibrantColor(0);
+                                            if (vibrantColor == 0) {
+                                                vibrantColor = palette.getMutedColor(0);
+                                            }
+
+                                            int darkVibrantColor = palette.getDarkVibrantColor(0);
+                                            if (darkVibrantColor == 0) {
+                                                darkVibrantColor = palette.getDarkMutedColor(0);
+                                            }
+
+                                            mLinearBackground.setBackgroundColor(lightVibrantColor);
+                                            CollapsingToolbarLayout toolbarLayout = ButterKnife.findById(getActivity(), R.id.collapsing_toolbar);
+                                            toolbarLayout.setContentScrimColor(vibrantColor);
+
+                                            if (Build.VERSION.SDK_INT >= 21) {
+                                                Window window = getActivity().getWindow();
+                                                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                                                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                                                window.setStatusBarColor(darkVibrantColor);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Log.e(TAG, "onError: no image");
+                                        }
+                                    });
+
+                        }
                     }
                 })
         );
