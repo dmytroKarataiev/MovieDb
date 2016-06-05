@@ -49,12 +49,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import karataiev.dmytro.popularmovies.BuildConfig;
 import karataiev.dmytro.popularmovies.R;
@@ -552,5 +554,47 @@ public class Utility {
         }
 
         return false;
+    }
+
+    /**
+     * Creates full url to download an Image
+     * @param context from which call is made
+     * @param path unique id for a movie
+     * @return full path to download
+     */
+    public static String getFullUrl(Context context, String path) {
+        return MovieObject.BASE_URL + Utility.posterSize(context)[1] + path;
+    }
+
+    /**
+     * Format long value to the dollar format
+     * @param budget in US Dollars
+     * @return String representation
+     */
+    public static String currencyFormat(long budget) {
+        Locale locale = new Locale("en", "US");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        return currencyFormatter.format(budget);
+    }
+
+    /**
+     * Returns runtime in hours and minutes
+     * @param runtime in minutes
+     * @return formatted String
+     */
+    public static String getRuntimeString(long runtime) {
+        long hours = TimeUnit.MINUTES.toHours(runtime);
+        runtime -= TimeUnit.HOURS.toMinutes(hours);
+
+        return "Runtime: " + String.valueOf(hours) + "h " + runtime + "min";
+    }
+
+    /**
+     * Returns fully formatted IDMB link
+     * @param imdb id of a movie
+     * @return URL as a String to a movie on IMDB
+     */
+    public static String getImdbLink(String imdb) {
+        return "IMDB: <a href=\"http://www.imdb.com/title/" + imdb + "/\">Link</a>";
     }
 }

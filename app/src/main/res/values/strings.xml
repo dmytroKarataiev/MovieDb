@@ -89,4 +89,8 @@
     <string name="actor_description">Actor\'s photo</string>
     <string name="actor_known">Known for:</string>
 
+    <string name="movie.runtime">Runtime: <xliff:g id="runtime">%1$s</xliff:g></string>
+    <string name="movie.budget">Budget: <xliff:g id="runtime">%1$s</xliff:g></string>
+    <string name="url_temp"><a href="http://www.imdb.com/title/tt0113375/">Link</a></string>
+
 </resources>

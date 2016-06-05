@@ -27,6 +27,7 @@ package karataiev.dmytro.popularmovies;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,7 +44,9 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -79,11 +82,9 @@ import karataiev.dmytro.popularmovies.database.MoviesContract;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Backdrops;
 import karataiev.dmytro.popularmovies.model.Consts;
-import karataiev.dmytro.popularmovies.model.Genre;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
-import karataiev.dmytro.popularmovies.model.ProductionCompany;
 import karataiev.dmytro.popularmovies.model.Review;
 import karataiev.dmytro.popularmovies.model.Trailer;
 import karataiev.dmytro.popularmovies.remote.ApiService;
@@ -149,6 +150,10 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     TextView mTextRuntime;
     @BindView(R.id.detail_other)
     TextView mTextOther;
+    @BindView(R.id.detail_budget)
+    TextView mTextBudget;
+    @BindView(R.id.detail_tagline)
+    TextView mTextTagline;
 
     private Unbinder mUnbinder;
 
@@ -537,24 +542,34 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
                     @Override
                     public void onNext(MovieObject movieObject) {
-                        StringBuilder productions = new StringBuilder();
-                        StringBuilder genres = new StringBuilder();
-
-                        for (ProductionCompany each : movieObject.getProductionCompanies()) {
-                            productions.append(each.getName()).append(", ");
+                        // TODO: 6/1/16 fix
+                        if (movieObject.getBudget() > 0) {
+                            mTextBudget.setVisibility(View.VISIBLE);
+                            mTextBudget.setText(getString(R.string.movie_budget,
+                                    Utility.currencyFormat(movieObject.getBudget())));
                         }
 
-                        for (Genre each : movieObject.getGenres()) {
-                            genres.append(each.getName()).append(", ");
+                        if (movieObject.getRuntime() > 0) {
+                            mTextRuntime.setVisibility(View.VISIBLE);
+                            mTextRuntime.setText(Utility.getRuntimeString(movieObject.getRuntime()));
                         }
 
-                        // TODO: 6/1/16 fix 
-                        mTextRuntime.setText(String.valueOf(movieObject.getRuntime()));
-                        mTextOther.setText("Budget: " + movieObject.getBudget()
-                                + "\n Tagline: " + movieObject.getTagline()
-                                + "\n Imdb: " + movieObject.getImdbId()
-                                + "\n Genres: " + genres
-                                + "\n Production Company: " + productions.toString());
+                        if (!movieObject.getTagline().isEmpty()) {
+                            mTextTagline.setVisibility(View.VISIBLE);
+                            mTextTagline.setText(movieObject.getTagline());
+                        }
+
+                        /*
+                        mTextOther.setText("Imdb: <a href=\"http://www.imdb.com/title/tt0113375/\">Link</a>"
+                                + "\nGenres: " + genres
+                                + "\nProduction Company: " + productions.toString());
+                                */
+                        if (!movieObject.getImdbId().isEmpty()) {
+                            mTextOther.setVisibility(View.VISIBLE);
+                            mTextOther.setMovementMethod(LinkMovementMethod.getInstance());
+                            mTextOther.setText(Html.fromHtml(Utility.getImdbLink(movieObject.getImdbId())));
+                            mTextOther.setLinkTextColor(Color.BLUE);
+                        }
                     }
                 }));
 
@@ -578,60 +593,12 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
                     @Override
                     public void onNext(Backdrops backdrops) {
-                        final String[] POSTER_SIZE = Utility.posterSize(getContext());
-
-                        String path = "https://image.tmdb.org/t/p/" + POSTER_SIZE[1]
-                                + backdrops.getBackdrops().get(new Random()
-                                .nextInt(backdrops.getBackdrops().size())).getFilePath();
-
-                        if (mImageBackdrop != null) {
-                            Picasso.with(getContext())
-                                    .load(path)
-                                    .into(mImageBackdrop, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                            // makes detail view colored according to the image palette
-                                            Palette palette = Palette.from(((BitmapDrawable) mImageBackdrop.getDrawable()).getBitmap()).generate();
-
-                                            int lightVibrantColor = palette.getLightVibrantColor(0);
-                                            if (lightVibrantColor == 0) {
-                                                lightVibrantColor = palette.getLightMutedColor(0);
-                                            }
-
-                                            int vibrantColor = palette.getVibrantColor(0);
-                                            if (vibrantColor == 0) {
-                                                vibrantColor = palette.getMutedColor(0);
-                                            }
-
-                                            int darkVibrantColor = palette.getDarkVibrantColor(0);
-                                            if (darkVibrantColor == 0) {
-                                                darkVibrantColor = palette.getDarkMutedColor(0);
-                                            }
-
-                                            mLinearBackground.setBackgroundColor(lightVibrantColor);
-                                            CollapsingToolbarLayout toolbarLayout = ButterKnife.findById(getActivity(), R.id.collapsing_toolbar);
-                                            toolbarLayout.setContentScrimColor(vibrantColor);
-
-                                            if (Build.VERSION.SDK_INT >= 21) {
-                                                Window window = getActivity().getWindow();
-                                                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                                                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                                                window.setStatusBarColor(darkVibrantColor);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onError() {
-                                            Log.e(TAG, "onError: no image");
-                                        }
-                                    });
-
-                        }
+                        loadBackdrop(backdrops);
                     }
                 })
         );
 
+        // Adds actors to the RecyclerView
         _subscriptions.add(
                 mApiService.getMovieCredits(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
@@ -656,6 +623,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         })
         );
 
+        // Adds trailers and inflates YouTube Fragment
         _subscriptions.add(
                 mApiService.getMovieVideos(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
@@ -701,6 +669,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         })
         );
 
+        // Adds reviews to the TextView
         _subscriptions.add(
                 mApiService.getMovieReviews(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
@@ -732,5 +701,62 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         Intent intent = new Intent(getContext(), ActorActivity.class);
         intent.putExtra(Consts.ACTOR_EXTRA, movieCast);
         startActivity(intent);
+    }
+
+    /**
+     * Loads backdrop and uses palette from it to paint the screen
+     * @param backdrops to randomly pick
+     */
+    private void loadBackdrop(Backdrops backdrops) {
+        if (mImageBackdrop != null) {
+            Picasso.with(getContext())
+                    .load(Utility.getFullUrl(getContext(), backdrops.getBackdrops()
+                            .get(new Random()
+                                    .nextInt(backdrops.getBackdrops().size()))
+                            .getFilePath()))
+                    .into(mImageBackdrop, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                            // makes detail view colored according to the image palette
+                            BitmapDrawable drawable = (BitmapDrawable) mImageBackdrop.getDrawable();
+
+                            if (drawable != null) {
+                                Palette palette = Palette.from(drawable.getBitmap()).generate();
+
+                                int lightVibrantColor = palette.getLightVibrantColor(0);
+                                if (lightVibrantColor == 0) {
+                                    lightVibrantColor = palette.getLightMutedColor(0);
+                                }
+
+                                int vibrantColor = palette.getVibrantColor(0);
+                                if (vibrantColor == 0) {
+                                    vibrantColor = palette.getMutedColor(0);
+                                }
+
+                                int darkVibrantColor = palette.getDarkVibrantColor(0);
+                                if (darkVibrantColor == 0) {
+                                    darkVibrantColor = palette.getDarkMutedColor(0);
+                                }
+
+                                mLinearBackground.setBackgroundColor(lightVibrantColor);
+                                CollapsingToolbarLayout toolbarLayout = ButterKnife.findById(getActivity(), R.id.collapsing_toolbar);
+                                toolbarLayout.setContentScrimColor(vibrantColor);
+
+                                if (Build.VERSION.SDK_INT >= 21) {
+                                    Window window = getActivity().getWindow();
+                                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                                    window.setStatusBarColor(darkVibrantColor);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            Log.e(TAG, "onError: no image");
+                        }
+                    });
+        }
     }
 }

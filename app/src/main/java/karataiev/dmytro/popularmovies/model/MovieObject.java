@@ -43,6 +43,7 @@ import karataiev.dmytro.popularmovies.utils.Utility;
 public class MovieObject implements Parcelable {
 
     public static final String MOVIE_OBJECT = "movie";
+    public static final String BASE_URL = "https://image.tmdb.org/t/p/";
 
     private String fullPosterPath;
     private String trailerPath;

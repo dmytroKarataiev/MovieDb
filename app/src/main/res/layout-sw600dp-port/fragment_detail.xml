@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  The MIT License (MIT)
   ~
   ~  Copyright (c) 2016. Dmytro Karataiev
@@ -26,16 +25,16 @@
 <android.support.v4.widget.NestedScrollView
 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/detail_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical">
 
         <ImageView
@@ -45,6 +44,16 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop" />
 
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/detail_tagline"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/fab_margin"
+            android:paddingLeft="@dimen/fab_margin"
+            android:paddingRight="@dimen/fab_margin"
+            android:visibility="gone" />
+
         <!-- Main content: rating, votes, year -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,103 +61,9 @@
             android:orientation="horizontal"
             android:padding="@dimen/fab_margin">
 
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="@dimen/poster_width"
-                android:layout_height="@dimen/poster_height">
+            <include layout="@layout/detail_poster" />
 
-                <ImageView
-                    android:transitionName="@string/anim_poster"
-                    android:id="@+id/movie_poster"
-                    android:layout_width="@dimen/poster_width"
-                    android:layout_height="@dimen/poster_height"
-                    android:contentDescription="@string/movie_poster"
-                    android:scaleType="centerCrop" />
-
-                <TextView
-                    android:id="@+id/movie_poster_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ProgressBar
-                    android:id="@+id/movie_item_spinner"
-                    android:layout_width="@dimen/poster_width"
-                    android:layout_height="@dimen/poster_height"
-                    android:progressDrawable="@drawable/circular_progress_bar" />
-
-                <ImageView
-                    android:transitionName="@string/anim_fav"
-                    android:contentDescription="@string/favorites_icon"
-                    android:id="@+id/movie_poster_favorite"
-                    android:layout_width="@dimen/favorite_width"
-                    android:layout_height="@dimen/favorite_height"
-                    android:layout_gravity="left|top"
-                    android:src="@drawable/ic_bookmark" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/fab_margin">
-
-                <TextView
-                    android:id="@+id/detail_releasedate_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/year_text" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="@dimen/star_width"
-                        android:layout_height="@dimen/star_height"
-                        android:layout_marginEnd="@dimen/star_margin"
-                        android:layout_marginRight="@dimen/star_margin"
-                        android:contentDescription="@string/star_votes"
-                        android:src="@drawable/ic_star" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/detail_rating_textview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/rating_text" />
-
-                        <TextView
-                            android:id="@+id/detail_votecount_textview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/votes" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/detail_runtime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1h 30m" />
-
-                    <TextView
-                        android:id="@+id/detail_other"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
+            <include layout="@layout/detail_more" />
 
         </LinearLayout>
 
