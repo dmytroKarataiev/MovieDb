@@ -44,7 +44,6 @@ import karataiev.dmytro.popularmovies.model.MovieObject;
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.CallbackFromAdapter,
         FavoritesFragment.CallbackFromFavorites, PopupMenu.OnMenuItemClickListener {
 
-    private String LOG_TAG = MainActivity.class.getSimpleName();
     private MainFragment mContent;
     private DetailFragment mDetailFragment;
     private final String FRAGMENT_TAG = "FFTAG";
@@ -57,12 +56,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         if (savedInstanceState == null) {
             mContent = new MainFragment();
@@ -132,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
                 break;
             case R.id.action_filter:
                 showSortMenu(findViewById(R.id.action_filter));
+                return true;
+            case R.id.action_test:
+                startActivity(new Intent(this, PagerActivity.class));
                 return true;
         }
 

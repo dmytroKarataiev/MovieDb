@@ -55,13 +55,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import karataiev.dmytro.popularmovies.BuildConfig;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.model.Genre;
 import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.model.ProductionCompany;
 
 /**
  * Class with additional helper functions
@@ -596,5 +599,37 @@ public class Utility {
      */
     public static String getImdbLink(String imdb) {
         return "IMDB: <a href=\"http://www.imdb.com/title/" + imdb + "/\">Link</a>";
+    }
+
+    /**
+     * Returns formatted string of genres
+     * @param genres list of genres
+     * @return formatted string
+     */
+    public static String getGenresString(List<Genre> genres) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Genre each : genres) {
+            stringBuilder.append(each.getName()).append(", ");
+        }
+
+        return "Genre: " + stringBuilder.toString()
+                .substring(0, stringBuilder.length() - 2);
+    }
+
+    /**
+     * Returns formatted string of production companies
+     * @param productions list of production companies
+     * @return formatted string
+     */
+    public static String getProductionString(List<ProductionCompany> productions) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (ProductionCompany each : productions) {
+            stringBuilder.append(each.getName()).append(", ");
+        }
+
+        return "Production Companies: " + stringBuilder.toString()
+                .substring(0, stringBuilder.length() - 2);
     }
 }

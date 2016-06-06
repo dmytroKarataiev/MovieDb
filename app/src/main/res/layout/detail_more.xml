@@ -84,9 +84,20 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/detail_other"
+        android:id="@+id/detail_genres"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Other"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/detail_production"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/detail_imdb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="gone" />
 </LinearLayout>
