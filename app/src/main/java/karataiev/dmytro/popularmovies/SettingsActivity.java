@@ -63,11 +63,11 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+        preference.setOnPreferenceChangeListener(sPreferenceListener);
 
         // Trigger the listener immediately with the preference's
         // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+        sPreferenceListener.onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
@@ -77,35 +77,31 @@ public class SettingsActivity extends PreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
-            new Preference.OnPreferenceChangeListener() {
+    private static Preference.OnPreferenceChangeListener sPreferenceListener =
+            (preference, newValue) -> {
+                String stringValue = newValue.toString();
+                Log.d("SettingsActivity", "preference:" + preference + " value: " + newValue);
 
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String stringValue = newValue.toString();
-                    Log.d("SettingsActivity", "preference:" + preference + " value: " + newValue);
+                if (preference instanceof ListPreference) {
+                    // For list preferences, look up the correct display value in
+                    // the preference's 'entries' list.
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
 
-                    if (preference instanceof ListPreference) {
-                        // For list preferences, look up the correct display value in
-                        // the preference's 'entries' list.
-                        ListPreference listPreference = (ListPreference) preference;
-                        int index = listPreference.findIndexOfValue(stringValue);
+                    Log.d("SettingsActivity", "index:" + index + " summary: " + stringValue);
 
-                        Log.d("SettingsActivity", "index:" + index + " summary: " + stringValue);
+                    // Set the summary to reflect the new value.
+                    preference.setSummary(
+                            index >= 0
+                                    ? listPreference.getEntries()[index]
+                                    : null);
 
-                        // Set the summary to reflect the new value.
-                        preference.setSummary(
-                                index >= 0
-                                        ? listPreference.getEntries()[index]
-                                        : null);
-
-                    } else {
-                        // For all other preferences, set the summary to the value's
-                        // simple string representation.
-                        preference.setSummary(stringValue);
-                    }
-                    return true;
+                } else {
+                    // For all other preferences, set the summary to the value's
+                    // simple string representation.
+                    preference.setSummary(stringValue);
                 }
+                return true;
             };
 
     /**
