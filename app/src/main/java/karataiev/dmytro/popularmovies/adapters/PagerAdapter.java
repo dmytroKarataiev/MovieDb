@@ -22,30 +22,44 @@
  *  SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package karataiev.dmytro.popularmovies.adapters;
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** todo
+ * Created by karataev on 6/13/16.
+ */
+public class PagerAdapter extends FragmentPagerAdapter {
+
+    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<String> mFragmentTitles = new ArrayList<>();
+
+    public PagerAdapter(FragmentManager fm) {
+        super(fm);
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    public void addFragment(Fragment fragment, String title) {
+        mFragments.add(fragment);
+        mFragmentTitles.add(title);
     }
-}
 
-allprojects {
-    repositories {
-        jcenter()
-        mavenCentral()
+    @Override
+    public Fragment getItem(int position) {
+        return mFragments.get(position);
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    @Override
+    public int getCount() {
+        return mFragments.size();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return mFragmentTitles.get(position);
+    }
 }

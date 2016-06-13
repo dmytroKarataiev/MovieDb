@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
 
         if (savedInstanceState == null) {
             mContent = new MainFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.container, mContent, FRAGMENT_TAG).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.viewpager, mContent, FRAGMENT_TAG).commit();
         } else {
             mContent = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
             case R.id.action_favorites:
                 if (mTwoPane) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new FavoritesFragment(), FAVFRAGMENT_TAG)
+                            .replace(R.id.viewpager, new FavoritesFragment(), FAVFRAGMENT_TAG)
                             .commit();
 
                     if (getSupportActionBar() != null) {
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
                 // Add to Favorites Fragment Back button
                 if (mTwoPane) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, mContent, FRAGMENT_TAG)
+                            .replace(R.id.viewpager, mContent, FRAGMENT_TAG)
                             .commit();
 
                     if (getSupportActionBar() != null) {
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
 
         if (fm.findFragmentByTag(FAVFRAGMENT_TAG) != null) {
             fm.beginTransaction()
-                    .replace(R.id.container, new MainFragment(), FRAGMENT_TAG)
+                    .replace(R.id.viewpager, new MainFragment(), FRAGMENT_TAG)
                     .commit();
 
             if (getSupportActionBar() != null) {

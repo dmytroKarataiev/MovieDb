@@ -26,18 +26,72 @@ package karataiev.dmytro.popularmovies;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import karataiev.dmytro.popularmovies.adapters.PagerAdapter;
 
 /**
  * Created by karataev on 6/6/16.
  */
 public class PagerActivity extends AppCompatActivity {
 
+    @BindView(R.id.sliding_tabs)
+    TabLayout mTabLayout;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
+
+        ButterKnife.bind(this);
+
+        initPager();
+    }
+
+    /**
+     * Initialises a ViewPager and a TabLayout with a custom indicator
+     * sets listeners to them
+     */
+    private void initPager() {
+        final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+
+        // TODO: 6/13/16 fix init in fragments, add new fragment
+        pagerAdapter.addFragment(new MainFragment(), getString(R.string.app_name));
+        pagerAdapter.addFragment(new FavoritesFragment(), getString(R.string.action_favorites));
+        pagerAdapter.addFragment(TvFragment.newInstance(0, "Title"), getString(R.string.title_tv));
+
+        mViewPager.setAdapter(pagerAdapter);
+        mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+
+        // zoom effect on swipe // TODO: 6/13/16  
+        // mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        // on second click on tab - scroll to the top if in TasksFragment
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // TODO: 6/13/16 scroll to the top
+            }
+        });
     }
 
     @Override
@@ -48,7 +102,7 @@ public class PagerActivity extends AppCompatActivity {
         // copy the behavior of the hardware back button
         switch (id) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
         }
 

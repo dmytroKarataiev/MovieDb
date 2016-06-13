@@ -51,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
+                    .add(R.id.viewpager, new DetailFragment())
                     .commit();
         }
 
@@ -73,7 +73,7 @@ public class DetailActivity extends AppCompatActivity {
         // copy the behavior of the hardware back button
         switch (id) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
         }
 

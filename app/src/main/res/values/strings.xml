@@ -92,5 +92,6 @@
     <string name="movie.runtime">Runtime: <xliff:g id="runtime">%1$s</xliff:g></string>
     <string name="movie.budget">Budget: <xliff:g id="runtime">%1$s</xliff:g></string>
     <string name="url_temp"><a href="http://www.imdb.com/title/tt0113375/">Link</a></string>
+    <string name="title_tv">Popular Series</string>
 
 </resources>

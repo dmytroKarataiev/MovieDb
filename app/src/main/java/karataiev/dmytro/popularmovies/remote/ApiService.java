@@ -34,6 +34,7 @@ import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.MovieReviews;
 import karataiev.dmytro.popularmovies.model.MovieTrailers;
+import karataiev.dmytro.popularmovies.model.TvResults;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import rx.Observable;
@@ -71,4 +72,7 @@ public interface ApiService {
 
     @GET("person/{id}/movie_credits" + API_KEY)
     Observable<ActorCredits> getActorCredits(@Path("id") String actorId);
+
+    @GET("tv/popular" + API_KEY)
+    Observable<TvResults> getTvPopular();
 }

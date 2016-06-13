@@ -66,7 +66,7 @@ public class FavoritesActivity extends AppCompatActivity
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
         }
 
