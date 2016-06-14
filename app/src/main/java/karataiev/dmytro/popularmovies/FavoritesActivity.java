@@ -30,14 +30,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import karataiev.dmytro.popularmovies.model.MovieObject;
-
 /**
  * Class to start DetailActivityFragment
  * Created by karataev on 12/15/15.
  */
-public class FavoritesActivity extends AppCompatActivity
-        implements FavoritesFragment.CallbackFromFavorites{
+public class FavoritesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +68,5 @@ public class FavoritesActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onItemSelected(MovieObject movieObject) {
-
-        Intent intent = new Intent(this, DetailActivity.class)
-                .putExtra(MovieObject.MOVIE_OBJECT, movieObject);
-        startActivity(intent);
-
     }
 }

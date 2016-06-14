@@ -24,6 +24,7 @@
 
 package karataiev.dmytro.popularmovies;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,18 +57,6 @@ public class FavoritesFragment extends Fragment
     // Couldn't find more efficient way to use following variable then to make them global
     @BindView(R.id.movies_grid) GridView mGridView;
     Unbinder mUnbinder;
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface CallbackFromFavorites {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onItemSelected(MovieObject movieObject);
-    }
 
     public FavoritesFragment() { }
 
@@ -109,7 +98,9 @@ public class FavoritesFragment extends Fragment
             //  byte[] posterBytes = cursor.getBlob(posterIndex);
             //  byte[] backdropBytes = cursor.getBlob(backdropIndex);
 
-            ((CallbackFromFavorites) getContext()).onItemSelected(movie);
+            Intent intent = new Intent(getContext(), DetailActivity.class);
+            intent.putExtra(MovieObject.MOVIE_OBJECT, movie);
+            startActivity(intent);
 
             //  Intent intent = new Intent(getActivity(), DetailActivity.class)
             //      .putExtra("movie", movie)

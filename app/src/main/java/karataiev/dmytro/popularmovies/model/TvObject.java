@@ -24,6 +24,8 @@
 
 package karataiev.dmytro.popularmovies.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -33,7 +35,7 @@ import java.util.List;
 /**
  * Created by karataev on 6/13/16.
  */
-public class TvObject {
+public class TvObject implements Comparable<TvObject> {
 
     @SerializedName("backdrop_path")
     @Expose
@@ -309,4 +311,19 @@ public class TvObject {
         this.voteCount = voteCount;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof TvObject && id == ((TvObject) o).getId();
+    }
+
+    @Override
+    public int compareTo(@NonNull TvObject another) {
+        if (id > another.getId()) {
+            return 1;
+        } else if (id < another.getId()) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
 }

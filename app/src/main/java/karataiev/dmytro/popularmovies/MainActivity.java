@@ -38,11 +38,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.CallbackFromAdapter,
-        FavoritesFragment.CallbackFromFavorites, PopupMenu.OnMenuItemClickListener {
+public class MainActivity extends AppCompatActivity
+        implements PopupMenu.OnMenuItemClickListener {
 
     private MainFragment mContent;
     private DetailFragment mDetailFragment;
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Cal
         super.onSaveInstanceState(outstate);
     }
 
-    @Override
+    // TODO: 6/13/16 gix two pane 
     public void onItemSelected(MovieObject movieObject) {
         if (mTwoPane) {
             Bundle args = new Bundle();

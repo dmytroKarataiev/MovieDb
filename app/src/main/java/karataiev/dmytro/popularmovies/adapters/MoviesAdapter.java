@@ -43,6 +43,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.R;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
 import karataiev.dmytro.popularmovies.utils.Utility;
@@ -55,19 +56,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     private final List<MovieObject> mValues;
     private final Context mContext;
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface CallbackFromAdapter {
-
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onItemSelected(MovieObject movieObject);
-    }
+    private ItemClickListener<MovieObject, View> mListener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -85,6 +74,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         public String toString() {
             return super.toString() + " '" + mPosterText.getText();
         }
+    }
+
+    public void setData(ItemClickListener<MovieObject, View> listener) {
+        mListener = listener;
     }
 
     public MoviesAdapter(Context context, List<MovieObject> items) {
@@ -108,7 +101,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             // Set a tag for a shared transition
             holder.mImagePoster.setTag(movieObject.getId());
             holder.mImageFavorite.setTag(movieObject.getId() + "1");
-            ((CallbackFromAdapter) mContext).onItemSelected(movieObject);
+            if (mListener != null) {
+                mListener.onItemClicked(movieObject, holder.itemView);
+            }
         });
 
         Picasso.with(holder.mImagePoster.getContext()).load(mValues.get(position).getPosterPath()).into(holder.mImagePoster);

@@ -57,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.remote.TaskCompleted;
 import karataiev.dmytro.popularmovies.utils.Utility;
@@ -70,7 +71,7 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements TaskCompleted {
+public class MainFragment extends Fragment implements TaskCompleted, ItemClickListener<MovieObject, View> {
 
     private static final String TAG = MainFragment.class.getSimpleName();
 
@@ -181,6 +182,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
         movieAdapter = new MoviesAdapter(getActivity(), movieList);
+        movieAdapter.setData(this);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -330,6 +332,13 @@ public class MainFragment extends Fragment implements TaskCompleted {
         loadingMore = progress;
     }
 
+    @Override
+    public void onItemClicked(MovieObject item, View view) {
+        // TODO: 6/13/16 fix
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra(MovieObject.MOVIE_OBJECT, item);
+        startActivity(intent);
+    }
 
     // TODO: 6/2/16 change to Rx 
     /**
@@ -428,6 +437,7 @@ public class MainFragment extends Fragment implements TaskCompleted {
 
             if (mRecyclerView != null) {
                 movieAdapter = new MoviesAdapter(getActivity(), movieList);
+                movieAdapter.setData(MainFragment.this);
                 mRecyclerView.swapAdapter(movieAdapter, false);
             }
 

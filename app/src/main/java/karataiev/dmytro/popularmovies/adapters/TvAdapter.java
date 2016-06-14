@@ -37,13 +37,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.R;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.TvObject;
-import karataiev.dmytro.popularmovies.model.TvResults;
 import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
@@ -54,20 +55,26 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
 
     private static final String TAG = TvAdapter.class.getSimpleName();
 
-    private TvResults mTvResults;
+    private List<TvObject> mTvResults;
     private Context mContext;
     private ItemClickListener<TvObject, View> mListener;
 
-    public void setData(ItemClickListener<TvObject, View> listener) {
+    public void setData(ItemClickListener<TvObject, View> listener, List<TvObject> tvResults) {
         mListener = listener;
+        if (mTvResults != null) {
+            mTvResults.addAll(tvResults);
+        } else {
+            mTvResults = tvResults;
+        }
+        notifyDataSetChanged();
     }
 
-    public TvAdapter(Context context, TvResults tvResults) {
+    public TvAdapter(Context context, List<TvObject> tvResults) {
         super();
         mContext = context;
         mTvResults = tvResults;
         if (tvResults != null) {
-            Log.d("TvAdapter", "tvResults.getResults().size():" + tvResults.getResults().size());
+            Log.d("TvAdapter", "tvResults.getResults().size():" + tvResults.size());
         }
     }
 
@@ -92,7 +99,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TvObject tvObject = mTvResults.getResults().get(position);
+        TvObject tvObject = mTvResults.get(position);
 
         // TODO: 6/13/16 cache link
         Picasso.with(mContext)
@@ -121,7 +128,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mTvResults != null ? mTvResults.getResults().size() : 0;
+        return mTvResults != null ? mTvResults.size() : 0;
     }
 
 }
