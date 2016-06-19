@@ -24,6 +24,8 @@
 
 package karataiev.dmytro.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
@@ -35,7 +37,9 @@ import java.util.List;
 /**
  * Created by karataev on 6/13/16.
  */
-public class TvObject implements Comparable<TvObject> {
+public class TvObject implements Comparable<TvObject>,Parcelable {
+
+    public static final String TV_EXTRA = "tv_extra";
 
     @SerializedName("backdrop_path")
     @Expose
@@ -326,4 +330,58 @@ public class TvObject implements Comparable<TvObject> {
             return 0;
         }
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.backdropPath);
+        dest.writeString(this.firstAirDate);
+        dest.writeList(this.genreIds);
+        dest.writeLong(this.id);
+        dest.writeString(this.originalLanguage);
+        dest.writeString(this.originalName);
+        dest.writeString(this.overview);
+        dest.writeStringList(this.originCountry);
+        dest.writeString(this.posterPath);
+        dest.writeDouble(this.popularity);
+        dest.writeString(this.name);
+        dest.writeDouble(this.voteAverage);
+        dest.writeLong(this.voteCount);
+    }
+
+    public TvObject() {
+    }
+
+    protected TvObject(Parcel in) {
+        this.backdropPath = in.readString();
+        this.firstAirDate = in.readString();
+        this.genreIds = new ArrayList<>();
+        in.readList(this.genreIds, Long.class.getClassLoader());
+        this.id = in.readLong();
+        this.originalLanguage = in.readString();
+        this.originalName = in.readString();
+        this.overview = in.readString();
+        this.originCountry = in.createStringArrayList();
+        this.posterPath = in.readString();
+        this.popularity = in.readDouble();
+        this.name = in.readString();
+        this.voteAverage = in.readDouble();
+        this.voteCount = in.readLong();
+    }
+
+    public static final Parcelable.Creator<TvObject> CREATOR = new Parcelable.Creator<TvObject>() {
+        @Override
+        public TvObject createFromParcel(Parcel source) {
+            return new TvObject(source);
+        }
+
+        @Override
+        public TvObject[] newArray(int size) {
+            return new TvObject[size];
+        }
+    };
 }
