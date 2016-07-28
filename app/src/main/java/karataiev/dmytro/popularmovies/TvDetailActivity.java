@@ -53,12 +53,14 @@ public class TvDetailActivity extends AppCompatActivity {
         // Enable the Up button
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+
+            if (getIntent().hasExtra(TvObject.TV_EXTRA)) {
+                TvObject tvObject = getIntent().getParcelableExtra(TvObject.TV_EXTRA);
+                ab.setTitle(tvObject.getName());
+            }
         }
 
-        if (getIntent().hasExtra(TvObject.TV_EXTRA)) {
-            TvObject tvObject = getIntent().getParcelableExtra(TvObject.TV_EXTRA);
-            ab.setTitle(tvObject.getName());
-        }
+
     }
 
     // TODO: 6/18/16 possibly move to a base activity
