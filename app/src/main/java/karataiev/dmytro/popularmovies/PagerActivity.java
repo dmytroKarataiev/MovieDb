@@ -76,7 +76,7 @@ public class PagerActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         // on second click on tab - scroll to the top if in TasksFragment
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
@@ -92,6 +92,9 @@ public class PagerActivity extends AppCompatActivity {
                 // TODO: 6/13/16 scroll to the top
             }
         });
+
+        // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation 
+
     }
 
     @Override
