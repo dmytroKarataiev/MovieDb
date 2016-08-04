@@ -1,25 +1,25 @@
 /*
- *  The MIT License (MIT)
+ * MIT License
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ * Copyright (c) 2016. Dmytro Karataiev
  *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package karataiev.dmytro.popularmovies;
@@ -38,26 +38,29 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import karataiev.dmytro.popularmovies.adapters.TvAdapter;
+import karataiev.dmytro.popularmovies.adapters.PersonAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Consts;
-import karataiev.dmytro.popularmovies.model.TvObject;
-import karataiev.dmytro.popularmovies.model.TvResults;
+import karataiev.dmytro.popularmovies.model.person.PersonPopular;
+import karataiev.dmytro.popularmovies.model.person.PersonPopularResult;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 // TODO: 6/14/16 add TV Activity 
+
 /**
+ * Fragment to show popular persons of the day with continuous scrolling.
+ * On click opens Deatil activity for an actor.
  * Created by karataev on 6/13/16.
  */
-public class TvFragment extends Fragment implements ItemClickListener<TvObject, View> {
+public class PersonFragment extends Fragment implements ItemClickListener<PersonPopularResult, View> {
 
-    private static final String TAG = TvFragment.class.getSimpleName();
+    private static final String TAG = PersonFragment.class.getSimpleName();
 
     private CompositeSubscription _subscription;
-    private TvAdapter mTvAdapter;
+    private PersonAdapter mPersonAdapter;
     private GridLayoutManager mGridLayoutManager;
 
     @BindView(R.id.recyclerview)
@@ -79,8 +82,8 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static TvFragment newInstance() {
-        TvFragment fragment = new TvFragment();
+    public static PersonFragment newInstance() {
+        PersonFragment fragment = new PersonFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -98,7 +101,7 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
-        mTvAdapter = new TvAdapter(getContext(), null);
+        mPersonAdapter = new PersonAdapter(getContext(), null);
 
         requestUpdate(mCurrentPage);
 
@@ -108,14 +111,13 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
 
         mRecyclerView.setLayoutManager(mGridLayoutManager);
 
-        mRecyclerView.setAdapter(mTvAdapter);
+        mRecyclerView.setAdapter(mPersonAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.d(TAG, "mGridLayoutManager.findLastVisibleItemPosition():" + mGridLayoutManager.findLastVisibleItemPosition() + " " + mTvAdapter.getItemCount());
-                if (mGridLayoutManager.findLastVisibleItemPosition() >= mTvAdapter.getItemCount() - 5) {
+                if (mGridLayoutManager.findLastVisibleItemPosition() >= mPersonAdapter.getItemCount() - 5) {
                     if (!isUpdating) {
                         requestUpdate(++mCurrentPage);
                     }
@@ -133,10 +135,10 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
         Log.d(TAG, "page:" + page);
         isUpdating = true;
 
-        _subscription.add(App.getApiManager().getMoviesService().getTvPopular(page)
+        _subscription.add(App.getApiManager().getMoviesService().getActorPopular(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<TvResults>() {
+                .subscribe(new Subscriber<PersonPopular>() {
                     @Override
                     public void onCompleted() {
 
@@ -148,13 +150,13 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
                     }
 
                     @Override
-                    public void onNext(TvResults tvResults) {
+                    public void onNext(PersonPopular tvResults) {
                         if (tvResults.getResults() != null && tvResults.getResults().size() > 0) {
-                            if (mTvAdapter == null) {
-                                mTvAdapter = new TvAdapter(getContext(), tvResults.getResults());
-                                mRecyclerView.swapAdapter(mTvAdapter, false);
+                            if (mPersonAdapter == null) {
+                                mPersonAdapter = new PersonAdapter(getContext(), tvResults.getResults());
+                                mRecyclerView.swapAdapter(mPersonAdapter, false);
                             } else {
-                                mTvAdapter.setData(TvFragment.this, tvResults.getResults());
+                                mPersonAdapter.setData(PersonFragment.this, tvResults.getResults());
                             }
                             Log.d(TAG, "onNext: " + tvResults.getTotalResults() + " " + tvResults.getResults().size());
                         }
@@ -173,9 +175,11 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
     }
 
     @Override
-    public void onItemClicked(TvObject item, View view) {
-        Intent intent = new Intent(getContext(), TvDetailActivity.class);
-        intent.putExtra(Consts.TV_EXTRA, item);
+    public void onItemClicked(PersonPopularResult item, View view) {
+
+        Intent intent = new Intent(getContext(), ActorActivity.class);
+        intent.putExtra(Consts.ACTOR_EXTRA, item);
         startActivity(intent);
+
     }
 }

@@ -58,7 +58,16 @@ public class FavoritesFragment extends Fragment
     @BindView(R.id.movies_grid) GridView mGridView;
     Unbinder mUnbinder;
 
-    public FavoritesFragment() { }
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static FavoritesFragment newInstance() {
+        FavoritesFragment fragment = new FavoritesFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){

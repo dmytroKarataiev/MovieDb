@@ -31,7 +31,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-/** todo
+/**
+ * Simple Pager Adapter for fragments with Movies, Actors, TV Series, etc.
  * Created by karataev on 6/13/16.
  */
 public class PagerAdapter extends FragmentPagerAdapter {

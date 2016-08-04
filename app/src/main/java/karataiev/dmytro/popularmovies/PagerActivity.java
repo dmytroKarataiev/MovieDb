@@ -34,8 +34,10 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.adapters.PagerAdapter;
+import karataiev.dmytro.popularmovies.ui.ZoomOutPageTransformer;
 
 /**
+ * Future main activity screen with tabs.
  * Created by karataev on 6/6/16.
  */
 public class PagerActivity extends AppCompatActivity {
@@ -62,16 +64,16 @@ public class PagerActivity extends AppCompatActivity {
     private void initPager() {
         final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
-        // TODO: 6/13/16 fix init in fragments, add new fragment
-        pagerAdapter.addFragment(new MainFragment(), getString(R.string.app_name));
-        pagerAdapter.addFragment(new FavoritesFragment(), getString(R.string.action_favorites));
-        pagerAdapter.addFragment(TvFragment.newInstance(0, "Title"), getString(R.string.title_tv));
+        pagerAdapter.addFragment(MainFragment.newInstance(), getString(R.string.title_movies));
+        pagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
+        pagerAdapter.addFragment(TvFragment.newInstance(), getString(R.string.title_tv));
+        pagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
 
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
 
-        // zoom effect on swipe // TODO: 6/13/16  
-        // mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        // zoom effect on swipe
+        mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         mTabLayout.setupWithViewPager(mViewPager);
 

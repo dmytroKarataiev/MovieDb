@@ -30,11 +30,13 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MovieCast implements Parcelable {
+import karataiev.dmytro.popularmovies.interfaces.MoviePerson;
+
+public class MovieCast implements Parcelable, MoviePerson {
 
     @SerializedName("cast_id")
     @Expose
-    private Integer castId;
+    private int castId;
     @SerializedName("character")
     @Expose
     private String character;
@@ -43,13 +45,13 @@ public class MovieCast implements Parcelable {
     private String creditId;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private int id;
     @SerializedName("name")
     @Expose
     private String name;
     @SerializedName("order")
     @Expose
-    private Integer order;
+    private int order;
     @SerializedName("profile_path")
     @Expose
     private String profilePath;
@@ -59,7 +61,7 @@ public class MovieCast implements Parcelable {
      * @return
      * The castId
      */
-    public Integer getCastId() {
+    public int getCastId() {
         return castId;
     }
 
@@ -68,7 +70,7 @@ public class MovieCast implements Parcelable {
      * @param castId
      * The cast_id
      */
-    public void setCastId(Integer castId) {
+    public void setCastId(int castId) {
         this.castId = castId;
     }
 
@@ -113,7 +115,7 @@ public class MovieCast implements Parcelable {
      * @return
      * The id
      */
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -122,7 +124,7 @@ public class MovieCast implements Parcelable {
      * @param id
      * The id
      */
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -149,7 +151,7 @@ public class MovieCast implements Parcelable {
      * @return
      * The order
      */
-    public Integer getOrder() {
+    public int getOrder() {
         return order;
     }
 
@@ -158,7 +160,7 @@ public class MovieCast implements Parcelable {
      * @param order
      * The order
      */
-    public void setOrder(Integer order) {
+    public void setOrder(int order) {
         this.order = order;
     }
 
@@ -187,12 +189,12 @@ public class MovieCast implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.castId);
+        dest.writeInt(this.castId);
         dest.writeString(this.character);
         dest.writeString(this.creditId);
-        dest.writeValue(this.id);
+        dest.writeInt(this.id);
         dest.writeString(this.name);
-        dest.writeValue(this.order);
+        dest.writeInt(this.order);
         dest.writeString(this.profilePath);
     }
 
@@ -200,12 +202,12 @@ public class MovieCast implements Parcelable {
     }
 
     protected MovieCast(Parcel in) {
-        this.castId = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.castId = in.readInt();
         this.character = in.readString();
         this.creditId = in.readString();
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.id = in.readInt();
         this.name = in.readString();
-        this.order = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.order = in.readInt();
         this.profilePath = in.readString();
     }
 

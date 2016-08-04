@@ -32,6 +32,7 @@ import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.TvObject;
 
 public class TvDetailActivity extends AppCompatActivity {
@@ -54,8 +55,8 @@ public class TvDetailActivity extends AppCompatActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
 
-            if (getIntent().hasExtra(TvObject.TV_EXTRA)) {
-                TvObject tvObject = getIntent().getParcelableExtra(TvObject.TV_EXTRA);
+            if (getIntent().hasExtra(Consts.TV_EXTRA)) {
+                TvObject tvObject = getIntent().getParcelableExtra(Consts.TV_EXTRA);
                 ab.setTitle(tvObject.getName());
             }
         }

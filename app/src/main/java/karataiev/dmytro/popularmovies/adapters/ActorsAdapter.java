@@ -90,6 +90,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
                 .noFade()
                 .into(holder.mImageActor);
         holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
+        holder.mImageActor.setContentDescription(mMovieCredits.getCast().get(position).getName());
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {

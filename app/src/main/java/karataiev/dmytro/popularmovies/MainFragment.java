@@ -101,7 +101,15 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
     // RxAndroid EditText Subscription
     private Subscription _subscription;
 
-    public MainFragment() {
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static MainFragment newInstance() {
+        MainFragment fragment = new MainFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override

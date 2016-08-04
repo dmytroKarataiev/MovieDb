@@ -39,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.TvObject;
 import karataiev.dmytro.popularmovies.utils.Utility;
@@ -79,9 +80,9 @@ public class TvDetailFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (getActivity().getIntent().hasExtra(TvObject.TV_EXTRA)) {
+        if (getActivity().getIntent().hasExtra(Consts.TV_EXTRA)) {
             loadData(getActivity().getIntent()
-                    .getParcelableExtra(TvObject.TV_EXTRA));
+                    .getParcelableExtra(Consts.TV_EXTRA));
 
         }
     }

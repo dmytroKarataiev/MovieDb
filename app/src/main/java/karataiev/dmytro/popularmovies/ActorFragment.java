@@ -47,11 +47,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.ThumbnailsAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.interfaces.MoviePerson;
 import karataiev.dmytro.popularmovies.model.Actor;
 import karataiev.dmytro.popularmovies.model.ActorCredits;
 import karataiev.dmytro.popularmovies.model.ActorTagged;
 import karataiev.dmytro.popularmovies.model.Consts;
-import karataiev.dmytro.popularmovies.model.MovieCast;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -137,7 +137,7 @@ public class ActorFragment extends Fragment implements ItemClickListener<String,
         mUnbinder.unbind();
     }
 
-    public void setData(MovieCast movieCast) {
+    public void setData(MoviePerson movieCast) {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         mThumbnailsAdapter = new ThumbnailsAdapter(getContext());

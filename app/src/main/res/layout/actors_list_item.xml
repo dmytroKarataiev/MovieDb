@@ -30,13 +30,11 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <!-- TODO HARDCODE -->
     <de.hdodenhof.circleimageview.CircleImageView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/actor_photo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:contentDescription="@string/app_name"
+        android:layout_width="@dimen/actor_oval_size"
+        android:layout_height="@dimen/actor_oval_size"
         android:scaleType="centerCrop"
         app:civ_border_width="1dp"
         app:civ_border_color="#D8000000"/>

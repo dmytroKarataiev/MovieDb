@@ -25,6 +25,7 @@
 package karataiev.dmytro.popularmovies.model;
 
 /**
+ * Cumulative class with all model constants to prevent repetitive consts in different classes
  * Created by karataev on 5/26/16.
  */
 public class Consts {
@@ -36,4 +37,5 @@ public class Consts {
     public static final String ACTOR_THUMB = "w185";
     public static final String ACTOR_BACKDROP = "w500";
 
+    public static final String TV_EXTRA = "tv_extra";
 }

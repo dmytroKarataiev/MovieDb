@@ -39,8 +39,6 @@ import java.util.List;
  */
 public class TvObject implements Comparable<TvObject>,Parcelable {
 
-    public static final String TV_EXTRA = "tv_extra";
-
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
