@@ -72,7 +72,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,10 +84,10 @@ import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.MovieCast;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.model.MovieResults;
 import karataiev.dmytro.popularmovies.model.Review;
 import karataiev.dmytro.popularmovies.model.Trailer;
 import karataiev.dmytro.popularmovies.remote.ApiService;
-import karataiev.dmytro.popularmovies.remote.FetchMovies;
 import karataiev.dmytro.popularmovies.utils.DatabaseTasks;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import rx.Observable;
@@ -273,18 +272,28 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             intent = this.getActivity().getIntent();
             mMovieObject = intent.getParcelableExtra(MovieObject.MOVIE_OBJECT);
             if (mMovieObject == null) {
-                try {
-                    FetchMovies fetchFirstMovie = new FetchMovies(getContext(), null, false, 1);
+                _subscriptions.add(App.getApiManager()
+                        .getMoviesService()
+                        .getMoviesSort(Utility.getSort(getContext()))
+                        .subscribe(new Subscriber<MovieResults>() {
+                            @Override
+                            public void onCompleted() {
 
-                    ArrayList<MovieObject> temporary = fetchFirstMovie.execute(Utility.getUrl(1, getContext()).toString()).get();
-                    if (temporary != null) {
-                        mMovieObject = temporary.get(0);
-                    }
-                } catch (ExecutionException e) {
-                    Log.e(TAG, "error");
-                } catch (InterruptedException e2) {
-                    Log.e(TAG, "error" + e2);
-                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(MovieResults movieResults) {
+                                List<MovieObject> movies = movieResults.getResults();
+                                if (movies != null && movies.size() > 0) {
+                                    mMovieObject = movies.get(0);
+                                }
+                            }
+                        }));
             }
         }
     }
@@ -588,24 +597,24 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // then extracts palette and colors Detail Activity
         _subscriptions.add(
                 mApiService.getMovieImages(String.valueOf(mMovieObject.getId()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Backdrops>() {
-                    @Override
-                    public void onCompleted() {
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<Backdrops>() {
+                            @Override
+                            public void onCompleted() {
 
-                    }
+                            }
 
-                    @Override
-                    public void onError(Throwable e) {
+                            @Override
+                            public void onError(Throwable e) {
 
-                    }
+                            }
 
-                    @Override
-                    public void onNext(Backdrops backdrops) {
-                        loadBackdrop(backdrops);
-                    }
-                })
+                            @Override
+                            public void onNext(Backdrops backdrops) {
+                                loadBackdrop(backdrops);
+                            }
+                        })
         );
 
         // Adds actors to the RecyclerView
@@ -715,6 +724,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     /**
      * Loads backdrop and uses palette from it to paint the screen
+     *
      * @param backdrops to randomly pick
      */
     private void loadBackdrop(Backdrops backdrops) {

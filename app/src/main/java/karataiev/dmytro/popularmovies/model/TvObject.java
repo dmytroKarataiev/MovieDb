@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Created by karataev on 6/13/16.
  */
-public class TvObject implements Comparable<TvObject>,Parcelable {
+public class TvObject implements Comparable<TvObject>, Parcelable {
 
     @SerializedName("backdrop_path")
     @Expose

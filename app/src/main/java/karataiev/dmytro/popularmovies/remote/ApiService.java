@@ -32,6 +32,7 @@ import karataiev.dmytro.popularmovies.model.ActorTagged;
 import karataiev.dmytro.popularmovies.model.Backdrops;
 import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
+import karataiev.dmytro.popularmovies.model.MovieResults;
 import karataiev.dmytro.popularmovies.model.MovieReviews;
 import karataiev.dmytro.popularmovies.model.MovieTrailers;
 import karataiev.dmytro.popularmovies.model.TvObject;
@@ -43,11 +44,15 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 /**
+ * Movies DB API Service
  * Created by karataev on 5/8/16.
  */
 public interface ApiService {
 
     String API_KEY = "?api_key=" + BuildConfig.MOVIE_DB_API_KEY;
+
+    @GET("movie/{sort}" + API_KEY)
+    Observable<MovieResults> getMoviesSort(@Path("sort") String sort);
 
     @GET("movie/{id}" + API_KEY)
     Observable<MovieObject> getMovie(@Path("id") String movieId);

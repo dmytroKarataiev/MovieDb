@@ -59,7 +59,6 @@ import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.MovieObject;
-import karataiev.dmytro.popularmovies.remote.TaskCompleted;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -71,9 +70,15 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements TaskCompleted, ItemClickListener<MovieObject, View> {
+public class MainFragment extends Fragment implements ItemClickListener<MovieObject, View> {
 
     private static final String TAG = MainFragment.class.getSimpleName();
+
+    // COnstants for SaveInst
+    public static final String SAVE_MOVIES = "movies";
+    public static final String SAVE_POS = "position";
+    public static final String SAVE_SEARCH = "page";
+    public static final String SAVE_PAGE = "search";
 
     // Couldn't find more efficient way to use following variable then to make them global
     private MoviesAdapter movieAdapter;
@@ -89,7 +94,6 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
     private boolean networkRestored;
 
     // Continuous viewing and progress bar variables
-    private boolean loadingMore;
     private int currentPage = 1;
     private int currentPosition;
     private boolean addMovies;
@@ -171,14 +175,13 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
         mSort = Utility.getSort(getContext());
 
         // If movies were fetched - re-uses data
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_MOVIES)) {
             updateMovieList();
         } else {
-            // TODO: 6/1/16 fix consts
-            movieList = savedInstanceState.getParcelableArrayList("movies");
-            currentPosition = savedInstanceState.getInt("position");
-            currentPage = savedInstanceState.getInt("page");
-            searchParameter = savedInstanceState.getString("search");
+            movieList = savedInstanceState.getParcelableArrayList(SAVE_MOVIES);
+            currentPosition = savedInstanceState.getInt(SAVE_POS);
+            currentPage = savedInstanceState.getInt(SAVE_PAGE);
+            searchParameter = savedInstanceState.getString(SAVE_SEARCH);
         }
 
         mUnbinder = ButterKnife.bind(this, rootView);
@@ -259,11 +262,10 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
         super.onSaveInstanceState(outState);
 
         // Saves movies so we don't need to re-download them
-        // TODO: 6/1/16 fix consts
-        outState.putParcelableArrayList("movies", (ArrayList<MovieObject>) movieList);
-        outState.putInt("position", currentPosition);
-        outState.putInt("page", currentPage);
-        outState.putString("search", searchParameter);
+        outState.putParcelableArrayList(SAVE_MOVIES, (ArrayList<MovieObject>) movieList);
+        outState.putInt(SAVE_POS, currentPosition);
+        outState.putInt(SAVE_PAGE, currentPage);
+        outState.putString(SAVE_SEARCH, searchParameter);
     }
 
     /**
@@ -316,10 +318,7 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
      * @param sort to fetch data sorted with the parameter
      */
     private void fetchMovies(String sort) {
-
-        FetchMovies fetchMovie = new FetchMovies(progress ->
-                loadingMore = progress, isSearch, currentPage);
-
+        FetchMovies fetchMovie = new FetchMovies(isSearch, currentPage);
         fetchMovie.execute(sort);
     }
 
@@ -327,22 +326,14 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
      * Method to set ActionBar title according to the sort criteria
      */
     private void setActionbarTitle() {
-
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
         if (actionBar != null) {
             actionBar.setTitle(Utility.getSortReadable(getContext()));
         }
     }
 
     @Override
-    public void onAsyncProgress(boolean progress) {
-        loadingMore = progress;
-    }
-
-    @Override
     public void onItemClicked(MovieObject item, View view) {
-        // TODO: 6/13/16 fix
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(MovieObject.MOVIE_OBJECT, item);
         startActivity(intent);
@@ -355,13 +346,11 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
     public class FetchMovies extends AsyncTask<String, Void, ArrayList<MovieObject>> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
-        private TaskCompleted listener;
         private boolean isSearch;
         private int currentPage;
         private String searchParams;
 
-        public FetchMovies(TaskCompleted listener, boolean isSearch, int currentPage) {
-            this.listener = listener;
+        public FetchMovies(boolean isSearch, int currentPage) {
             this.isSearch = isSearch;
             this.currentPage = currentPage;
         }
@@ -386,10 +375,6 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = "";
-
-            if (listener != null) {
-                listener.onAsyncProgress(true);
-            }
 
             if (params[0] != null) {
                 searchParams = params[0];
@@ -417,11 +402,6 @@ public class MainFragment extends Fragment implements TaskCompleted, ItemClickLi
 
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movieObjects) {
-            // Check the flag that activity is over
-            if (listener != null) {
-                listener.onAsyncProgress(false);
-            }
-
             if (searchParams.equals(mSort)) {
                 movieList = movieObjects;
             } else if (movieObjects == null || movieList == null) {

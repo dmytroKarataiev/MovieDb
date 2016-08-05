@@ -30,41 +30,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+import karataiev.dmytro.popularmovies.interfaces.MovieDbResult;
+
 /**
  * Created by karataev on 6/13/16.
  */
-public class TvResults {
+public class TvResults extends MovieDbResult {
 
-    @SerializedName("page")
-    @Expose
-    private long page;
     @SerializedName("results")
     @Expose
     private List<TvObject> results = new ArrayList<>();
-    @SerializedName("total_pages")
-    @Expose
-    private long totalPages;
-    @SerializedName("total_results")
-    @Expose
-    private long totalResults;
-
-    /**
-     *
-     * @return
-     * The page
-     */
-    public long getPage() {
-        return page;
-    }
-
-    /**
-     *
-     * @param page
-     * The page
-     */
-    public void setPage(long page) {
-        this.page = page;
-    }
 
     /**
      *
@@ -82,42 +57,6 @@ public class TvResults {
      */
     public void setResults(List<TvObject> results) {
         this.results = results;
-    }
-
-    /**
-     *
-     * @return
-     * The totalPages
-     */
-    public long getTotalPages() {
-        return totalPages;
-    }
-
-    /**
-     *
-     * @param totalPages
-     * The total_pages
-     */
-    public void setTotalPages(long totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    /**
-     *
-     * @return
-     * The totalResults
-     */
-    public long getTotalResults() {
-        return totalResults;
-    }
-
-    /**
-     *
-     * @param totalResults
-     * The total_results
-     */
-    public void setTotalResults(long totalResults) {
-        this.totalResults = totalResults;
     }
 
 }
