@@ -24,28 +24,42 @@
 
 package karataiev.dmytro.popularmovies;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.adapters.PagerAdapter;
 import karataiev.dmytro.popularmovies.ui.ZoomOutPageTransformer;
+import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
  * Future main activity screen with tabs.
  * Created by karataev on 6/6/16.
  */
-public class PagerActivity extends AppCompatActivity {
+public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+
+    private static final String TAG = PagerActivity.class.getSimpleName();
 
     @BindView(R.id.sliding_tabs)
-    TabLayout mTabLayout;
+    TabLayout mTab;
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    private PagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +67,8 @@ public class PagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pager);
 
         ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
 
         initPager();
     }
@@ -62,26 +78,27 @@ public class PagerActivity extends AppCompatActivity {
      * sets listeners to them
      */
     private void initPager() {
-        final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
-        pagerAdapter.addFragment(MainFragment.newInstance(), getString(R.string.title_movies));
-        pagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
-        pagerAdapter.addFragment(TvFragment.newInstance(), getString(R.string.title_tv));
-        pagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
+        mPagerAdapter.addFragment(MainFragment.newInstance(), getString(R.string.title_movies));
+        mPagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
+        mPagerAdapter.addFragment(TvFragment.newInstance(), getString(R.string.title_tv));
+        mPagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
 
-        mViewPager.setAdapter(pagerAdapter);
-        mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
 
         // zoom effect on swipe
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
-        mTabLayout.setupWithViewPager(mViewPager);
+        mTab.setupWithViewPager(mViewPager);
 
         // on second click on tab - scroll to the top if in TasksFragment
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                setTitle();
             }
 
             @Override
@@ -109,8 +126,95 @@ public class PagerActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_filter:
+                showSortMenu(findViewById(R.id.action_filter));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setTitle();
+        Log.d(TAG, "onResume: ");
+    }
+
+    /**
+     * Sets ActionBar title to the corresponding view
+     */
+    private void setTitle() {
+        if (mToolbar != null && mTab != null) {
+
+            switch (mTab.getSelectedTabPosition()) {
+                case 0:
+                    mToolbar.setTitle(Utility.getSortReadable(this));
+                    break;
+                case 1:
+                    mToolbar.setTitle(getString(R.string.title_favorites));
+                    break;
+                case 2:
+                    mToolbar.setTitle(getString(R.string.title_tv));
+                    break;
+                case 3:
+                    mToolbar.setTitle(getString(R.string.title_actors));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_pager, menu);
+        return true;
+    }
+
+    // TODO: 8/24/16 hide filter menu in other fragments 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        MainFragment mainFragment = null;
+
+        if (mViewPager.getCurrentItem() == 0) {
+            mainFragment = (MainFragment) mPagerAdapter.getItem(0);
+        }
+
+        // TODO: 8/24/16 add constants 
+        switch (item.getItemId()) {
+            case R.id.popup_filter_popular:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
+                break;
+            case R.id.popup_filter_votes:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
+                break;
+            case R.id.popup_filter_release:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
+                break;
+        }
+
+        if (mainFragment != null) {
+            mainFragment.setPosition(0);
+            mainFragment.updateMovieList();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Shows PopupMenu on Filter button click in ActionBar
+     * @param view of the button itself
+     */
+    public void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(PagerActivity.this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_filter_popup, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.show();
+    }
+
 }

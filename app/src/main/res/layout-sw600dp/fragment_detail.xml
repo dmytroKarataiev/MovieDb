@@ -26,6 +26,7 @@
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -42,17 +43,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/description_backdrop"
             android:minHeight="330dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            tools:ignore="InconsistentLayout" />
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/detail_tagline"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/fab_margin"
             android:paddingLeft="@dimen/fab_margin"
             android:paddingRight="@dimen/fab_margin"
+            android:paddingTop="@dimen/fab_margin"
             android:visibility="gone" />
 
         <!-- Main content: rating, votes, year -->

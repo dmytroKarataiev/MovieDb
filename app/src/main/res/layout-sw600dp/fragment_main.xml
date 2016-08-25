@@ -23,6 +23,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -35,7 +36,8 @@
         android:hint="@string/search"
         android:imeOptions="actionDone"
         android:inputType="textCapWords"
-        android:padding="@dimen/search" />
+        android:padding="@dimen/search"
+        tools:ignore="InconsistentLayout" />
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recyclerview"

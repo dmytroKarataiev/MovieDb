@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  The MIT License (MIT)
   ~
   ~  Copyright (c) 2016. Dmytro Karataiev
@@ -23,8 +22,7 @@
   ~  SOFTWARE.
   -->
 
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -64,9 +62,10 @@
                     android:layout_height="wrap_content"
                     android:background="@color/colorLighter"
                     android:hint="@string/search"
+                    android:imeOptions="actionDone"
                     android:inputType="textCapWords"
                     android:padding="@dimen/search"
-                    android:imeOptions="actionDone"/>
+                    tools:ignore="InconsistentLayout" />
 
             </LinearLayout>
 

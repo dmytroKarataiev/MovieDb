@@ -30,11 +30,7 @@
     <dimen name="poster_width">185dp</dimen>
     <dimen name="poster_height">278dp</dimen>
 
-    <!-- Column width in GridView -->
-    <dimen name="column_width">150dp</dimen>
-
     <!-- Text sizes -->
-    <dimen name="movie_name">24sp</dimen>
     <dimen name="year_text">36sp</dimen>
     <dimen name="rating_text">24sp</dimen>
     <dimen name="votes">16sp</dimen>

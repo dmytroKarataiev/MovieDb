@@ -136,6 +136,7 @@ public class Utility {
 
     /**
      * Method to return sort parameter in a redable format
+     *
      * @param context of an activity
      * @return readable representation of a sort parameter
      */
@@ -235,8 +236,9 @@ public class Utility {
 
     /**
      * Method to get URL for a page from Movie DB
+     *
      * @param currentPage to fetch correct page
-     * @param context from which a call is being made
+     * @param context     from which a call is being made
      * @return URL to next 20 movies
      */
     public static URL getUrl(int currentPage, Context context) {
@@ -270,7 +272,7 @@ public class Utility {
             builtUri = builtUri.buildUpon()
                     .appendQueryParameter(VOTERS, VOTERS_MIN)
                     .build();
-        // Discard movies with less than 10 votes
+            // Discard movies with less than 10 votes
         } else if (SORT.contains("release_date.desc")) {
             builtUri = builtUri.buildUpon()
                     .appendQueryParameter(RELEASE_DATE, getInTheatersDate())
@@ -290,6 +292,7 @@ public class Utility {
 
     /**
      * Method to get the screen details and in the app to set them accordingly
+     *
      * @param context to get screen metrics
      * @return different screen parameters
      */
@@ -313,13 +316,14 @@ public class Utility {
 
         }
 
-        return new int[] { width, height, densityDpi, columns, posterWidth, posterHeight };
+        return new int[]{width, height, densityDpi, columns, posterWidth, posterHeight};
     }
 
     /**
      * Method to check in the database if movie is present
+     *
      * @param context from which method is called
-     * @param movie to check if it is in database
+     * @param movie   to check if it is in database
      * @return boolean true if present, false otherwise
      */
     public static boolean isFavorite(Context context, MovieObject movie) {
@@ -333,7 +337,7 @@ public class Utility {
             currentPoster = contentResolver.query(MoviesContract.MovieEntry.CONTENT_URI,
                     null,
                     MoviesContract.MovieEntry.COLUMN_ID + " = ?",
-                    new String[]{ String.valueOf(movie.getId()) },
+                    new String[]{String.valueOf(movie.getId())},
                     null);
         }
 
@@ -355,6 +359,7 @@ public class Utility {
 
     /**
      * Method to get trailer URL
+     *
      * @param movie_id from MovieObject
      * @return URL request for trailers
      */
@@ -383,6 +388,7 @@ public class Utility {
 
     /**
      * Method to get search URL
+     *
      * @param search request
      * @return URL request for movies
      */
@@ -464,6 +470,7 @@ public class Utility {
     /**
      * Method to create ContentValues from a MovieObject
      * Called from MoviesAdapter, DetailFragment
+     *
      * @param movie with contents
      * @return ContentValues with contents from the MovieObject
      */
@@ -492,6 +499,7 @@ public class Utility {
     /**
      * Method to create byte[] from a Drawable to later put it into the database
      * Called from MoviesAdapter, DetailFragment
+     *
      * @param drawable to convert
      * @return byte[] made from the Drawable
      */
@@ -507,8 +515,9 @@ public class Utility {
 
     /**
      * Method to Make file from byte[]
+     *
      * @param context from which call is being made
-     * @param input byte[] array with data
+     * @param input   byte[] array with data
      * @return File from input
      */
     public static File makeFile(Context context, byte[] input, String filename) {
@@ -534,17 +543,16 @@ public class Utility {
 
     /**
      * Method to get release date 2 weeks ahead of a current date
+     *
      * @return current date + 2 weeks
      */
     public static String getInTheatersDate() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());//dd/MM/yyyy
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
-
         calendar.add(Calendar.DATE, 14);
         return sdfDate.format(calendar.getTime());
-
     }
 
     // Network status variables and methods (to stop fetching the data if the phone is offline
@@ -561,8 +569,9 @@ public class Utility {
 
     /**
      * Creates full url to download an Image
+     *
      * @param context from which call is made
-     * @param path unique id for a movie
+     * @param path    unique id for a movie
      * @return full path to download
      */
     public static String getFullUrl(Context context, String path) {
@@ -571,6 +580,7 @@ public class Utility {
 
     /**
      * Format long value to the dollar format
+     *
      * @param budget in US Dollars
      * @return String representation
      */
@@ -582,6 +592,7 @@ public class Utility {
 
     /**
      * Returns runtime in hours and minutes
+     *
      * @param runtime in minutes
      * @return formatted String
      */
@@ -594,6 +605,7 @@ public class Utility {
 
     /**
      * Returns fully formatted IDMB link
+     *
      * @param imdb id of a movie
      * @return URL as a String to a movie on IMDB
      */
@@ -603,6 +615,7 @@ public class Utility {
 
     /**
      * Returns formatted string of genres
+     *
      * @param genres list of genres
      * @return formatted string
      */
@@ -619,6 +632,7 @@ public class Utility {
 
     /**
      * Returns formatted string of production companies
+     *
      * @param productions list of production companies
      * @return formatted string
      */

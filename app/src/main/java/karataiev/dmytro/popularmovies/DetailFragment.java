@@ -45,6 +45,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -364,60 +365,65 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
 
-        mYouTubePlayer = player;
-        // Detect if display is in landscape mode and set YouTube layout height accordingly
-        TypedValue tv = new TypedValue();
+        try {
+            mYouTubePlayer = player;
+            // Detect if display is in landscape mode and set YouTube layout height accordingly
+            TypedValue tv = new TypedValue();
 
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) &&
-                (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)) {
-            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true) &&
+                    (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+                int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
 
-            if (getView() != null) {
-                FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
-                ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
+                if (getView() != null) {
+                    FrameLayout youtubeFrame = (FrameLayout) getView().findViewById(R.id.youtube_fragment);
+                    ViewGroup.LayoutParams layoutParams = youtubeFrame.getLayoutParams();
 
-                layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
-                layoutParams.width = Utility.screenSize(getContext())[0];
-                youtubeFrame.setLayoutParams(layoutParams);
+                    layoutParams.height = Utility.screenSize(getContext())[1] - (3 * actionBarHeight);
+                    layoutParams.width = Utility.screenSize(getContext())[0];
+                    youtubeFrame.setLayoutParams(layoutParams);
+                }
             }
+
+            player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+                @Override
+                public void onLoading() {
+
+                }
+
+                @Override
+                public void onLoaded(String s) {
+                    currentVideo = mTrailersList.indexOf(s);
+                }
+
+                @Override
+                public void onAdStarted() {
+
+                }
+
+                @Override
+                public void onVideoStarted() {
+
+                }
+
+                @Override
+                public void onVideoEnded() {
+
+                }
+
+                @Override
+                public void onError(YouTubePlayer.ErrorReason errorReason) {
+
+                }
+            });
+            if (!wasRestored) {
+                if (mTrailersList != null && mTrailersList.size() > 0) {
+                    mYouTubePlayer.cueVideos(mTrailersList, currentVideo, currentVideoMillis);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "1 e:" + e);
         }
 
-        player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
-            @Override
-            public void onLoading() {
-
-            }
-
-            @Override
-            public void onLoaded(String s) {
-                currentVideo = mTrailersList.indexOf(s);
-            }
-
-            @Override
-            public void onAdStarted() {
-
-            }
-
-            @Override
-            public void onVideoStarted() {
-
-            }
-
-            @Override
-            public void onVideoEnded() {
-
-            }
-
-            @Override
-            public void onError(YouTubePlayer.ErrorReason errorReason) {
-
-            }
-        });
-        if (!wasRestored) {
-            if (mTrailersList != null && mTrailersList.size() > 0) {
-                mYouTubePlayer.cueVideos(mTrailersList, currentVideo, currentVideoMillis);
-            }
-        }
     }
 
     @Override
@@ -429,8 +435,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             try {
                 saveInstanceState.putInt(VIDEO_TAG, mYouTubePlayer.getCurrentTimeMillis());
                 saveInstanceState.putInt(VIDEO_NUM, currentVideo);
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "YouTube state error:" + e);
+            } catch (Exception e) {
+                Log.e(TAG, "2 YouTube state error:" + e);
             }
         }
 
@@ -452,7 +458,11 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RECOVERY_DIALOG_REQUEST) {
             // Retry initialization if user performed a recovery action
-            getYouTubePlayerProvider().initialize(BuildConfig.YOUTUBE_API_KEY, this);
+            try {
+                getYouTubePlayerProvider().initialize(BuildConfig.YOUTUBE_API_KEY, this);
+            } catch (Exception e) {
+                Log.d("DetailFragment", "e:" + e);
+            }
         }
     }
 
@@ -513,7 +523,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mTextDescription.setText(mMovieObject.getOverview());
         mTextRating.setText(String.valueOf(mMovieObject.getVoteAverage()));
         mTextRelease.setText(mMovieObject.getReleaseDate());
-        mTextVotes.setText(String.format(getActivity().getString(R.string.votes_text), mMovieObject.getVoteCount()));
+        // TODO: 8/22/16 properly format the votes 
+        mTextVotes.setText(String.format(getActivity().getString(R.string.votes_text), String.valueOf(mMovieObject.getVoteCount())));
 
         if (Utility.isFavorite(getContext(), mMovieObject)) {
             Picasso.with(getContext()).load(R.drawable.ic_bookmark_fav).into(mImageFavorite);
@@ -574,7 +585,15 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         if (!movieObject.getImdbId().isEmpty()) {
                             mTextImdb.setVisibility(View.VISIBLE);
                             mTextImdb.setMovementMethod(LinkMovementMethod.getInstance());
-                            mTextImdb.setText(Html.fromHtml(Utility.getImdbLink(movieObject.getImdbId())));
+
+                            Spanned result;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                result = Html.fromHtml(Utility.getImdbLink(movieObject.getImdbId()), Html.FROM_HTML_MODE_LEGACY);
+                            } else {
+                                result = Html.fromHtml(Utility.getImdbLink(movieObject.getImdbId()));
+                            }
+
+                            mTextImdb.setText(result);
                             mTextImdb.setLinkTextColor(Color.BLUE);
                         }
 
@@ -651,18 +670,24 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                         .subscribe(new Observer<Trailer>() {
                             @Override
                             public void onCompleted() {
-                                if (mTrailersList.size() > 0) {
-                                    // YouTube view initialization
-                                    youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
-                                    youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, DetailFragment.this);
+                                try {
+                                    if (mTrailersList.size() > 0) {
+                                        // YouTube view initialization
 
-                                    FragmentManager fragmentManager = getFragmentManager();
-                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                    transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
+                                        youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
+                                        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, DetailFragment.this);
+
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                        transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
+                                    }
+                                    if (mYouTubePlayer != null) {
+                                        mYouTubePlayer.cueVideos(mTrailersList);
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "3 e:" + e);
                                 }
-                                if (mYouTubePlayer != null) {
-                                    mYouTubePlayer.cueVideos(mTrailersList);
-                                }
+
                                 // If there are trailers - add their links to the share Intent
                                 StringBuilder stringBuilder = new StringBuilder();
                                 stringBuilder.append("\nAlso check out the Trailers:\n");

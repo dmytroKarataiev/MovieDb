@@ -42,9 +42,9 @@
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/fab_margin"
             android:paddingLeft="@dimen/fab_margin"
             android:paddingRight="@dimen/fab_margin"
+            android:paddingTop="@dimen/fab_margin"
             android:visibility="gone" />
 
         <!-- Main content: rating, votes, year -->
@@ -67,7 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_below="@id/main_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:ignore="InconsistentLayout" />
 
         <!-- Movie Description -->
         <TextView

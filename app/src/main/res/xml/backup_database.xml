@@ -23,6 +23,6 @@
   ~  SOFTWARE.
   -->
 
-<full-backup-content xmlns:android="http://schemas.android.com/apk/res/android">
+<full-backup-content>
     <include domain="database" path="movies.db" />
 </full-backup-content>

@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener {
 
     private MainFragment mContent;
-    private DetailFragment mDetailFragment;
     private final String FRAGMENT_TAG = "FFTAG";
     private final String DETAILFRAGMENT_TAG = "DFTAG";
     private final String FAVFRAGMENT_TAG = "FAVFR";
@@ -71,7 +70,8 @@ public class MainActivity extends AppCompatActivity
             mTwoPane = true;
 
             if (savedInstanceState == null) {
-                mDetailFragment = new DetailFragment();
+                // TODO: 8/22/16 newinstance pattern 
+                DetailFragment mDetailFragment = new DetailFragment();
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.movie_detail_container, mDetailFragment, DETAILFRAGMENT_TAG)
                         .commit();
@@ -210,33 +210,31 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        MainFragment mainFragment = null;
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) instanceof MainFragment) {
+            mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        }
+        // TODO: 8/24/16 add constants
         switch (item.getItemId()) {
             case R.id.popup_filter_popular:
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
-                if (mainFragment != null) {
-                    mainFragment.setPosition(0);
-                    mainFragment.updateMovieList();
-                }
-                return true;
+                break;
             case R.id.popup_filter_votes:
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
-                if (mainFragment != null) {
-                    mainFragment.setPosition(0);
-                    mainFragment.updateMovieList();
-                }
-                return true;
+                break;
             case R.id.popup_filter_release:
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
-                if (mainFragment != null) {
-                    mainFragment.setPosition(0);
-                    mainFragment.updateMovieList();
-                }
-                return true;
-            default:
-                return false;
+                break;
         }
+
+        if (mainFragment != null) {
+            mainFragment.setPosition(0);
+            mainFragment.updateMovieList();
+            return true;
+        }
+
+        return false;
     }
 }
