@@ -34,8 +34,8 @@ android {
         applicationId "karataiev.dmytro.popularmovies"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 8
-        versionName "1.15_beta"
+        versionCode 9
+        versionName "1.2_beta"
         multiDexEnabled true
     }
     buildTypes {

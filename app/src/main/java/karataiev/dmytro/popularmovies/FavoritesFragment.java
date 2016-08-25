@@ -31,6 +31,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,6 +119,9 @@ public class FavoritesFragment extends Fragment
             //  startActivity(intent);
 
         });
+
+        // gridview scroll effect on ActionBar
+        ViewCompat.setNestedScrollingEnabled(mGridView, true);
 
         mGridView.setAdapter(mFavoritesAdapter);
 
