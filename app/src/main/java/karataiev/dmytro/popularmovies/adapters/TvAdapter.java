@@ -104,7 +104,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
         // TODO: 6/13/16 cache link
         Picasso.with(mContext)
                 .load(Consts.IMAGE_URL
-                        + Utility.posterSize(holder.itemView.getContext())[0]
+                        + Utility.posterSize(mContext)[1]
                         + tvObject.getBackdropPath())
                 .into(holder.mImageActor, new Callback() {
                     @Override
