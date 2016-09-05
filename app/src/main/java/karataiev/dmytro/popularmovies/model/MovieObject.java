@@ -601,7 +601,7 @@ public class MovieObject implements Parcelable {
         final String[] POSTER_SIZE = Utility.posterSize(context);
 
         // Creates to links to the posters: one for main window, one for the detailed view
-        fullPosterPath = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/" + this.posterPath;
+        fullPosterPath = "http://image.tmdb.org/t/p/" + POSTER_SIZE[1] + "/" + posterPath;
         posterPath = "http://image.tmdb.org/t/p/" + POSTER_SIZE[0] + "/" + posterPath;
         backdropPath = "https://image.tmdb.org/t/p/" + POSTER_SIZE[1] + backdropPath;
         //voteAverage = Utility.formatRating(voteAverage);

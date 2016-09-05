@@ -228,6 +228,7 @@ public class MainFragment extends Fragment implements ItemClickListener<MovieObj
             toolbar.setOnClickListener(v -> mRecyclerView.smoothScrollToPosition(0));
         }
 
+        // TODO: 8/28/16 move to activity 
         // BroadcastReceiver to get info about network connection
         networkStateReceiver = new BroadcastReceiver() {
             @Override
