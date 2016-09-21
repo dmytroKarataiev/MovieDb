@@ -30,4 +30,8 @@
     <color name="colorLighter">#5C6BC0</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <color name="tab_item_selected">#FFFFFF</color>
+    <color name="tab_item_unselected">#a8a8a8</color>
+
 </resources>

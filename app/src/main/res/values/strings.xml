@@ -93,7 +93,7 @@
     <string name="movie.runtime">Runtime: <xliff:g id="runtime">%1$s</xliff:g></string>
     <string name="url_temp"><a href="http://www.imdb.com/title/tt0113375/">Link</a></string>
          -->
-    <string name="movie.budget">Budget: <xliff:g id="runtime">%1$s</xliff:g></string>
+    <string name="movie_budget">Budget: <xliff:g id="runtime">%1$s</xliff:g></string>
     <string name="title_activity_tv_detail">Tv Details</string>
     <string name="description_backdrop">Backdrop Image</string>
 
@@ -101,7 +101,9 @@
     <string name="title_tv">Series</string>
     <string name="title_actors">Actors</string>
     <string name="title_movies">Movies</string>
-    <string name="title_favorites">Favorite</string>
+    <string name="title_favorites">Favorites</string>
+
+    <string name="tab_description">Tab button</string>
 
 
 </resources>

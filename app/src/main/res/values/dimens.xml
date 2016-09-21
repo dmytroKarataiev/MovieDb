@@ -25,7 +25,6 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="tablayout_height">48dp</dimen>
 
     <!-- Poster sizes -->
     <dimen name="poster_width">185dp</dimen>
@@ -52,5 +51,10 @@
 
     <!-- Actor List Dimens -->
     <dimen name="actor_oval_size">50dp</dimen>
+
+    <!-- Tab Layout Dimens -->
+    <dimen name="tab_height">52dp</dimen>
+    <dimen name="tab_layout_padding">4dp</dimen>
+    <dimen name="tab_image_size">30dp</dimen>
 
 </resources>

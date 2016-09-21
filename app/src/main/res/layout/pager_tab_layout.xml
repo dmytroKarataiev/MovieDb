@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  The MIT License (MIT)
   ~
   ~  Copyright (c) 2016. Dmytro Karataiev
@@ -22,20 +22,24 @@
   ~  SOFTWARE.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="karataiev.dmytro.popularmovies.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="200"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tab_height"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <item android:id="@+id/action_filter"
-        android:icon="@drawable/ic_filter"
-        android:title="@string/menu_sort"
-        android:orderInCategory="150"
-        app:showAsAction="always" />
+    <ImageView
+        android:id="@+id/tab_item_image"
+        android:layout_width="@dimen/tab_image_size"
+        android:layout_height="@dimen/tab_image_size"
+        android:contentDescription="@string/tab_description"
+        android:paddingTop="@dimen/tab_layout_padding" />
 
-</menu>
+    <TextView
+        android:id="@+id/tab_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="@dimen/tab_layout_padding"
+        android:textAppearance="?android:textAppearance" />
+</LinearLayout>

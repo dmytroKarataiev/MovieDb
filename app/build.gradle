@@ -28,7 +28,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "karataiev.dmytro.popularmovies"
@@ -55,7 +55,7 @@ android {
 }
 
 ext {
-    compatLibVersion = '24.2.0'
+    compatLibVersion = '24.2.1'
     butterknife = '8.3.0'
     retrofit = '2.1.0'
 }

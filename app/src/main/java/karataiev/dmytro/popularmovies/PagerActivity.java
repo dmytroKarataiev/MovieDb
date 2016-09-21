@@ -37,7 +37,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.adapters.PagerAdapter;
@@ -58,6 +61,11 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     ViewPager mViewPager;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @BindColor(R.color.tab_item_selected)
+    int mColorSelected;
+    @BindColor(R.color.tab_item_unselected)
+    int mColorUnSelected;
 
     private PagerAdapter mPagerAdapter;
 
@@ -93,27 +101,98 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
         mTab.setupWithViewPager(mViewPager);
 
-        // on second click on tab - scroll to the top if in TasksFragment
-        mTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
-                setTitle();
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // TODO: 6/13/16 scroll to the top
-            }
-        });
+        setTabImages();
 
         // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation 
 
+    }
+
+    /**
+     * Method to set tab images and highlights on tab switching
+     */
+    private void setTabImages() {
+        if (mTab != null) {
+
+            int[] iconSet = {
+                    R.drawable.ic_movie_white,
+                    R.drawable.ic_star_white,
+                    R.drawable.ic_subscriptions_white,
+                    R.drawable.ic_people_white,
+                    R.drawable.ic_movie_white,
+                    R.drawable.ic_star_white,
+                    R.drawable.ic_subscriptions_white,
+                    R.drawable.ic_people_white
+            };
+
+            // Set custom layouts for each Tab
+            for (int i = 0, n = mTab.getTabCount(); i < n; i++) {
+                TabLayout.Tab tabLayout = mTab.getTabAt(i);
+
+                if (tabLayout != null) {
+                    tabLayout.setCustomView(R.layout.pager_tab_layout);
+                    View customView = tabLayout.getCustomView();
+
+                    if (customView != null) {
+                        ImageView imageView = ButterKnife.findById(customView, R.id.tab_item_image);
+                        TextView textView = ButterKnife.findById(customView, R.id.tab_item_text);
+                        textView.setText(tabLayout.getText());
+
+                        if (i == 0) {
+                            textView.setTextColor(mColorSelected);
+                            imageView.setImageResource(iconSet[i + iconSet.length / 2]);
+                        } else {
+                            textView.setTextColor(mColorUnSelected);
+                            imageView.setImageResource(iconSet[i]);
+                        }
+                    }
+                }
+            }
+
+            // Highlight image and text on selection
+            mTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    setTitle();
+                    View customView = tab.getCustomView();
+                    if (customView != null) {
+                        ImageView imageView = ButterKnife.findById(customView, R.id.tab_item_image);
+                        imageView.setImageResource(iconSet[tab.getPosition() + iconSet.length / 2]);
+
+                        TextView textView = ButterKnife.findById(customView, R.id.tab_item_text);
+                        textView.setTextColor(mColorSelected);
+                    }
+                    mViewPager.setCurrentItem(tab.getPosition());
+                    setTitle();
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    View customView = tab.getCustomView();
+                    if (customView != null) {
+                        ImageView imageView = ButterKnife.findById(customView, R.id.tab_item_image);
+                        imageView.setImageResource(iconSet[tab.getPosition()]);
+
+                        TextView textView = ButterKnife.findById(customView, R.id.tab_item_text);
+                        textView.setTextColor(mColorUnSelected);
+                    }
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                    /* todo add scroll to top
+                    Fragment fragment = mPagerAdapter.getRegisteredFragment(tab.getPosition());
+
+                    if (fragment instanceof RecentFragment) {
+                        ((RecentFragment) fragment).scrollToTop();
+                    } else if (fragment instanceof NewsFragment) {
+                        ((NewsFragment) fragment).scrollToTop();
+                    }
+                    */
+                }
+            });
+
+        }
     }
 
     @Override
