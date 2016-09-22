@@ -24,9 +24,12 @@
 
 package karataiev.dmytro.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,19 +42,26 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import karataiev.dmytro.popularmovies.adapters.ActorsAdapter;
+import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
 import karataiev.dmytro.popularmovies.model.Consts;
+import karataiev.dmytro.popularmovies.model.MovieCast;
+import karataiev.dmytro.popularmovies.model.MovieCredits;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.model.TvObject;
 import karataiev.dmytro.popularmovies.utils.Utility;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TvDetailFragment extends Fragment {
+public class TvDetailFragment extends Fragment implements ItemClickListener<MovieCast, View> {
 
     @Nullable
     @BindView(R.id.backdrop)
@@ -59,6 +69,11 @@ public class TvDetailFragment extends Fragment {
     @BindView(R.id.tv_title)
     TextView mTextTitle;
     private Unbinder mUnbinder;
+
+    // Actors RecyclerList view
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerActors;
+    private ActorsAdapter mActorsAdapter;
 
     private CompositeSubscription mSubscriptions;
 
@@ -123,6 +138,48 @@ public class TvDetailFragment extends Fragment {
                     }
                 }));
 
+        // add actors
+        initActorsList(tvObject);
+    }
+
+    /**
+     * Inits RecyclerView with actors list.
+     * @param tvObject for which to download actors.
+     */
+    private void initActorsList(TvObject tvObject) {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                RecyclerView.HORIZONTAL, false);
+        mActorsAdapter = new ActorsAdapter(getContext(), null);
+
+        mRecyclerActors.setLayoutManager(layoutManager);
+        mRecyclerActors.setAdapter(mActorsAdapter);
+        mRecyclerActors.setNestedScrollingEnabled(true);
+
+        // Adds actors to the RecyclerView
+        mSubscriptions.add(
+                App.getApiManager().getMoviesService().getTvCredits(String.valueOf(tvObject.getId()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<MovieCredits>() {
+                            @Override
+                            public void onCompleted() {
+                                Log.d(TAG, "onCompleted: ");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "onError: ", e);
+                            }
+
+                            @Override
+                            public void onNext(MovieCredits movieCredits) {
+                                mActorsAdapter = new ActorsAdapter(getContext(), movieCredits);
+                                mRecyclerActors.setAdapter(mActorsAdapter);
+                                mActorsAdapter.setData(TvDetailFragment.this);
+                            }
+                        })
+        );
+
     }
 
     @Override
@@ -132,5 +189,12 @@ public class TvDetailFragment extends Fragment {
         if (mSubscriptions != null && !mSubscriptions.isUnsubscribed()) {
             mSubscriptions.unsubscribe();
         }
+    }
+
+    @Override
+    public void onItemClicked(MovieCast movieCast, View view) {
+        Intent intent = new Intent(getContext(), ActorActivity.class);
+        intent.putExtra(Consts.ACTOR_EXTRA, movieCast);
+        startActivity(intent);
     }
 }

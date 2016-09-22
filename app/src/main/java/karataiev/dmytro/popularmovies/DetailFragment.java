@@ -168,7 +168,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
 
     // RxJava
     private ApiService mApiService;
-    private CompositeSubscription _subscriptions;
+    private CompositeSubscription mSubscriptions;
 
     // Callback inside of Picasso Call
     private Callback callback = new Callback() {
@@ -226,7 +226,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         super.onCreate(savedInstanceState);
 
         mApiService = App.getApiManager().getMoviesService();
-        _subscriptions = new CompositeSubscription();
+        mSubscriptions = new CompositeSubscription();
 
         mReviewsList = new ArrayList<>();
         mTrailersList = new ArrayList<>();
@@ -244,7 +244,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             mMovieObject = arguments.getParcelable(MovieObject.MOVIE_OBJECT);
         } else if (getActivity().getIntent().hasExtra(Consts.MOVIE_ID)) {
             String movieId = getActivity().getIntent().getStringExtra(Consts.MOVIE_ID);
-            _subscriptions.add(App.getApiManager().getMoviesService()
+            mSubscriptions.add(App.getApiManager().getMoviesService()
                     .getMovie(movieId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -273,7 +273,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             intent = this.getActivity().getIntent();
             mMovieObject = intent.getParcelableExtra(MovieObject.MOVIE_OBJECT);
             if (mMovieObject == null) {
-                _subscriptions.add(App.getApiManager()
+                mSubscriptions.add(App.getApiManager()
                         .getMoviesService()
                         .getMoviesSort(Utility.getSort(getContext()))
                         .subscribe(new Subscriber<MovieResults>() {
@@ -477,8 +477,8 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         if (mYouTubePlayer != null) {
             mYouTubePlayer.release();
         }
-        if (_subscriptions != null && !_subscriptions.isUnsubscribed()) {
-            _subscriptions.unsubscribe();
+        if (mSubscriptions != null && !mSubscriptions.isUnsubscribed()) {
+            mSubscriptions.unsubscribe();
         }
 
     }
@@ -550,7 +550,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         mRecyclerActors.setNestedScrollingEnabled(true);
 
         // downloads all the details about a movie
-        _subscriptions.add(mApiService.getMovie(String.valueOf(mMovieObject.getId()))
+        mSubscriptions.add(mApiService.getMovie(String.valueOf(mMovieObject.getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<MovieObject>() {
@@ -614,7 +614,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         // downloads links to images for a movie, takes one at random
         // and makes it as a CollapsingToolbar Background,
         // then extracts palette and colors Detail Activity
-        _subscriptions.add(
+        mSubscriptions.add(
                 mApiService.getMovieImages(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -637,7 +637,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         // Adds actors to the RecyclerView
-        _subscriptions.add(
+        mSubscriptions.add(
                 mApiService.getMovieCredits(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -662,7 +662,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         // Adds trailers and inflates YouTube Fragment
-        _subscriptions.add(
+        mSubscriptions.add(
                 mApiService.getMovieVideos(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -714,7 +714,7 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
         );
 
         // Adds reviews to the TextView
-        _subscriptions.add(
+        mSubscriptions.add(
                 mApiService.getMovieReviews(String.valueOf(mMovieObject.getId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

@@ -35,15 +35,15 @@ import java.util.List;
  */
 public class ActorCredits {
 
+    @SerializedName("id")
+    @Expose
+    private long id;
     @SerializedName("cast")
     @Expose
     private List<ActorCast> cast = new ArrayList<>();
     @SerializedName("crew")
     @Expose
     private List<ActorCrew> crew = new ArrayList<>();
-    @SerializedName("id")
-    @Expose
-    private long id;
 
     /**
      *

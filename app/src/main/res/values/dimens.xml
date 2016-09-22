@@ -56,5 +56,6 @@
     <dimen name="tab_height">52dp</dimen>
     <dimen name="tab_layout_padding">4dp</dimen>
     <dimen name="tab_image_size">30dp</dimen>
+    <dimen name="detail_cast_height">120dp</dimen>
 
 </resources>

@@ -97,5 +97,5 @@ public interface ApiService {
     Observable<Backdrops> getTvImages(@Path("id") String movieId);
 
     @GET("tv/{id}/credits" + API_KEY)
-    Observable<ActorCredits> getTvCredits(@Path("id") String tvId);
+    Observable<MovieCredits> getTvCredits(@Path("id") String tvId);
 }

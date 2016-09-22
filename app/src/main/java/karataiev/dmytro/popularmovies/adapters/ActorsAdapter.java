@@ -86,11 +86,11 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
         MovieCast movieCast = mMovieCredits.getCast().get(position);
 
         Picasso.with(mContext)
-                .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + mMovieCredits.getCast().get(position).getProfilePath())
+                .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
                 .noFade()
                 .into(holder.mImageActor);
-        holder.mTextActor.setText(mMovieCredits.getCast().get(position).getName().replace(" ", "\n"));
-        holder.mImageActor.setContentDescription(mMovieCredits.getCast().get(position).getName());
+        holder.mTextActor.setText(movieCast.getName().replace(" ", "\n"));
+        holder.mImageActor.setContentDescription(movieCast.getName());
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {
