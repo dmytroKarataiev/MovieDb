@@ -1,9 +1,9 @@
-# PopularMovies
+# The Movie Database Client
 <a href="https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" width="185" height="60"/></a><br>
 
 ![Animation of a current state](movies.gif)
 
-A fast and easy to use client to [The Movie Database API](https://www.themoviedb.org) with data persistance, youtube trailers inside the app, sharing functionality.
+A fast and easy to use client to [The Movie Database API](https://www.themoviedb.org) with data persistence, youtube trailers inside the app, sharing functionality.
 
 ## Functionality
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
