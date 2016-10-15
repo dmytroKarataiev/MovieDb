@@ -28,10 +28,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -71,7 +73,8 @@ import rx.android.schedulers.AndroidSchedulers;
  * A placeholder fragment containing a simple view.
  */
 public class MoviesFragment extends Fragment
-        implements ItemClickListener<MovieObject, View>, ScrollableFragment {
+        implements ItemClickListener<MovieObject, View>, ScrollableFragment,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
 
@@ -299,12 +302,16 @@ public class MoviesFragment extends Fragment
     public void onResume() {
         super.onResume();
         startListening();
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(networkStateReceiver);
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -338,6 +345,14 @@ public class MoviesFragment extends Fragment
     @Override
     public void scrollToTop() {
         mRecyclerView.smoothScrollToPosition(0);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_sort_key))) {
+            setPosition(0);
+            updateMovieList();
+        }
     }
 
     // TODO: 6/2/16 change to Rx 

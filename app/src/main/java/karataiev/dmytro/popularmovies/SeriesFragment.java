@@ -54,10 +54,10 @@ import rx.subscriptions.CompositeSubscription;
  * Fragment which shows a list of TV Series.
  * Created by karataev on 6/13/16.
  */
-public class TvFragment extends Fragment
+public class SeriesFragment extends Fragment
         implements ItemClickListener<TvObject, View>, ScrollableFragment {
 
-    private static final String TAG = TvFragment.class.getSimpleName();
+    private static final String TAG = SeriesFragment.class.getSimpleName();
 
     private CompositeSubscription _subscription;
     private TvAdapter mTvAdapter;
@@ -82,8 +82,8 @@ public class TvFragment extends Fragment
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static TvFragment newInstance() {
-        TvFragment fragment = new TvFragment();
+    public static SeriesFragment newInstance() {
+        SeriesFragment fragment = new SeriesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -117,7 +117,6 @@ public class TvFragment extends Fragment
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.d(TAG, "mGridLayoutManager.findLastVisibleItemPosition():" + mGridLayoutManager.findLastVisibleItemPosition() + " " + mTvAdapter.getItemCount());
                 if (mGridLayoutManager.findLastVisibleItemPosition() >= mTvAdapter.getItemCount() - 5) {
                     if (!isUpdating) {
                         requestUpdate(++mCurrentPage);
@@ -133,7 +132,6 @@ public class TvFragment extends Fragment
      * todo
      */
     private void requestUpdate(int page) {
-        Log.d(TAG, "page:" + page);
         isUpdating = true;
 
         _subscription.add(App.getApiManager().getMoviesService().getTvPopular(page)
@@ -157,9 +155,8 @@ public class TvFragment extends Fragment
                                 mTvAdapter = new TvAdapter(getContext(), tvResults.getResults());
                                 mRecyclerView.swapAdapter(mTvAdapter, false);
                             } else {
-                                mTvAdapter.setData(TvFragment.this, tvResults.getResults());
+                                mTvAdapter.setData(SeriesFragment.this, tvResults.getResults());
                             }
-                            Log.d(TAG, "onNext: " + tvResults.getTotalResults() + " " + tvResults.getResults().size());
                         }
                         isUpdating = false;
                     }

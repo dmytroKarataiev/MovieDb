@@ -75,6 +75,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     int mColorUnSelected;
 
     private PagerAdapter mPagerAdapter;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,7 +98,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
         mPagerAdapter.addFragment(MoviesFragment.newInstance(), getString(R.string.title_movies));
         mPagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
-        mPagerAdapter.addFragment(TvFragment.newInstance(), getString(R.string.title_tv));
+        mPagerAdapter.addFragment(SeriesFragment.newInstance(), getString(R.string.title_tv));
         mPagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
 
         mViewPager.setAdapter(mPagerAdapter);
@@ -112,8 +113,36 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
         setScrollToTop();
 
+        setMenuItems();
         // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation 
 
+    }
+
+    /**
+     * Depending on the position - shows correct menu item for filtering
+     */
+    private void setMenuItems() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                MenuItem item = mMenu.findItem(R.id.action_filter);
+                if (position == FRAGMENT_MOVIES) {
+                    item.setVisible(true);
+                } else {
+                    item.setVisible(false);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**
@@ -262,20 +291,14 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_pager, menu);
         return true;
     }
 
-    // TODO: 8/24/16 hide filter menu in other fragments 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        MoviesFragment moviesFragment = null;
-
-        if (mViewPager.getCurrentItem() == 0) {
-            moviesFragment = (MoviesFragment) mPagerAdapter.getItem(0);
-        }
 
         switch (item.getItemId()) {
             case R.id.popup_filter_popular:
@@ -290,12 +313,6 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
                         getString(R.string.pref_sort_release_date)).apply();
                 break;
-        }
-
-        if (moviesFragment != null) {
-            moviesFragment.setPosition(0);
-            moviesFragment.updateMovieList();
-            return true;
         }
 
         return false;
