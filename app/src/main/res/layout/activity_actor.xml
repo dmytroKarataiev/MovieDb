@@ -28,7 +28,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="karataiev.dmytro.popularmovies.ActorActivity">
+    tools:context="com.adkdevelopment.moviesdb.ActorActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -71,7 +71,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment"
-        android:name="karataiev.dmytro.popularmovies.ActorFragment"
+        android:name="com.adkdevelopment.moviesdb.ActorFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

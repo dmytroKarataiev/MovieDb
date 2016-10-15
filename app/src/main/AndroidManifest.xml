@@ -22,7 +22,7 @@
   ~  SOFTWARE.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="karataiev.dmytro.popularmovies">
+    package="com.adkdevelopment.moviesdb">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -31,7 +31,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".App"
+        android:name="com.adkdevelopment.moviesdb.App"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_database"
         android:icon="@mipmap/ic_launcher"
@@ -40,54 +40,54 @@
         android:theme="@style/AppTheme.NoActionBar">
         <provider
             android:name=".database.MovieProvider"
-            android:authorities="karataiev.dmytro.popularmovies"
+            android:authorities="com.adkdevelopment.moviesdb"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.adkdevelopment.moviesdb.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden">
 
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name="com.adkdevelopment.moviesdb.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.adkdevelopment.moviesdb.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.adkdevelopment.moviesdb.MainActivity" />
         </activity>
         <activity
-            android:name=".FavoritesActivity"
+            android:name="com.adkdevelopment.moviesdb.FavoritesActivity"
             android:label="@string/title_activity_favorites"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.adkdevelopment.moviesdb.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.adkdevelopment.moviesdb.MainActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.adkdevelopment.moviesdb.SettingsActivity"
             android:label="@string/pref_sort"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="com.adkdevelopment.moviesdb.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.adkdevelopment.moviesdb.MainActivity" />
         </activity>
         <activity
-            android:name=".ActorActivity"
+            android:name="com.adkdevelopment.moviesdb.ActorActivity"
             android:label="@string/title_activity_actor"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.adkdevelopment.moviesdb.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value="com.adkdevelopment.moviesdb.MainActivity" />
         </activity>
         <activity
-            android:name=".PagerActivity"
+            android:name="com.adkdevelopment.moviesdb.PagerActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -109,14 +109,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TvDetailActivity"
+            android:name="com.adkdevelopment.moviesdb.TvDetailActivity"
             android:label="@string/title_activity_tv_detail"
-            android:parentActivityName=".PagerActivity"
+            android:parentActivityName="com.adkdevelopment.moviesdb.PagerActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="PagerActivity" />
+                android:value="com.adkdevelopment.moviesdb.PagerActivity" />
         </activity>
     </application>
 

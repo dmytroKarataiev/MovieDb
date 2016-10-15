@@ -31,11 +31,11 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "karataiev.dmytro.popularmovies"
+        applicationId "com.adkdevelopment.moviesdb"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 9
-        versionName "1.2_beta"
+        versionCode 1
+        versionName "0.1"
         multiDexEnabled true
     }
     buildTypes {
