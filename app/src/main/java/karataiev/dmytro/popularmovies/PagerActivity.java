@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -44,6 +45,7 @@ import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import karataiev.dmytro.popularmovies.adapters.PagerAdapter;
+import karataiev.dmytro.popularmovies.interfaces.ScrollableFragment;
 import karataiev.dmytro.popularmovies.ui.ZoomOutPageTransformer;
 import karataiev.dmytro.popularmovies.utils.Utility;
 
@@ -54,6 +56,11 @@ import karataiev.dmytro.popularmovies.utils.Utility;
 public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = PagerActivity.class.getSimpleName();
+
+    public static final int FRAGMENT_MOVIES = 0;
+    public static final int FRAGMENT_FAVORITES = 1;
+    public static final int FRAGMENT_SERIES = 2;
+    public static final int FRAGMENT_ACTORS = 3;
 
     @BindView(R.id.sliding_tabs)
     TabLayout mTab;
@@ -88,7 +95,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     private void initPager() {
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
-        mPagerAdapter.addFragment(MainFragment.newInstance(), getString(R.string.title_movies));
+        mPagerAdapter.addFragment(MoviesFragment.newInstance(), getString(R.string.title_movies));
         mPagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
         mPagerAdapter.addFragment(TvFragment.newInstance(), getString(R.string.title_tv));
         mPagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
@@ -103,8 +110,22 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
         setTabImages();
 
+        setScrollToTop();
+
         // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation 
 
+    }
+
+    /**
+     * Scrolls the fragment to the top of a list.
+     */
+    private void setScrollToTop() {
+        mToolbar.setOnClickListener(v -> {
+            Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+            if (fragment instanceof ScrollableFragment) {
+                ((ScrollableFragment) fragment).scrollToTop();
+            }
+        });
     }
 
     /**
@@ -179,16 +200,10 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
                 @Override
                 public void onTabReselected(TabLayout.Tab tab) {
-
-                    /* todo add scroll to top
-                    Fragment fragment = mPagerAdapter.getRegisteredFragment(tab.getPosition());
-
-                    if (fragment instanceof RecentFragment) {
-                        ((RecentFragment) fragment).scrollToTop();
-                    } else if (fragment instanceof NewsFragment) {
-                        ((NewsFragment) fragment).scrollToTop();
+                    Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+                    if (fragment instanceof ScrollableFragment) {
+                        ((ScrollableFragment) fragment).scrollToTop();
                     }
-                    */
                 }
             });
 
@@ -225,18 +240,17 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
      */
     private void setTitle() {
         if (mToolbar != null && mTab != null) {
-
             switch (mTab.getSelectedTabPosition()) {
-                case 0:
+                case FRAGMENT_MOVIES:
                     mToolbar.setTitle(Utility.getSortReadable(this));
                     break;
-                case 1:
+                case FRAGMENT_FAVORITES:
                     mToolbar.setTitle(getString(R.string.title_favorites));
                     break;
-                case 2:
+                case FRAGMENT_SERIES:
                     mToolbar.setTitle(getString(R.string.title_tv));
                     break;
-                case 3:
+                case FRAGMENT_ACTORS:
                     mToolbar.setTitle(getString(R.string.title_actors));
                     break;
                 default:
@@ -257,28 +271,30 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     public boolean onMenuItemClick(MenuItem item) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        MainFragment mainFragment = null;
+        MoviesFragment moviesFragment = null;
 
         if (mViewPager.getCurrentItem() == 0) {
-            mainFragment = (MainFragment) mPagerAdapter.getItem(0);
+            moviesFragment = (MoviesFragment) mPagerAdapter.getItem(0);
         }
 
-        // TODO: 8/24/16 add constants 
         switch (item.getItemId()) {
             case R.id.popup_filter_popular:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_popular)).apply();
                 break;
             case R.id.popup_filter_votes:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_vote_average)).apply();
                 break;
             case R.id.popup_filter_release:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "release_date.desc").apply();
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_release_date)).apply();
                 break;
         }
 
-        if (mainFragment != null) {
-            mainFragment.setPosition(0);
-            mainFragment.updateMovieList();
+        if (moviesFragment != null) {
+            moviesFragment.setPosition(0);
+            moviesFragment.updateMovieList();
             return true;
         }
 

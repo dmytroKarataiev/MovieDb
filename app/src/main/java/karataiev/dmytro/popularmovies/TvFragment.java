@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.TvAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.interfaces.ScrollableFragment;
 import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.TvObject;
 import karataiev.dmytro.popularmovies.model.TvResults;
@@ -50,9 +51,11 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 // TODO: 6/14/16 add TV Activity 
 /**
+ * Fragment which shows a list of TV Series.
  * Created by karataev on 6/13/16.
  */
-public class TvFragment extends Fragment implements ItemClickListener<TvObject, View> {
+public class TvFragment extends Fragment
+        implements ItemClickListener<TvObject, View>, ScrollableFragment {
 
     private static final String TAG = TvFragment.class.getSimpleName();
 
@@ -177,5 +180,10 @@ public class TvFragment extends Fragment implements ItemClickListener<TvObject, 
         Intent intent = new Intent(getContext(), TvDetailActivity.class);
         intent.putExtra(Consts.TV_EXTRA, item);
         startActivity(intent);
+    }
+
+    @Override
+    public void scrollToTop() {
+        mRecyclerView.smoothScrollToPosition(0);
     }
 }

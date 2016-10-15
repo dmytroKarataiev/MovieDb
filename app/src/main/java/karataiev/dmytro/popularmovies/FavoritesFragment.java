@@ -42,14 +42,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.FavoritesAdapter;
 import karataiev.dmytro.popularmovies.database.MoviesContract;
+import karataiev.dmytro.popularmovies.interfaces.ScrollableFragment;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.utils.Utility;
 
 /**
- * A placeholder fragment containing a simple view.
+ * A fragment which show a list of favorite movies, tv series.
  */
 public class FavoritesFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, ScrollableFragment {
 
     // Cursor loader variables
     private FavoritesAdapter mFavoritesAdapter;
@@ -161,5 +162,10 @@ public class FavoritesFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
         mUnbinder.unbind();
+    }
+
+    @Override
+    public void scrollToTop() {
+        mGridView.smoothScrollToPosition(0);
     }
 }

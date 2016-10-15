@@ -43,7 +43,7 @@ import karataiev.dmytro.popularmovies.model.MovieObject;
 public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener {
 
-    private MainFragment mContent;
+    private MoviesFragment mContent;
     private final String FRAGMENT_TAG = "FFTAG";
     private final String DETAILFRAGMENT_TAG = "DFTAG";
     private final String FAVFRAGMENT_TAG = "FAVFR";
@@ -60,18 +60,17 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null) {
-            mContent = new MainFragment();
+            mContent = new MoviesFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.viewpager, mContent, FRAGMENT_TAG).commit();
         } else {
-            mContent = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            mContent = (MoviesFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
 
         if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
 
             if (savedInstanceState == null) {
-                // TODO: 8/22/16 newinstance pattern 
-                DetailFragment mDetailFragment = new DetailFragment();
+                DetailFragment mDetailFragment = DetailFragment.newInstance();
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.movie_detail_container, mDetailFragment, DETAILFRAGMENT_TAG)
                         .commit();
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity
 
         if (fm.findFragmentByTag(FAVFRAGMENT_TAG) != null) {
             fm.beginTransaction()
-                    .replace(R.id.viewpager, new MainFragment(), FRAGMENT_TAG)
+                    .replace(R.id.viewpager, new MoviesFragment(), FRAGMENT_TAG)
                     .commit();
 
             if (getSupportActionBar() != null) {
@@ -212,9 +211,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem item) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        MainFragment mainFragment = null;
-        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) instanceof MainFragment) {
-            mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        MoviesFragment moviesFragment = null;
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) instanceof MoviesFragment) {
+            moviesFragment = (MoviesFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
         // TODO: 8/24/16 add constants
         switch (item.getItemId()) {
@@ -229,9 +228,9 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-        if (mainFragment != null) {
-            mainFragment.setPosition(0);
-            mainFragment.updateMovieList();
+        if (moviesFragment != null) {
+            moviesFragment.setPosition(0);
+            moviesFragment.updateMovieList();
             return true;
         }
 

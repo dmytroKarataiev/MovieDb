@@ -37,7 +37,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +57,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.MoviesAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.interfaces.ScrollableFragment;
 import karataiev.dmytro.popularmovies.model.MovieObject;
 import karataiev.dmytro.popularmovies.utils.Utility;
 import okhttp3.OkHttpClient;
@@ -70,9 +70,10 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements ItemClickListener<MovieObject, View> {
+public class MoviesFragment extends Fragment
+        implements ItemClickListener<MovieObject, View>, ScrollableFragment {
 
-    private static final String TAG = MainFragment.class.getSimpleName();
+    private static final String TAG = MoviesFragment.class.getSimpleName();
 
     // COnstants for SaveInst
     public static final String SAVE_MOVIES = "movies";
@@ -109,8 +110,8 @@ public class MainFragment extends Fragment implements ItemClickListener<MovieObj
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static MainFragment newInstance() {
-        MainFragment fragment = new MainFragment();
+    public static MoviesFragment newInstance() {
+        MoviesFragment fragment = new MoviesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -221,12 +222,6 @@ public class MainFragment extends Fragment implements ItemClickListener<MovieObj
 
         mRecyclerView.setAdapter(movieAdapter);
         mRecyclerView.smoothScrollToPosition(currentPosition);
-
-        // iPhone-like scroll to the first position in the view on toolbar click
-        Toolbar toolbar = ButterKnife.findById(getActivity(), R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setOnClickListener(v -> mRecyclerView.smoothScrollToPosition(0));
-        }
 
         // TODO: 8/28/16 move to activity 
         // BroadcastReceiver to get info about network connection
@@ -340,6 +335,11 @@ public class MainFragment extends Fragment implements ItemClickListener<MovieObj
         startActivity(intent);
     }
 
+    @Override
+    public void scrollToTop() {
+        mRecyclerView.smoothScrollToPosition(0);
+    }
+
     // TODO: 6/2/16 change to Rx 
     /**
      * Class to retrieve MovieObjects from JSON on background thread
@@ -426,7 +426,7 @@ public class MainFragment extends Fragment implements ItemClickListener<MovieObj
 
             if (mRecyclerView != null) {
                 movieAdapter = new MoviesAdapter(getActivity(), movieList);
-                movieAdapter.setData(MainFragment.this);
+                movieAdapter.setData(MoviesFragment.this);
                 mRecyclerView.swapAdapter(movieAdapter, false);
             }
 

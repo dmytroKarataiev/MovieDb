@@ -105,5 +105,9 @@
 
     <string name="tab_description">Tab button</string>
 
+    <!-- Shared Preference Keys -->
+    <string name="pref_sort_popular" translatable="false">popularity.desc</string>
+    <string name="pref_sort_vote_average" translatable="false">vote_average.desc</string>
+    <string name="pref_sort_release_date" translatable="false">release_date.desc</string>
 
 </resources>

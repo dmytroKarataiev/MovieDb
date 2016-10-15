@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import karataiev.dmytro.popularmovies.adapters.PersonAdapter;
 import karataiev.dmytro.popularmovies.interfaces.ItemClickListener;
+import karataiev.dmytro.popularmovies.interfaces.ScrollableFragment;
 import karataiev.dmytro.popularmovies.model.Consts;
 import karataiev.dmytro.popularmovies.model.person.PersonPopular;
 import karataiev.dmytro.popularmovies.model.person.PersonPopularResult;
@@ -55,7 +56,8 @@ import rx.subscriptions.CompositeSubscription;
  * On click opens Deatil activity for an actor.
  * Created by karataev on 6/13/16.
  */
-public class PersonFragment extends Fragment implements ItemClickListener<PersonPopularResult, View> {
+public class PersonFragment extends Fragment
+        implements ItemClickListener<PersonPopularResult, View>, ScrollableFragment {
 
     private static final String TAG = PersonFragment.class.getSimpleName();
 
@@ -176,10 +178,13 @@ public class PersonFragment extends Fragment implements ItemClickListener<Person
 
     @Override
     public void onItemClicked(PersonPopularResult item, View view) {
-
         Intent intent = new Intent(getContext(), ActorActivity.class);
         intent.putExtra(Consts.ACTOR_EXTRA, item);
         startActivity(intent);
+    }
 
+    @Override
+    public void scrollToTop() {
+        mRecyclerView.smoothScrollToPosition(0);
     }
 }
