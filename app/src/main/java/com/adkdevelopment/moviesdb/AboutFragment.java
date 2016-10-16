@@ -22,12 +22,46 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.interfaces;
+package com.adkdevelopment.moviesdb;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
- * Allows fragments to perform search actions.
- * Created by Dmytro Karataiev on 10/15/16.
+ * A placeholder fragment containing a simple view.
  */
-public interface SearchableFragment {
-    void searchRequest(String searchString);
+public class AboutFragment extends Fragment {
+
+    @BindView(R.id.about_text)
+    TextView mTextAbout;
+    private Unbinder mUnbinder;
+
+    public AboutFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
+
+        mUnbinder = ButterKnife.bind(this, rootView);
+        mTextAbout.setMovementMethod(LinkMovementMethod.getInstance());
+
+        return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mUnbinder.unbind();
+    }
 }

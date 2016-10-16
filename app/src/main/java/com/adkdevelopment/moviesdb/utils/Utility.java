@@ -130,6 +130,18 @@ public class Utility {
     }
 
     /**
+     * Method to get sort settings from SharedPreferences
+     *
+     * @param context from which call was made
+     * @return current sort preference
+     */
+    public static String getSeriesSort(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_sort_series_key),
+                context.getString(R.string.pref_sort_series_top));
+    }
+
+    /**
      * Method to return sort parameter in a redable format
      *
      * @param context of an activity
@@ -293,15 +305,16 @@ public class Utility {
      */
     public static int[] screenSize(Context context) {
 
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        if (context != null) {
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-        int densityDpi = metrics.densityDpi;
-        float density = metrics.density;
-        int columns = width / densityDpi;
-        int posterWidth = width / columns;
-        int posterHeight = (int) (posterWidth * 1.5);
+            int width = metrics.widthPixels;
+            int height = metrics.heightPixels;
+            int densityDpi = metrics.densityDpi;
+            float density = metrics.density;
+            int columns = width / densityDpi;
+            int posterWidth = width / columns;
+            int posterHeight = (int) (posterWidth * 1.5);
 
         /*
         if (width / density > 550 && height / density > 550) {
@@ -311,8 +324,11 @@ public class Utility {
             densityDpi = densityDpi * 2;
         }
         */
+            return new int[]{width, height, densityDpi, columns, posterWidth, posterHeight};
 
-        return new int[]{width, height, densityDpi, columns, posterWidth, posterHeight};
+        }
+
+        return new int[]{0, 0, 0, 0, 0, 0};
     }
 
     /**

@@ -26,7 +26,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/popup_filter_popular"
         android:title="@string/sort_popular" />
-    <item android:id="@+id/popup_filter_votes"
+    <item android:id="@+id/popup_filter_top"
         android:title="@string/sort_votes_average" />
     <item android:id="@+id/popup_filter_release"
         android:title="@string/sort_release_date" />

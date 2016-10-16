@@ -32,10 +32,8 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
-    <item android:id="@+id/action_filter"
-        android:icon="@drawable/ic_filter"
-        android:title="@string/menu_sort"
-        android:orderInCategory="150"
-        app:showAsAction="always" />
-
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/title_activity_about"
+        app:showAsAction="never" />
 </menu>

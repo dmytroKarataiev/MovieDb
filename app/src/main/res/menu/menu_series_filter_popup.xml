@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~  The MIT License (MIT)
   ~
@@ -22,34 +23,14 @@
   ~  SOFTWARE.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.adkdevelopment.moviesdb.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="200"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/action_filter"
-        android:icon="@drawable/ic_filter"
-        android:title="@string/menu_sort"
-        android:orderInCategory="150"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_favorites"
-        android:orderInCategory="100"
-        android:title="@string/action_favorites"
-        android:icon="@drawable/ic_star_white"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_test"
-        android:orderInCategory="1"
-        android:title="@string/action_favorites"
-        android:icon="@drawable/ic_star_white"
-        app:showAsAction="ifRoom" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/popup_filter_airing"
+        android:title="@string/series_sort_airing" />
+    <item android:id="@+id/popup_filter_on_the_air"
+        android:title="@string/series_sort_ontheair" />
+    <item android:id="@+id/popup_filter_popular"
+        android:title="@string/series_sort_popular" />
+    <item android:id="@+id/popup_filter_top"
+        android:title="@string/series_sort_top" />
 
 </menu>

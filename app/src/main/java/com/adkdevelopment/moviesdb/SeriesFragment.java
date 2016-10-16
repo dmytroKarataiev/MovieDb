@@ -25,19 +25,22 @@
 package com.adkdevelopment.moviesdb;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.adkdevelopment.moviesdb.adapters.TvAdapter;
 import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
 import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
@@ -45,6 +48,10 @@ import com.adkdevelopment.moviesdb.model.Consts;
 import com.adkdevelopment.moviesdb.model.TvObject;
 import com.adkdevelopment.moviesdb.model.TvResults;
 import com.adkdevelopment.moviesdb.utils.Utility;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -55,7 +62,9 @@ import rx.subscriptions.CompositeSubscription;
  * Created by karataev on 6/13/16.
  */
 public class SeriesFragment extends Fragment
-        implements ItemClickListener<TvObject, View>, ScrollableFragment {
+        implements ItemClickListener<TvObject, View>, ScrollableFragment,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = SeriesFragment.class.getSimpleName();
 
@@ -98,10 +107,11 @@ public class SeriesFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        setHasOptionsMenu(true);
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
-        mTvAdapter = new TvAdapter(getContext(), null);
+        mTvAdapter = new TvAdapter(getContext(), null, SeriesFragment.this);
 
         requestUpdate(mCurrentPage);
 
@@ -134,7 +144,14 @@ public class SeriesFragment extends Fragment
     private void requestUpdate(int page) {
         isUpdating = true;
 
-        _subscription.add(App.getApiManager().getMoviesService().getTvPopular(page)
+        String sort = Utility.getSeriesSort(getContext());
+
+        if (_subscription != null && !_subscription.isUnsubscribed() && page == 1) {
+            _subscription.unsubscribe();
+            _subscription = new CompositeSubscription();
+        }
+
+        _subscription.add(App.getApiManager().getMoviesService().getSeries(sort, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<TvResults>() {
@@ -151,11 +168,11 @@ public class SeriesFragment extends Fragment
                     @Override
                     public void onNext(TvResults tvResults) {
                         if (tvResults.getResults() != null && tvResults.getResults().size() > 0) {
-                            if (mTvAdapter == null) {
-                                mTvAdapter = new TvAdapter(getContext(), tvResults.getResults());
+                            if (mTvAdapter == null || page == 1) {
+                                mTvAdapter = new TvAdapter(getContext(), tvResults.getResults(), SeriesFragment.this);
                                 mRecyclerView.swapAdapter(mTvAdapter, false);
                             } else {
-                                mTvAdapter.setData(SeriesFragment.this, tvResults.getResults());
+                                mTvAdapter.setData(tvResults.getResults());
                             }
                         }
                         isUpdating = false;
@@ -183,4 +200,82 @@ public class SeriesFragment extends Fragment
     public void scrollToTop() {
         mRecyclerView.smoothScrollToPosition(0);
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_sort_series_key))) {
+            requestUpdate(1);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_series, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_filter_series:
+                showSortMenu(getActivity().findViewById(R.id.action_filter_series));
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        switch (item.getItemId()) {
+            case R.id.popup_filter_airing:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_series_key),
+                        getString(R.string.pref_sort_series_airing)).apply();
+                break;
+            case R.id.popup_filter_on_the_air:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_series_key),
+                        getString(R.string.pref_sort_series_ontheair)).apply();
+                break;
+            case R.id.popup_filter_popular:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_series_key),
+                        getString(R.string.pref_sort_series_popular)).apply();
+                break;
+            case R.id.popup_filter_top:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_series_key),
+                        getString(R.string.pref_sort_series_top)).apply();
+                break;
+        }
+
+        return false;
+    }
+
+    /**
+     * Shows PopupMenu on Filter button click in ActionBar
+     * @param view of the button itself
+     */
+    public void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_series_filter_popup, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.show();
+    }
+
 }

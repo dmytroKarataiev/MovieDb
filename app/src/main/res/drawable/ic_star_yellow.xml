@@ -22,34 +22,12 @@
   ~  SOFTWARE.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.adkdevelopment.moviesdb.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="200"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/action_filter"
-        android:icon="@drawable/ic_filter"
-        android:title="@string/menu_sort"
-        android:orderInCategory="150"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_favorites"
-        android:orderInCategory="100"
-        android:title="@string/action_favorites"
-        android:icon="@drawable/ic_star_white"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_test"
-        android:orderInCategory="1"
-        android:title="@string/action_favorites"
-        android:icon="@drawable/ic_star_white"
-        app:showAsAction="ifRoom" />
-
-</menu>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M12,17.27L18.18,21l-1.64,-7.03L22,9.24l-7.19,-0.61L12,2 9.19,8.63 2,9.24l5.46,4.73L5.82,21z"/>
+</vector>

@@ -34,6 +34,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.adkdevelopment.moviesdb.R;
+import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
+import com.adkdevelopment.moviesdb.model.Consts;
+import com.adkdevelopment.moviesdb.model.TvObject;
+import com.adkdevelopment.moviesdb.utils.Utility;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -41,11 +46,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
-import com.adkdevelopment.moviesdb.model.Consts;
-import com.adkdevelopment.moviesdb.model.TvObject;
-import com.adkdevelopment.moviesdb.utils.Utility;
 
 /**
  * Adapter which shows actors and their names in a recyclerview
@@ -59,8 +59,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
     private Context mContext;
     private ItemClickListener<TvObject, View> mListener;
 
-    public void setData(ItemClickListener<TvObject, View> listener, List<TvObject> tvResults) {
-        mListener = listener;
+    public void setData(List<TvObject> tvResults) {
         if (mTvResults != null) {
             mTvResults.addAll(tvResults);
         } else {
@@ -69,10 +68,11 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public TvAdapter(Context context, List<TvObject> tvResults) {
+    public TvAdapter(Context context, List<TvObject> tvResults, ItemClickListener<TvObject, View> listener) {
         super();
         mContext = context;
         mTvResults = tvResults;
+        mListener = listener;
         if (tvResults != null) {
             Log.d("TvAdapter", "tvResults.getResults().size():" + tvResults.size());
         }

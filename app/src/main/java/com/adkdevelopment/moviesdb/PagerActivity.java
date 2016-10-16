@@ -24,15 +24,13 @@
 
 package com.adkdevelopment.moviesdb;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -63,7 +61,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * Future main activity screen with tabs.
  * Created by karataev on 6/6/16.
  */
-public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+public class PagerActivity extends AppCompatActivity {
 
     private static final String TAG = PagerActivity.class.getSimpleName();
 
@@ -123,6 +121,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     /**
      * Creates an observer for the RxTextView listener.
      * Checks if the fragment is of a Searchable type and sends a search request.
+     *
      * @return text view change event.
      */
     private Observer<TextViewTextChangeEvent> getSearchObserver() {
@@ -189,7 +188,6 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
             @Override
             public void onPageSelected(int position) {
-                setFilterButton();
                 Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
                 if (!(fragment instanceof SearchableFragment)) {
                     mEditText.setVisibility(View.GONE);
@@ -203,20 +201,6 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
             }
         });
-    }
-
-    /**
-     * Shows or hides filter button in the actionbar, depending on the current fragment.
-     */
-    private void setFilterButton() {
-        if (mMenu != null) {
-            MenuItem item = mMenu.findItem(R.id.action_filter);
-            if (mViewPager.getCurrentItem() == FRAGMENT_MOVIES) {
-                item.setVisible(true);
-            } else {
-                item.setVisible(false);
-            }
-        }
     }
 
     /**
@@ -238,10 +222,10 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
         if (mTab != null) {
 
             int[] iconSet = {
-                    R.drawable.ic_movie_white,
-                    R.drawable.ic_star_white,
-                    R.drawable.ic_subscriptions_white,
-                    R.drawable.ic_people_white,
+                    R.drawable.ic_movie_unselected,
+                    R.drawable.ic_star_unselected,
+                    R.drawable.ic_subscriptions_unselected,
+                    R.drawable.ic_people_unselected,
                     R.drawable.ic_movie_white,
                     R.drawable.ic_star_white,
                     R.drawable.ic_subscriptions_white,
@@ -323,8 +307,8 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_filter:
-                showSortMenu(findViewById(R.id.action_filter));
+            case R.id.action_about:
+                startActivity(new Intent(this, AboutActivity.class));
                 return true;
         }
 
@@ -366,42 +350,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_pager, menu);
-        mMenu = menu;
-        setFilterButton();
         return true;
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        switch (item.getItemId()) {
-            case R.id.popup_filter_popular:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
-                        getString(R.string.pref_sort_popular)).apply();
-                break;
-            case R.id.popup_filter_votes:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
-                        getString(R.string.pref_sort_vote_average)).apply();
-                break;
-            case R.id.popup_filter_release:
-                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
-                        getString(R.string.pref_sort_release_date)).apply();
-                break;
-        }
-
-        return false;
-    }
-
-    /**
-     * Shows PopupMenu on Filter button click in ActionBar
-     * @param view of the button itself
-     */
-    public void showSortMenu(View view) {
-        PopupMenu popupMenu = new PopupMenu(PagerActivity.this, view);
-        popupMenu.getMenuInflater().inflate(R.menu.menu_filter_popup, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(this);
-        popupMenu.show();
     }
 
     @Override

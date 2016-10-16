@@ -48,7 +48,7 @@
             android:layout_marginEnd="@dimen/star_margin"
             android:layout_marginRight="@dimen/star_margin"
             android:contentDescription="@string/star_votes"
-            android:src="@drawable/ic_star" />
+            android:src="@drawable/ic_star_yellow" />
 
         <LinearLayout
             android:layout_width="wrap_content"

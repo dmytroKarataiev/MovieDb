@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 break;
-            case R.id.action_filter:
-                showSortMenu(findViewById(R.id.action_filter));
+            case R.id.action_filter_series:
+                showSortMenu(findViewById(R.id.action_filter_series));
                 return true;
             case R.id.action_test:
                 startActivity(new Intent(this, PagerActivity.class));
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.popup_filter_popular:
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "popularity.desc").apply();
                 break;
-            case R.id.popup_filter_votes:
+            case R.id.popup_filter_top:
                 sharedPreferences.edit().putString(getString(R.string.pref_sort_key), "vote_average.desc").apply();
                 break;
             case R.id.popup_filter_release:

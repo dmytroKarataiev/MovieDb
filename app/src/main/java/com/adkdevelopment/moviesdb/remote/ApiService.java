@@ -87,8 +87,8 @@ public interface ApiService {
 
     // Tv related APIs
 
-    @GET("tv/popular" + API_KEY)
-    Observable<TvResults> getTvPopular(@Query("page") int page);
+    @GET("tv/{sort}" + API_KEY)
+    Observable<TvResults> getSeries(@Path("sort") String sort, @Query("page") int page);
 
     @GET("tv/{id}" + API_KEY)
     Observable<TvObject> getTvId(@Path("id") String tvId);

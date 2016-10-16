@@ -113,5 +113,28 @@
     <string name="pref_sort_popular" translatable="false">popularity.desc</string>
     <string name="pref_sort_vote_average" translatable="false">vote_average.desc</string>
     <string name="pref_sort_release_date" translatable="false">release_date.desc</string>
+    <string name="pref_sort_series_key" translatable="false">sort_series</string>
+    <string name="pref_sort_series_airing" translatable="false">airing_today</string>
+    <string name="pref_sort_series_ontheair" translatable="false">on_the_air</string>
+    <string name="pref_sort_series_popular" translatable="false">popular</string>
+    <string name="pref_sort_series_top" translatable="false">top_rated</string>
+
+    <!-- Series pop up menu -->
+    <string name="series_sort_airing">Airing today</string>
+    <string name="series_sort_ontheair">On the air</string>
+    <string name="series_sort_popular">Popular</string>
+    <string name="series_sort_top">Top rated</string>
+
+    <!-- About Activity -->
+    <string name="title_activity_about">About</string>
+    <string name="about_email">dmytro.karataiev@gmail.com</string>
+    <string name="about_email_subject">The Movies DB Feedback and Proposals</string>
+    <string name="about_email_body">Please share your feedback with the developer or ask for a new feature</string>
+    <string name="about_text">A fast and easy to use client to The Movie Database API with data persistence, youtube trailers inside the app, sharing functionality.
+        \n\nYou can find the latest news about movies, share info with your friends.
+        \n\nThe App is completely free, open source and is released under the <a href="http://choosealicense.com/licenses/mit/">MIT licence</a>, more details you can find on the
+        GitHub page: <a href="https://github.com/dmytroKarataiev/MoviesDb">The Movies DB</a>.
+        \n\nPlease share your feedback with the developer or ask for a new feature by pressing the message button below.</string>
+    <string name="about_send">Send Email</string>
 
 </resources>

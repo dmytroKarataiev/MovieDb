@@ -38,9 +38,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -69,7 +73,8 @@ import okhttp3.Response;
 public class MoviesFragment extends Fragment
         implements ItemClickListener<MovieObject, View>,
         ScrollableFragment, SearchableFragment,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
 
@@ -84,7 +89,8 @@ public class MoviesFragment extends Fragment
     private List<MovieObject> mMovies;
     private String mSort;
 
-    @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerView;
     private Unbinder mUnbinder;
 
     private GridLayoutManager mGridLayoutManager;
@@ -138,6 +144,7 @@ public class MoviesFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        setHasOptionsMenu(true);
 
         // Initializes global mSort with SharedPreferences of sort
         mSort = Utility.getSort(getContext());
@@ -320,6 +327,7 @@ public class MoviesFragment extends Fragment
     }
 
     // TODO: 6/2/16 change to Rx 
+
     /**
      * Class to retrieve MovieObjects from JSON on background thread
      */
@@ -416,6 +424,58 @@ public class MoviesFragment extends Fragment
     public void setPosition(int position) {
         mCurrentPosition = position;
         mRecyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_movies, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_filter_movies:
+                showSortMenu(getActivity().findViewById(R.id.action_filter_movies));
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        switch (item.getItemId()) {
+            case R.id.popup_filter_popular:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_popular)).apply();
+                break;
+            case R.id.popup_filter_top:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_vote_average)).apply();
+                break;
+            case R.id.popup_filter_release:
+                sharedPreferences.edit().putString(getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_release_date)).apply();
+                break;
+        }
+
+        return false;
+    }
+
+    /**
+     * Shows PopupMenu on Filter button click in ActionBar
+     *
+     * @param view of the button itself
+     */
+    public void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_filter_popup, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.show();
     }
 
     @Override
