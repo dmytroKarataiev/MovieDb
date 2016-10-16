@@ -42,6 +42,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.adkdevelopment.moviesdb.adapters.PagerAdapter;
+import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
+import com.adkdevelopment.moviesdb.interfaces.SearchableFragment;
+import com.adkdevelopment.moviesdb.ui.ZoomOutPageTransformer;
+import com.adkdevelopment.moviesdb.utils.Utility;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 
@@ -50,11 +55,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.adkdevelopment.moviesdb.adapters.PagerAdapter;
-import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
-import com.adkdevelopment.moviesdb.interfaces.SearchableFragment;
-import com.adkdevelopment.moviesdb.ui.ZoomOutPageTransformer;
-import com.adkdevelopment.moviesdb.utils.Utility;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -189,12 +189,7 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
             @Override
             public void onPageSelected(int position) {
-                MenuItem item = mMenu.findItem(R.id.action_filter);
-                if (position == FRAGMENT_MOVIES) {
-                    item.setVisible(true);
-                } else {
-                    item.setVisible(false);
-                }
+                setFilterButton();
                 Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
                 if (!(fragment instanceof SearchableFragment)) {
                     mEditText.setVisibility(View.GONE);
@@ -208,6 +203,20 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
             }
         });
+    }
+
+    /**
+     * Shows or hides filter button in the actionbar, depending on the current fragment.
+     */
+    private void setFilterButton() {
+        if (mMenu != null) {
+            MenuItem item = mMenu.findItem(R.id.action_filter);
+            if (mViewPager.getCurrentItem() == FRAGMENT_MOVIES) {
+                item.setVisible(true);
+            } else {
+                item.setVisible(false);
+            }
+        }
     }
 
     /**
@@ -356,8 +365,9 @@ public class PagerActivity extends AppCompatActivity implements PopupMenu.OnMenu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_pager, menu);
+        mMenu = menu;
+        setFilterButton();
         return true;
     }
 

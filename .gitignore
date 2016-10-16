@@ -57,3 +57,7 @@ out/
 # API key is here
 /app/src/main/res/values/apikey.xml
 gradle.properties
+
+# Keystore
+keystore/
+*.jks

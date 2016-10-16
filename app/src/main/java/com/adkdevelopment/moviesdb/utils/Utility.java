@@ -29,7 +29,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -37,6 +36,12 @@ import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.adkdevelopment.moviesdb.BuildConfig;
+import com.adkdevelopment.moviesdb.R;
+import com.adkdevelopment.moviesdb.database.MoviesContract;
+import com.adkdevelopment.moviesdb.model.Genre;
+import com.adkdevelopment.moviesdb.model.MovieObject;
+import com.adkdevelopment.moviesdb.model.ProductionCompany;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -44,9 +49,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -58,13 +60,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-import com.adkdevelopment.moviesdb.BuildConfig;
-import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.database.MoviesContract;
-import com.adkdevelopment.moviesdb.model.Genre;
-import com.adkdevelopment.moviesdb.model.MovieObject;
-import com.adkdevelopment.moviesdb.model.ProductionCompany;
 
 /**
  * Class with additional helper functions
@@ -308,13 +303,14 @@ public class Utility {
         int posterWidth = width / columns;
         int posterHeight = (int) (posterWidth * 1.5);
 
+        /*
         if (width / density > 550 && height / density > 550) {
             columns = (int) Math.round(columns * 0.33);
             height = (int) Math.round(height * 0.66);
             width = (int) Math.round(width * 0.66);
             densityDpi = densityDpi * 2;
-
         }
+        */
 
         return new int[]{width, height, densityDpi, columns, posterWidth, posterHeight};
     }
@@ -494,51 +490,6 @@ public class Utility {
         contentValues.put(MoviesContract.MovieEntry.COLUMN_FULL_POSTER_PATH, movie.getFullPosterPath());
 
         return contentValues;
-    }
-
-    /**
-     * Method to create byte[] from a Drawable to later put it into the database
-     * Called from MoviesAdapter, DetailFragment
-     *
-     * @param drawable to convert
-     * @return byte[] made from the Drawable
-     */
-    public static byte[] makeByteArray(Drawable drawable) {
-
-        //Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        //ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-        //return stream.toByteArray();
-        return null;
-    }
-
-    /**
-     * Method to Make file from byte[]
-     *
-     * @param context from which call is being made
-     * @param input   byte[] array with data
-     * @return File from input
-     */
-    public static File makeFile(Context context, byte[] input, String filename) {
-
-        if (input != null) {
-            try {
-                File f = new File(context.getCacheDir(), filename);
-                if (f.createNewFile()) {
-                    FileOutputStream fos = new FileOutputStream(f);
-                    fos.write(input);
-                    fos.flush();
-                    fos.close();
-
-                    return f;
-                }
-
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "IO " + e);
-            }
-        }
-        return null;
     }
 
     /**

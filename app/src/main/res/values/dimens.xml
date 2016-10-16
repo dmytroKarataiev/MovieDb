@@ -36,8 +36,8 @@
     <dimen name="votes">16sp</dimen>
 
     <!-- Star sizes -->
-    <dimen name="star_width">20dp</dimen>
-    <dimen name="star_height">20dp</dimen>
+    <dimen name="star_width">40dp</dimen>
+    <dimen name="star_height">40dp</dimen>
     <dimen name="star_margin">4dp</dimen>
 
     <!-- Favorite button size -->

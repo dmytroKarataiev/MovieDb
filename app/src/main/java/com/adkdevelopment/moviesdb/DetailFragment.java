@@ -64,6 +64,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adkdevelopment.moviesdb.adapters.ActorsAdapter;
+import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
+import com.adkdevelopment.moviesdb.model.Backdrops;
+import com.adkdevelopment.moviesdb.model.Consts;
+import com.adkdevelopment.moviesdb.model.MovieCast;
+import com.adkdevelopment.moviesdb.model.MovieCredits;
+import com.adkdevelopment.moviesdb.model.MovieObject;
+import com.adkdevelopment.moviesdb.model.MovieResults;
+import com.adkdevelopment.moviesdb.model.Review;
+import com.adkdevelopment.moviesdb.model.Trailer;
+import com.adkdevelopment.moviesdb.remote.ApiService;
+import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
+import com.adkdevelopment.moviesdb.utils.Utility;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -77,20 +90,6 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.adkdevelopment.moviesdb.adapters.ActorsAdapter;
-import com.adkdevelopment.moviesdb.database.MoviesContract;
-import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
-import com.adkdevelopment.moviesdb.model.Backdrops;
-import com.adkdevelopment.moviesdb.model.Consts;
-import com.adkdevelopment.moviesdb.model.MovieCast;
-import com.adkdevelopment.moviesdb.model.MovieCredits;
-import com.adkdevelopment.moviesdb.model.MovieObject;
-import com.adkdevelopment.moviesdb.model.MovieResults;
-import com.adkdevelopment.moviesdb.model.Review;
-import com.adkdevelopment.moviesdb.model.Trailer;
-import com.adkdevelopment.moviesdb.remote.ApiService;
-import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
-import com.adkdevelopment.moviesdb.utils.Utility;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -185,15 +184,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 Toast.makeText(getContext(), mMovieObject.getTitle(), Toast.LENGTH_LONG).show();
 
                 if (!Utility.isFavorite(getContext(), mMovieObject)) {
-
-                    // Save drawable for later usage
-                    byte[] bitmapData = Utility.makeByteArray(mImagePoster.getDrawable());
-                    byte[] backdropBitmap = Utility.makeByteArray(mImageBackdrop.getDrawable());
-
-                    // save byte array of an image to the database
-                    favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
-                    favValue.put(MoviesContract.MovieEntry.COLUMN_FULL_IMAGE, backdropBitmap);
-
                     mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
 
                     // Insert on background thread
@@ -323,15 +313,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        /*
-        // YouTube view initialization
-        youTubePlayerSupportFragment = new YouTubePlayerSupportFragment();
-        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, this);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.youtube_fragment, youTubePlayerSupportFragment).commit();
-        */
         // TODO: 5/28/16 refactor
         if (mMovieObject != null) {
             loadData();
@@ -498,14 +479,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
      * Loads data
      */
     private void loadData() {
-
-        // Maybe it increases chance of OOM
-        // Files from db to load into ImageViews
-        // byte[] posterLoad = intent.getByteArrayExtra("poster");
-        // byte[] backdropLoad = intent.getByteArrayExtra("backdrop");
-        // File posterFile = Utility.makeFile(getContext(), posterLoad, mMovieObject.getId() + "poster");
-        // File backdropFile = Utility.makeFile(getContext(), backdropLoad, mMovieObject.getId() + "backdrop");
-
         // ActionBar title and image adding
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
@@ -517,25 +490,12 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
             mImageBackdrop = ButterKnife.findById(getActivity(), R.id.backdrop);
         }
 
-        // Not sure if it increases risk of OOM error
-        // if (posterFile != null && backdropFile != null) {
-        //     Picasso.with(getContext()).load(backdropFile).into(backdrop);
-        //     Picasso.with(getContext()).load(posterFile).into(viewHolder.mImagePoster, callback);
-        // } else if (backdropFile == null && posterFile != null) {
-        //     Picasso.with(getContext()).load(posterFile).into(viewHolder.mImagePoster, callback);
-        //     Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(backdrop);
-        // } else {
-
-        // Picasso.with(getContext()).load(mMovieObject.getBackdropPath()).into(mImageBackdrop);
-
         Picasso.with(getContext()).load(mMovieObject.getPosterPath()).into(mImagePoster, callback);
-        // }
 
         mTextDescription.setText(mMovieObject.getOverview());
-        mTextRating.setText(String.valueOf(mMovieObject.getVoteAverage()));
+        mTextRating.setText(String.format(getString(R.string.movie_rating), mMovieObject.getVoteAverage()));
         mTextRelease.setText(mMovieObject.getReleaseDate());
-        // TODO: 8/22/16 properly format the votes 
-        mTextVotes.setText(String.format(getActivity().getString(R.string.votes_text), String.valueOf(mMovieObject.getVoteCount())));
+        mTextVotes.setText(String.format(getString(R.string.votes_text), mMovieObject.getVoteCount()));
 
         if (Utility.isFavorite(getContext(), mMovieObject)) {
             Picasso.with(getContext()).load(R.drawable.ic_bookmark_fav).into(mImageFavorite);
@@ -548,7 +508,6 @@ public class DetailFragment extends Fragment implements YouTubePlayer.OnInitiali
                 "\n" + mMovieObject.getReleaseDate() +
                 "\n" + mMovieObject.getVoteAverage() +
                 "\n" + mMovieObject.getOverview();
-
     }
 
     private void initRecycler() {

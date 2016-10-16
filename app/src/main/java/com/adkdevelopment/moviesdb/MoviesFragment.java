@@ -44,6 +44,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.adkdevelopment.moviesdb.adapters.MoviesAdapter;
+import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
+import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
+import com.adkdevelopment.moviesdb.interfaces.SearchableFragment;
+import com.adkdevelopment.moviesdb.model.MovieObject;
+import com.adkdevelopment.moviesdb.utils.Utility;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,12 +59,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.adkdevelopment.moviesdb.adapters.MoviesAdapter;
-import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
-import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
-import com.adkdevelopment.moviesdb.interfaces.SearchableFragment;
-import com.adkdevelopment.moviesdb.model.MovieObject;
-import com.adkdevelopment.moviesdb.utils.Utility;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

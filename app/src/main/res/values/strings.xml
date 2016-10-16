@@ -31,7 +31,7 @@
     <string name="action_favorites">Favorites</string>
 
     <string name="movie_poster">Poster</string>
-    <string name="star_votes">*</string>
+    <string name="star_votes">Star</string>
 
     <!-- Preference screen -->
     <string name="pref_sort">Sort</string>
@@ -68,7 +68,11 @@
     </string-array>
 
     <string name="votes_text">
-        <xliff:g id="voters">%s</xliff:g> votes
+        <xliff:g id="voters">%d</xliff:g> votes
+    </string>
+
+    <string name="movie_rating">
+        <xliff:g id="rating">%.0f</xliff:g>/10
     </string>
 
     <string name="share">Share</string>
