@@ -85,7 +85,6 @@ public class PagerActivity extends AppCompatActivity {
     int mColorUnSelected;
 
     private PagerAdapter mPagerAdapter;
-    private Menu mMenu;
 
     // RxAndroid EditText Subscription
     private Subscription mSubscription;
@@ -138,7 +137,7 @@ public class PagerActivity extends AppCompatActivity {
 
             @Override
             public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+                Fragment fragment = mPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
                 if (fragment instanceof SearchableFragment) {
                     ((SearchableFragment) fragment)
                             .searchRequest(onTextChangeEvent.view().getText().toString());
@@ -152,28 +151,20 @@ public class PagerActivity extends AppCompatActivity {
      * sets listeners to them
      */
     private void initPager() {
-        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-
-        mPagerAdapter.addFragment(MoviesFragment.newInstance(), getString(R.string.title_movies));
-        mPagerAdapter.addFragment(FavoritesFragment.newInstance(), getString(R.string.title_favorites));
-        mPagerAdapter.addFragment(SeriesFragment.newInstance(), getString(R.string.title_tv));
-        mPagerAdapter.addFragment(PersonFragment.newInstance(), getString(R.string.title_actors));
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), getBaseContext());
 
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
-
         // zoom effect on swipe
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         mTab.setupWithViewPager(mViewPager);
 
         setTabImages();
-
         setScrollToTop();
-
         setActionbarItems();
-        // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation 
 
+        // TODO: 7/28/16 add parallax sroll to the tablayout viw setTranslation
     }
 
     /**
@@ -188,7 +179,7 @@ public class PagerActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+                Fragment fragment = mPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
                 if (!(fragment instanceof SearchableFragment)) {
                     mEditText.setVisibility(View.GONE);
                 } else {
@@ -208,7 +199,7 @@ public class PagerActivity extends AppCompatActivity {
      */
     private void setScrollToTop() {
         mToolbar.setOnClickListener(v -> {
-            Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+            Fragment fragment = mPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
             if (fragment instanceof ScrollableFragment) {
                 ((ScrollableFragment) fragment).scrollToTop();
             }
@@ -287,7 +278,7 @@ public class PagerActivity extends AppCompatActivity {
 
                 @Override
                 public void onTabReselected(TabLayout.Tab tab) {
-                    Fragment fragment = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+                    Fragment fragment = mPagerAdapter.getRegisteredFragment(mViewPager.getCurrentItem());
                     if (fragment instanceof ScrollableFragment) {
                         ((ScrollableFragment) fragment).scrollToTop();
                     }

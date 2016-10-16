@@ -37,14 +37,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.adkdevelopment.moviesdb.adapters.FavoritesAdapter;
 import com.adkdevelopment.moviesdb.database.MoviesContract;
 import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
 import com.adkdevelopment.moviesdb.model.MovieObject;
 import com.adkdevelopment.moviesdb.utils.Utility;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A fragment which show a list of favorite movies, tv series.
@@ -166,6 +167,8 @@ public class FavoritesFragment extends Fragment
 
     @Override
     public void scrollToTop() {
-        mGridView.smoothScrollToPosition(0);
+        if (mGridView != null) {
+            mGridView.smoothScrollToPosition(0);
+        }
     }
 }

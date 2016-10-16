@@ -54,6 +54,11 @@ android {
     }
 }
 
+if (project.hasProperty("moviesdb.signing")
+        && new File(project.property("moviesdb.signing") + ".gradle").exists()) {
+    apply from: project.property("moviesdb.signing") + ".gradle";
+}
+
 ext {
     compatLibVersion = '24.2.1'
     butterknife = '8.3.0'

@@ -35,9 +35,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.adkdevelopment.moviesdb.adapters.PersonAdapter;
 import com.adkdevelopment.moviesdb.interfaces.ItemClickListener;
 import com.adkdevelopment.moviesdb.interfaces.ScrollableFragment;
@@ -45,6 +42,10 @@ import com.adkdevelopment.moviesdb.model.Consts;
 import com.adkdevelopment.moviesdb.model.person.PersonPopular;
 import com.adkdevelopment.moviesdb.model.person.PersonPopularResult;
 import com.adkdevelopment.moviesdb.utils.Utility;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -185,6 +186,8 @@ public class PersonFragment extends Fragment
 
     @Override
     public void scrollToTop() {
-        mRecyclerView.smoothScrollToPosition(0);
+        if (mRecyclerView != null) {
+            mRecyclerView.smoothScrollToPosition(0);
+        }
     }
 }
