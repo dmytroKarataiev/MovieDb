@@ -46,4 +46,11 @@
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Empty TextView when there is nothing in RecyclerView -->
+    <style name="EmptyListInfo">
+        <item name="android:textAppearance">?android:textAppearance</item>
+        <item name="android:textSize">@dimen/error_text_size</item>
+        <item name="android:padding">@dimen/list_item_padding</item>
+    </style>
+
 </resources>

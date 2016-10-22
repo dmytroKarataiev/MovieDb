@@ -25,6 +25,10 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="padding_default">16dp</dimen>
+    <dimen name="list_item_padding">8dp</dimen>
+    <dimen name="progressbar_height">150dp</dimen>
+    <dimen name="error_text_size">16sp</dimen>
 
     <!-- Poster sizes -->
     <dimen name="poster_width">185dp</dimen>

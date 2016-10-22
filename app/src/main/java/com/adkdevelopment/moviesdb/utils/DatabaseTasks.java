@@ -29,7 +29,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.adkdevelopment.moviesdb.database.MoviesContract;
+import com.adkdevelopment.moviesdb.data.database.MoviesContract;
 
 /**
  * Additional class to manipulate database on background thread

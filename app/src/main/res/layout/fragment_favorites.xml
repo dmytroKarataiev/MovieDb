@@ -31,4 +31,4 @@
     android:numColumns="auto_fit"
     android:stretchMode="columnWidth"
     android:verticalSpacing="0dp"
-    tools:context=".FavoritesFragment" />
+    tools:context=".ui.FavoritesFragment" />

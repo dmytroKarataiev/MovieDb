@@ -38,10 +38,10 @@ import android.util.Log;
 
 import com.adkdevelopment.moviesdb.BuildConfig;
 import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.database.MoviesContract;
-import com.adkdevelopment.moviesdb.model.Genre;
-import com.adkdevelopment.moviesdb.model.MovieObject;
-import com.adkdevelopment.moviesdb.model.ProductionCompany;
+import com.adkdevelopment.moviesdb.data.database.MoviesContract;
+import com.adkdevelopment.moviesdb.data.model.Genre;
+import com.adkdevelopment.moviesdb.data.model.MovieObject;
+import com.adkdevelopment.moviesdb.data.model.ProductionCompany;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -67,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Utility {
 
-    private final static String LOG_TAG = Utility.class.getSimpleName();
+    private final static String TAG = Utility.class.getSimpleName();
 
     /**
      * Method to provide correct path to image, depending on the dpi metrics of the phone screen
@@ -172,34 +172,6 @@ public class Utility {
         } else {
             return date;
         }
-    }
-
-    /**
-     * Adds "/10" to the end of the fetched rating
-     *
-     * @param rating from JSON
-     * @return String rating + "/10"
-     */
-    public static String formatRating(String rating) {
-
-        if (rating.length() > 2) {
-            return rating.substring(0, 3) + "/10";
-        } else {
-            return rating + "/10";
-        }
-    }
-
-    /**
-     * Formats votes -> adds "," thousands separator
-     *
-     * @param votes as a String
-     * @return formatted String with thousands separator
-     */
-    public static String formatVotes(String votes) {
-
-        int votesInt = Integer.parseInt(votes);
-
-        return String.format(Locale.getDefault(), "%,d", votesInt);
     }
 
     /**
@@ -311,19 +283,10 @@ public class Utility {
             int width = metrics.widthPixels;
             int height = metrics.heightPixels;
             int densityDpi = metrics.densityDpi;
-            float density = metrics.density;
             int columns = width / densityDpi;
             int posterWidth = width / columns;
             int posterHeight = (int) (posterWidth * 1.5);
 
-        /*
-        if (width / density > 550 && height / density > 550) {
-            columns = (int) Math.round(columns * 0.33);
-            height = (int) Math.round(height * 0.66);
-            width = (int) Math.round(width * 0.66);
-            densityDpi = densityDpi * 2;
-        }
-        */
             return new int[]{width, height, densityDpi, columns, posterWidth, posterHeight};
 
         }

@@ -27,9 +27,11 @@ package com.adkdevelopment.moviesdb;
 import android.app.Application;
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.leakcanary.RefWatcher;
 
-import com.adkdevelopment.moviesdb.remote.ApiManager;
+import com.adkdevelopment.moviesdb.data.remote.ApiManager;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Application to start if necessary leak watcher
@@ -57,6 +59,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         //refWatcher = LeakCanary.install(this);
     }
 }

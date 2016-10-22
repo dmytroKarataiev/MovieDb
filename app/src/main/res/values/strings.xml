@@ -22,16 +22,16 @@
   ~  SOFTWARE.
   -->
 
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Movies Db</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">The Movie Db</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">Details</string>
-    <string name="title_activity_favorites">Favorites</string>
     <string name="action_sort">Sort</string>
-    <string name="action_favorites">Favorites</string>
 
     <string name="movie_poster">Poster</string>
     <string name="star_votes">Star</string>
+    <string name="recyclerview_empty_text">Oops! Something is wrong. Please check your internet connection and try again.</string>
+    <string name="fragment_error">Error somewhere</string>
 
     <!-- Preference screen -->
     <string name="pref_sort">Sort</string>
@@ -67,7 +67,7 @@
         <item>vote_count.desc</item>
     </string-array>
 
-    <string name="votes_text">
+    <string name="votes_text" tools:ignore="PluralsCandidate">
         <xliff:g id="voters">%d</xliff:g> votes
     </string>
 
