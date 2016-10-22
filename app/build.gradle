@@ -64,9 +64,13 @@ android {
     }
 }
 
-if (project.hasProperty("moviesdb.signing")
-        && new File(project.property("moviesdb.signing") + ".gradle").exists()) {
-    apply from: project.property("moviesdb.signing") + ".gradle";
+// If we have a property and a config file - apply configs and flavors from there
+def propertyConfig = 'moviesdb.signing'
+def signingFile = 'moviesdb.gradle'
+
+if (project.hasProperty(propertyConfig)
+        && file(project.property(propertyConfig) + signingFile).exists()) {
+    apply from: project.property(propertyConfig) + signingFile;
 }
 
 ext {

@@ -61,3 +61,6 @@ gradle.properties
 # Keystore
 keystore/
 *.jks
+
+# market listing
+materials

@@ -88,6 +88,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
         @BindView(R.id.movie_poster) ImageView mImageActor;
         @BindView(R.id.movie_poster_text) TextView mTextActor;
         @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
+        @BindView(R.id.movie_poster_favorite) ImageView mImageFavorite;
 
         public ViewHolder(View view) {
             super(view);
@@ -105,6 +106,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         TvObject tvObject = mTvResults.get(position);
+        holder.mImageFavorite.setVisibility(View.GONE);
 
         // TODO: 6/13/16 cache link
         Picasso.with(mContext)
