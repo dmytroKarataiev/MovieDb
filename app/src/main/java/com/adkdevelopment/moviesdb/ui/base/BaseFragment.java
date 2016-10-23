@@ -31,5 +31,11 @@ import android.support.v4.app.Fragment;
  * Created by Dmytro Karataiev on 8/10/16.
  */
 public class BaseFragment extends Fragment {
+    // Constants for SaveInst
+    public static final String SAVE_RESULTS = "results";
+    public static final String SAVE_POS = "position";
+    public static final String SAVE_SEARCH = "page";
+    public static final String SAVE_PAGE = "search";
+
 }
 

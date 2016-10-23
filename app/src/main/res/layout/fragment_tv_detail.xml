@@ -22,29 +22,145 @@
   ~  SOFTWARE.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detail_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.TvDetailFragment"
-    tools:showIn="@layout/activity_tv_detail">
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:padding="@dimen/padding_default"
+    android:transitionGroup="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:targetApi="lollipop">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_cast_height"
-        android:layout_below="@id/tv_title"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:ignore="InconsistentLayout" />
+        android:layout_height="match_parent"
+        tools:context=".ui.TvDetailFragment"
+        tools:showIn="@layout/activity_tv_detail">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Movie title (2016) 7/10" />
+
+        <TextView
+            android:id="@+id/tv_status_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_title"
+            android:text="@string/tv_status" />
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_status_title"
+            tools:text="Returning Series" />
+
+        <TextView
+            android:id="@+id/tv_network_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_status"
+            android:text="@string/tv_network" />
+
+        <TextView
+            android:id="@+id/tv_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_network_title"
+            tools:text="HBO" />
+
+        <TextView
+            android:id="@+id/tv_homepage_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_network"
+            android:text="@string/tv_homepage" />
+
+        <TextView
+            android:id="@+id/tv_homepage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_homepage_title"
+            tools:text="http://www.hbo.com/westworld" />
+
+        <TextView
+            android:id="@+id/tv_runtime_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_homepage"
+            android:text="@string/tv_runtime" />
+
+        <TextView
+            android:id="@+id/tv_runtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_runtime_title"
+            tools:text="60m" />
+
+        <TextView
+            android:id="@+id/tv_language_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_runtime"
+            android:text="@string/tv_language" />
+
+        <TextView
+            android:id="@+id/tv_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_language_title"
+            tools:text="English" />
+
+        <TextView
+            android:id="@+id/tv_overview_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_language"
+            android:text="@string/tv_overview" />
+
+        <TextView
+            android:id="@+id/tv_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_overview_title"
+            tools:text="@string/about_text" />
+
+        <TextView
+            android:id="@+id/tv_genres_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tv_title"
+            android:layout_toEndOf="@+id/tv_title"
+            android:layout_toRightOf="@+id/tv_title"
+            android:text="@string/tv_genres"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/tv_genres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_genres_title"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignStart="@+id/tv_genres_title"
+            android:layout_below="@+id/tv_genres_title"
+            android:textAlignment="center"
+            tools:text="Western, Science Fiction" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_cast_height"
+            android:layout_below="@id/tv_overview"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:ignore="InconsistentLayout" />
+
+    </RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

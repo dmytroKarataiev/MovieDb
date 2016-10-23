@@ -137,4 +137,13 @@
         \n\nPlease share your feedback with the developer or ask for a new feature by pressing the message button below.</string>
     <string name="about_send">Send Email</string>
 
+    <!-- Tv Detail Activity -->
+    <string name="tv_status">Status</string>
+    <string name="tv_network">Network</string>
+    <string name="tv_homepage">Homepage</string>
+    <string name="tv_runtime">Runtime</string>
+    <string name="tv_language">Original language</string>
+    <string name="tv_overview">Overview</string>
+    <string name="tv_genres">Genres</string>
+
 </resources>

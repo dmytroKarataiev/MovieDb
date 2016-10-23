@@ -22,60 +22,34 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.data.model;
+package com.adkdevelopment.moviesdb.ui.contracts;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import android.content.Intent;
+
+import com.adkdevelopment.moviesdb.data.model.Backdrops;
+import com.adkdevelopment.moviesdb.data.model.MovieCredits;
+import com.adkdevelopment.moviesdb.data.model.TvSeries;
+import com.adkdevelopment.moviesdb.ui.base.MvpPresenter;
+import com.adkdevelopment.moviesdb.ui.base.MvpView;
 
 /**
- * Created by karataev on 6/14/16.
+ * MVP Contract for the TvDetailFragment.
+ * Created by Dmytro Karataiev on 10/22/16.
  */
-public class TvNetwork {
-    @SerializedName("id")
-    @Expose
-    private long id;
-    @SerializedName("name")
-    @Expose
-    private String name;
 
-    /**
-     *
-     * @return
-     * The id
-     */
-    public long getId() {
-        return id;
+public class TvDetailContract {
+
+    public interface Presenter extends MvpPresenter<View> {
+        void requestData(Intent intent);
     }
 
-    /**
-     *
-     * @param id
-     * The id
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
+    public interface View extends MvpView {
+        void showData(TvSeries tvObject);
 
-    /**
-     *
-     * @return
-     * The name
-     */
-    public String getName() {
-        return name;
-    }
+        void showActors(MovieCredits movieCredits);
 
-    /**
-     *
-     * @param name
-     * The name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+        void showPosters(Backdrops backdrops);
 
-    @Override
-    public String toString() {
-        return name;
+        void showError();
     }
 }

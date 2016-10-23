@@ -34,6 +34,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -46,6 +47,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.adkdevelopment.moviesdb.R;
 import com.adkdevelopment.moviesdb.data.model.MovieObject;
@@ -79,19 +82,19 @@ public class MoviesFragment extends BaseFragment
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
 
-    // COnstants for SaveInst
-    public static final String SAVE_MOVIES = "movies";
-    public static final String SAVE_POS = "position";
-    public static final String SAVE_SEARCH = "page";
-    public static final String SAVE_PAGE = "search";
-
     // Couldn't find more efficient way to use following variable then to make them global
     private MoviesAdapter mMovieAdapter;
     private List<MovieObject> mMovies;
     private String mSort;
 
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
+    @BindView(R.id.list_empty_text)
+    TextView mListEmpty;
+    @BindView(R.id.progress_bar)
+    ProgressBar mProgressBar;
     private Unbinder mUnbinder;
 
     private GridLayoutManager mGridLayoutManager;
@@ -151,10 +154,10 @@ public class MoviesFragment extends BaseFragment
         mSort = Utility.getSort(getContext());
 
         // If movies were fetched - re-uses data
-        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_MOVIES)) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_RESULTS)) {
             updateMovieList();
         } else {
-            mMovies = savedInstanceState.getParcelableArrayList(SAVE_MOVIES);
+            mMovies = savedInstanceState.getParcelableArrayList(SAVE_RESULTS);
             mCurrentPosition = savedInstanceState.getInt(SAVE_POS);
             mCurrentPage = savedInstanceState.getInt(SAVE_PAGE);
             mSearchParameter = savedInstanceState.getString(SAVE_SEARCH);
@@ -216,6 +219,14 @@ public class MoviesFragment extends BaseFragment
         // Starts receiver
         startListening();
 
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            // on force refresh downloads all data
+            mCurrentPage = 1;
+            updateMovieList();
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
+
+
         return rootView;
     }
 
@@ -233,7 +244,7 @@ public class MoviesFragment extends BaseFragment
         super.onSaveInstanceState(outState);
 
         // Saves movies so we don't need to re-download them
-        outState.putParcelableArrayList(SAVE_MOVIES, (ArrayList<MovieObject>) mMovies);
+        outState.putParcelableArrayList(SAVE_RESULTS, (ArrayList<MovieObject>) mMovies);
         outState.putInt(SAVE_POS, mCurrentPosition);
         outState.putInt(SAVE_PAGE, mCurrentPage);
         outState.putString(SAVE_SEARCH, mSearchParameter);

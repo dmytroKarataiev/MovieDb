@@ -32,7 +32,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,11 +69,6 @@ public class SeriesFragment extends BaseFragment
         PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = SeriesFragment.class.getSimpleName();
-
-    // COnstants for SaveInst
-    public static final String SAVE_MOVIES = "movies";
-    public static final String SAVE_POS = "position";
-    public static final String SAVE_PAGE = "page";
 
     private List<TvObject> mSeries;
 
@@ -126,10 +120,10 @@ public class SeriesFragment extends BaseFragment
         mPresenter.attachView(this);
 
         // If movies were fetched - re-uses data
-        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_MOVIES)) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_RESULTS)) {
             mPresenter.requestData(mCurrentPage);
         } else {
-            mSeries = savedInstanceState.getParcelableArrayList(SAVE_MOVIES);
+            mSeries = savedInstanceState.getParcelableArrayList(SAVE_RESULTS);
             mCurrentPosition = savedInstanceState.getInt(SAVE_POS);
             mCurrentPage = savedInstanceState.getInt(SAVE_PAGE);
             showData(mSeries, mCurrentPage);
@@ -161,7 +155,7 @@ public class SeriesFragment extends BaseFragment
         super.onSaveInstanceState(outState);
 
         // Saves movies so we don't need to re-download them
-        outState.putParcelableArrayList(SAVE_MOVIES, (ArrayList<TvObject>) mSeries);
+        outState.putParcelableArrayList(SAVE_RESULTS, (ArrayList<TvObject>) mSeries);
         outState.putInt(SAVE_POS, mCurrentPosition);
         outState.putInt(SAVE_PAGE, mCurrentPage);
     }

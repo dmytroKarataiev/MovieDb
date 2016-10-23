@@ -35,9 +35,10 @@ import com.adkdevelopment.moviesdb.data.model.MovieObject;
 import com.adkdevelopment.moviesdb.data.model.MovieResults;
 import com.adkdevelopment.moviesdb.data.model.MovieReviews;
 import com.adkdevelopment.moviesdb.data.model.MovieTrailers;
-import com.adkdevelopment.moviesdb.data.model.TvObject;
 import com.adkdevelopment.moviesdb.data.model.TvResults;
+import com.adkdevelopment.moviesdb.data.model.TvSeries;
 import com.adkdevelopment.moviesdb.data.model.person.PersonPopular;
+
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -91,7 +92,7 @@ public interface ApiService {
     Observable<TvResults> getSeries(@Path("sort") String sort, @Query("page") int page);
 
     @GET("tv/{id}" + API_KEY)
-    Observable<TvObject> getTvId(@Path("id") String tvId);
+    Observable<TvSeries> getTvId(@Path("id") String tvId);
 
     @GET("tv/{id}/images" + API_KEY)
     Observable<Backdrops> getTvImages(@Path("id") String movieId);

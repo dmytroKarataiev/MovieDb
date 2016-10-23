@@ -50,17 +50,15 @@ import butterknife.ButterKnife;
  * Adapter which shows actors and their names in a recyclerview
  * Created by karataev on 5/8/16.
  */
-public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ViewHolder> {
+public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.ViewHolder> {
 
-    private static final String TAG = PersonAdapter.class.getSimpleName();
+    private static final String TAG = PeopleAdapter.class.getSimpleName();
 
     private List<PersonPopularResult> mPopularResults;
     private final Context mContext;
     private ItemClickListener<PersonPopularResult, View> mListener;
 
-    public void setData(ItemClickListener<PersonPopularResult, View> listener,
-                        List<PersonPopularResult> popularResults) {
-        mListener = listener;
+    public void setData(List<PersonPopularResult> popularResults) {
         if (mPopularResults != null) {
             mPopularResults.addAll(popularResults);
         } else {
@@ -69,8 +67,13 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public PersonAdapter(Context context, List<PersonPopularResult> popularResults) {
+    public List<PersonPopularResult> getPeople() {
+        return mPopularResults;
+    }
+
+    public PeopleAdapter(ItemClickListener<PersonPopularResult, View> listener, Context context, List<PersonPopularResult> popularResults) {
         super();
+        mListener = listener;
         mContext = context;
         this.mPopularResults = popularResults;
     }

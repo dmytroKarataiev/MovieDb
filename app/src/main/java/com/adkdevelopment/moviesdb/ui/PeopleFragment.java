@@ -26,32 +26,32 @@ package com.adkdevelopment.moviesdb.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.adkdevelopment.moviesdb.App;
 import com.adkdevelopment.moviesdb.R;
 import com.adkdevelopment.moviesdb.data.model.Consts;
-import com.adkdevelopment.moviesdb.data.model.person.PersonPopular;
 import com.adkdevelopment.moviesdb.data.model.person.PersonPopularResult;
-import com.adkdevelopment.moviesdb.ui.adapters.PersonAdapter;
+import com.adkdevelopment.moviesdb.ui.adapters.PeopleAdapter;
 import com.adkdevelopment.moviesdb.ui.base.BaseFragment;
+import com.adkdevelopment.moviesdb.ui.contracts.PeopleContract;
 import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener;
 import com.adkdevelopment.moviesdb.ui.interfaces.ScrollableFragment;
+import com.adkdevelopment.moviesdb.ui.presenters.PeoplePresenter;
 import com.adkdevelopment.moviesdb.utils.Utility;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 // TODO: 6/14/16 add TV Activity 
 
 /**
@@ -60,23 +60,24 @@ import rx.subscriptions.CompositeSubscription;
  * Created by karataev on 6/13/16.
  */
 public class PeopleFragment extends BaseFragment
-        implements ItemClickListener<PersonPopularResult, View>, ScrollableFragment {
+        implements PeopleContract.View,
+        ItemClickListener<PersonPopularResult, View>, ScrollableFragment {
 
     private static final String TAG = PeopleFragment.class.getSimpleName();
 
-    private CompositeSubscription _subscription;
-    private PersonAdapter mPersonAdapter;
+    private PeoplePresenter mPresenter;
+    private PeopleAdapter mAdapter;
     private GridLayoutManager mGridLayoutManager;
+    private List<PersonPopularResult> mPeople;
 
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerView;
-
-    /* todo
     @BindView(R.id.list_empty_text)
     TextView mListEmpty;
     @BindView(R.id.progress_bar)
     ProgressBar mProgressBar;
-    */
     private Unbinder mUnbinder;
 
     private int mCurrentPosition;
@@ -95,88 +96,73 @@ public class PeopleFragment extends BaseFragment
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        _subscription = new CompositeSubscription();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
-        mPersonAdapter = new PersonAdapter(getContext(), null);
-
-        requestUpdate(mCurrentPage);
-
         // Scale GridView according to the screen size
         mGridLayoutManager = new GridLayoutManager(mRecyclerView.getContext(),
                 Utility.screenSize(getContext())[3]);
-
+        mAdapter = new PeopleAdapter(this, getContext(), null);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
 
-        mRecyclerView.setAdapter(mPersonAdapter);
+        mPresenter = new PeoplePresenter(getContext());
+        mPresenter.attachView(this);
+
+        // If movies were fetched - re-uses data
+        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_RESULTS)) {
+            mPresenter.requestData(mCurrentPage);
+        } else {
+            mPeople = savedInstanceState.getParcelableArrayList(SAVE_RESULTS);
+            mCurrentPosition = savedInstanceState.getInt(SAVE_POS);
+            mCurrentPage = savedInstanceState.getInt(SAVE_PAGE);
+            showData(mPeople, mCurrentPage);
+            mRecyclerView.scrollToPosition(mCurrentPosition);
+        }
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (mGridLayoutManager.findLastVisibleItemPosition() >= mPersonAdapter.getItemCount() - 5) {
+                if (mGridLayoutManager.findLastVisibleItemPosition() >= mAdapter.getItemCount() - 5) {
                     if (!isUpdating) {
-                        requestUpdate(++mCurrentPage);
+                        mPresenter.requestData(++mCurrentPage);
                     }
                 }
             }
         });
 
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            // on force refresh downloads all data
+            mCurrentPage = 1;
+            mPresenter.requestData(mCurrentPage);
+        });
+
         return rootView;
     }
 
-    /**
-     * todo
-     */
-    private void requestUpdate(int page) {
-        Log.d(TAG, "page:" + page);
-        isUpdating = true;
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        _subscription.add(App.getApiManager().getMoviesService().getActorPopular(page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PersonPopular>() {
-                    @Override
-                    public void onCompleted() {
+        // Saves movies so we don't need to re-download them
+        outState.putParcelableArrayList(SAVE_RESULTS, (ArrayList<PersonPopularResult>) mPeople);
+        outState.putInt(SAVE_POS, mCurrentPosition);
+        outState.putInt(SAVE_PAGE, mCurrentPage);
+    }
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "onError: ", e);
-                    }
-
-                    @Override
-                    public void onNext(PersonPopular tvResults) {
-                        if (tvResults.getResults() != null && tvResults.getResults().size() > 0) {
-                            if (mPersonAdapter == null) {
-                                mPersonAdapter = new PersonAdapter(getContext(), tvResults.getResults());
-                                mRecyclerView.swapAdapter(mPersonAdapter, false);
-                            } else {
-                                mPersonAdapter.setData(PeopleFragment.this, tvResults.getResults());
-                            }
-                            Log.d(TAG, "onNext: " + tvResults.getTotalResults() + " " + tvResults.getResults().size());
-                        }
-                        isUpdating = false;
-                    }
-                }));
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mPresenter.detachView();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         mUnbinder.unbind();
-        if (_subscription != null && !_subscription.isUnsubscribed()) {
-            _subscription.unsubscribe();
-        }
     }
 
     @Override
@@ -190,6 +176,42 @@ public class PeopleFragment extends BaseFragment
     public void scrollToTop() {
         if (mRecyclerView != null) {
             mRecyclerView.smoothScrollToPosition(0);
+        }
+    }
+
+    @Override
+    public void showData(List<PersonPopularResult> series, int page) {
+        mListEmpty.setVisibility(View.INVISIBLE);
+        if (mAdapter == null || page == 1) {
+            mAdapter = new PeopleAdapter(this, getContext(), series);
+            mRecyclerView.swapAdapter(mAdapter, false);
+        } else {
+            mAdapter.setData(series);
+        }
+
+        mPeople = mAdapter.getPeople();
+    }
+
+    @Override
+    public void showEmpty() {
+        mListEmpty.setText(getString(R.string.recyclerview_empty_text));
+        mListEmpty.setVisibility(View.VISIBLE);
+        mAdapter.setData(null);
+    }
+
+    @Override
+    public void showError() {
+        mListEmpty.setVisibility(View.VISIBLE);
+        mListEmpty.setText(R.string.fragment_error);
+    }
+
+    @Override
+    public void showProgress() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.VISIBLE);
         }
     }
 }

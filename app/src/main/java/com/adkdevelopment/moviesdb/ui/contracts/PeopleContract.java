@@ -22,60 +22,32 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.data.model;
+package com.adkdevelopment.moviesdb.ui.contracts;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.adkdevelopment.moviesdb.data.model.person.PersonPopularResult;
+import com.adkdevelopment.moviesdb.ui.base.MvpPresenter;
+import com.adkdevelopment.moviesdb.ui.base.MvpView;
+
+import java.util.List;
 
 /**
- * Created by karataev on 6/14/16.
+ * MVP Contract for the PeopleFragment.
+ * Created by Dmytro Karataiev on 10/22/16.
  */
-public class TvNetwork {
-    @SerializedName("id")
-    @Expose
-    private long id;
-    @SerializedName("name")
-    @Expose
-    private String name;
 
-    /**
-     *
-     * @return
-     * The id
-     */
-    public long getId() {
-        return id;
+public class PeopleContract {
+
+    public interface Presenter extends MvpPresenter<View> {
+        void requestData(int page);
     }
 
-    /**
-     *
-     * @param id
-     * The id
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
+    public interface View extends MvpView {
+        void showData(List<PersonPopularResult> persons, int page);
 
-    /**
-     *
-     * @return
-     * The name
-     */
-    public String getName() {
-        return name;
-    }
+        void showEmpty();
 
-    /**
-     *
-     * @param name
-     * The name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+        void showError();
 
-    @Override
-    public String toString() {
-        return name;
+        void showProgress();
     }
 }

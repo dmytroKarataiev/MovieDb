@@ -35,6 +35,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adkdevelopment.moviesdb.R;
+import com.adkdevelopment.moviesdb.data.model.MovieObject;
+import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener;
+import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
+import com.adkdevelopment.moviesdb.utils.Utility;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -42,11 +47,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener;
-import com.adkdevelopment.moviesdb.data.model.MovieObject;
-import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
-import com.adkdevelopment.moviesdb.utils.Utility;
 
 /**
  * Adapter with MovieObjects
@@ -138,14 +138,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                     Toast.makeText(mContext, movieObject.getTitle(), Toast.LENGTH_LONG).show();
 
                     if (!Utility.isFavorite(mContext, movieObject)) {
-
-                        // Save drawable for later usage
-                        //byte[] bitmapData = Utility.makeByteArray(holder.mImagePoster.getDrawable());
-
-                        // save byte array of an image to the database
-                        //favValue.put(MoviesContract.MovieEntry.COLUMN_IMAGE, bitmapData);
-
-                        //holder.mImageFavorite.setImageResource(R.drawable.ic_bookmark_fav);
                         Picasso.with(holder.mImageFavorite.getContext())
                                 .load(R.drawable.ic_bookmark_fav)
                                 .into(holder.mImageFavorite);
