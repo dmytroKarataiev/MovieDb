@@ -1,5 +1,5 @@
 # The Movie Database Client
-<a href="https://play.google.com/store/apps/details?id=karataiev.dmytro.popularmovies"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" width="185" height="60"/></a><br>
+<a href="https://play.google.com/store/apps/details?id=com.adkdevelopment.moviesdb"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" width="185" height="60"/></a><br>
 
 ![Animation of a current state](movies.gif)
 
