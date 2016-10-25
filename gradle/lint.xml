@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~  The MIT License (MIT)
   ~
@@ -23,24 +23,9 @@
   ~  SOFTWARE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/fab_margin"
-    android:gravity="center" >
-
-    <ImageView
-        android:id="@+id/movie_image"
-        android:layout_width="120dp"
-        android:layout_height="200dp"
-        android:contentDescription="@string/app_name"
-        android:scaleType="centerCrop" />
-
-    <TextView
-        android:gravity="center_horizontal"
-        android:id="@+id/movie_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+<lint>
+    <issue id="InvalidPackage">
+        <ignore regexp=".*okio.*" />
+        <ignore regexp=".*retrofit.*" />
+    </issue>
+</lint>
