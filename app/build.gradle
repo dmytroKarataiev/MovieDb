@@ -54,10 +54,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildTypes.each {
-        it.buildConfigField 'String', 'MOVIE_DB_API_KEY', movieDbApiKey
-        it.buildConfigField 'String', 'YOUTUBE_API_KEY', youtubeApiKey
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -74,6 +70,13 @@ def signingFile = 'moviesdb.gradle'
 if (project.hasProperty(propertyConfig)
         && file(project.property(propertyConfig) + signingFile).exists()) {
     apply from: project.property(propertyConfig) + signingFile;
+} else {
+    android {
+        buildTypes.each {
+            it.buildConfigField 'String', 'MOVIE_DB_API_KEY', "\"\""
+            it.buildConfigField 'String', 'YOUTUBE_API_KEY', "\"\""
+        }
+    }
 }
 
 ext {
