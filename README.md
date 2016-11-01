@@ -1,50 +1,40 @@
-# The Movie Database Client
+# The Movie Database Client [![Travis CI](https://travis-ci.org/dmytroKarataiev/MovieDb.svg?branch=master)](https://travis-ci.org/dmytroKarataiev/MovieDb)
 <a href="https://play.google.com/store/apps/details?id=com.adkdevelopment.moviesdb"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" width="185" height="60"/></a><br>
 
 ![Animation of a current state](movies.gif)
 
-A fast and easy to use client to [The Movie Database API](https://www.themoviedb.org) with data persistence, youtube trailers inside the app, sharing functionality.
+A fast and easy to use client to [The Movie Database](https://www.themoviedb.org) with data persistence, youtube trailers inside the app, sharing functionality.
 
 ## Functionality
+* Shows tabs with movies, series, your favorites and actors.
 * You can sort data by: rating, popularity, number of votes, revenue and name in ascending and descending orders.
-* You can easily share info about chosen movie.
+* You can easily share info about a chosen movie.
 * Scrolling is continuous.
-* You can watch trailers inside of the app (YouTube API).
-* You can save your favorite movies.
+* You can watch trailers inside the app (YouTube API).
+* You can add movies to favorites.
 * Search by movie titles.
-* Tablet Design.
 
 ## Development plans
-* Popular TV Series.
-* Popular Actors.
 * Design improvements.
-* Actors Activity: Photos, List of Movies.
+* MVP architecture.
 
 ## Used Technologies
-* RxAndroid, RxJava (EditText observable).
-* Retrolambda, Butterknife to simplify life.
-* RecyclerView, RecyclerAdapter.
-* AsyncTasks.
-* Fragments.
-* Content Provider, Database.
-* CursorAdapter.
+* MVP architecture.
+* RxAndroid, RxJava (EditText observable), Retrolambda.
+* Content Provider, Database, LoaderManagers.
+* Fabric analytics, Travis CI.
+
+## Used Libraries
+* Picasso for image loading.
+* Retrofit for all REST-realted work.
+* LeakCanary to test for memory leaks.
+* YouTube Player API: https://developers.google.com/youtube/android/player/downloads/
 
 ## API Keys
 For this app to work you have to acquire API keys and put them into gradle.properties file.
 Following lines should be added to the file: <br>
 movieDbApiKey = "**YOUR API KEY**" <br>
 youtubeApiKey = "**YOUR API KEY**"
-
-## Content from the internet and other sources
-* Some technics and ideas were taken from the Udacity Course [Developing Android Apps](https://www.udacity.com/course/viewer#!/c-ud853-nd)
-* And useful WebCasts from Android NanoDegree: https://plus.google.com/u/0/107950612876685287140/posts
-
-## Additional Info
-* App uses great image library Picasso: http://square.github.io/picasso/
-* OkHttpClient performs all network work: http://square.github.io/okhttp/
-* GSON library effectively parses json: https://github.com/google/gson
-* YouTube Player API: https://developers.google.com/youtube/android/player/downloads/
-* How to get YouTube API key: https://developers.google.com/youtube/v3/getting-started
 
 License
 -------
