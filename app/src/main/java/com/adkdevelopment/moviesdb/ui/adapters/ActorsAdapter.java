@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.adkdevelopment.moviesdb.R;
@@ -36,11 +37,11 @@ import com.adkdevelopment.moviesdb.data.model.Consts;
 import com.adkdevelopment.moviesdb.data.model.MovieCast;
 import com.adkdevelopment.moviesdb.data.model.MovieCredits;
 import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener;
+import com.adkdevelopment.moviesdb.utils.CircleTransform;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Adapter which shows actors and their names in a recyclerview
@@ -64,8 +65,10 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.actor_photo) CircleImageView mImageActor;
-        @BindView(R.id.actor_name) TextView mTextActor;
+        @BindView(R.id.actor_photo)
+        ImageView mImageActor;
+        @BindView(R.id.actor_name)
+        TextView mTextActor;
 
         public ViewHolder(View view) {
             super(view);
@@ -88,6 +91,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
         Picasso.with(mContext)
                 .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
                 .noFade()
+                .transform(new CircleTransform())
                 .into(holder.mImageActor);
         holder.mTextActor.setText(movieCast.getName().replace(" ", "\n"));
         holder.mImageActor.setContentDescription(movieCast.getName());

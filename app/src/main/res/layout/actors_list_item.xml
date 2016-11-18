@@ -25,19 +25,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/fab_margin"
     android:gravity="center"
     android:orientation="vertical">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <ImageView
         android:id="@+id/actor_photo"
         android:layout_width="@dimen/actor_oval_size"
         android:layout_height="@dimen/actor_oval_size"
-        android:scaleType="centerCrop"
-        app:civ_border_width="1dp"
-        app:civ_border_color="#D8000000"/>
+        android:scaleType="centerCrop" />
 
     <TextView
         android:gravity="center_horizontal"
