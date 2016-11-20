@@ -23,11 +23,11 @@
   -->
 
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
@@ -42,49 +42,69 @@
             android:id="@+id/actor_photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/actor_photo_desc" />
+            android:layout_margin="@dimen/padding_default"
+            android:contentDescription="@string/actor_photo_desc"
+            android:minHeight="200dp"
+            android:minWidth="150dp"
+            tools:src="@drawable/ic_star_yellow" />
 
         <TextView
             android:id="@+id/actor_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/actor_photo" />
+            android:layout_toEndOf="@id/actor_photo"
+            android:layout_toRightOf="@id/actor_photo"
+            tools:text="Brad Pit" />
 
-        <TextView
-            android:id="@+id/actor_bioghraphy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/actor_name" />
-
-        <TextView
-            android:id="@+id/actor_birthday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/actor_bioghraphy" />
-
-        <TextView
-            android:id="@+id/actor_deathday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/actor_birthday" />
-
-        <TextView
-            android:id="@+id/actor_homepage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/actor_deathday" />
 
         <TextView
             android:id="@+id/actor_birthplace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/actor_homepage" />
+            android:layout_below="@id/actor_name"
+            android:layout_toEndOf="@id/actor_photo"
+            android:layout_toRightOf="@id/actor_photo"
+            tools:text="Los Angeles" />
+
+        <TextView
+            android:id="@+id/actor_birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/actor_birthplace"
+            android:layout_toEndOf="@id/actor_photo"
+            android:layout_toRightOf="@id/actor_photo"
+            tools:text="1990-09-09" />
+
+        <TextView
+            android:id="@+id/actor_deathday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/actor_birthday"
+            android:layout_toEndOf="@id/actor_photo"
+            android:layout_toRightOf="@id/actor_photo"
+            tools:text="1990-09-09" />
+
+        <TextView
+            android:id="@+id/actor_homepage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/actor_deathday"
+            android:layout_toEndOf="@id/actor_photo"
+            android:layout_toRightOf="@id/actor_photo"
+            tools:text="www.google.com" />
+
+        <TextView
+            android:id="@+id/actor_bioghraphy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/actor_photo"
+            tools:text="Biography Biography Biography Biography Biography Biography Biography Biography Biography" />
 
         <TextView
             android:id="@+id/actor_known"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/actor_birthplace"
+            android:layout_below="@id/actor_bioghraphy"
             android:text="@string/actor_known" />
 
         <android.support.v7.widget.RecyclerView
@@ -92,7 +112,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/actor_known" />
-
 
     </RelativeLayout>
 

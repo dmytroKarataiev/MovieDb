@@ -25,8 +25,6 @@
 package com.adkdevelopment.moviesdb.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -38,8 +36,6 @@ import butterknife.ButterKnife;
 
 public class ActorActivity extends BaseActivity implements ActorFragment.OnFragmentInteraction {
 
-    @BindView(R.id.fab)
-    FloatingActionButton mFab;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
@@ -53,10 +49,6 @@ public class ActorActivity extends BaseActivity implements ActorFragment.OnFragm
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        // TODO: 5/26/16
-        mFab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
     }
 
     @Override

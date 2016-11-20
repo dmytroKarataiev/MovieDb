@@ -34,7 +34,7 @@ public class Consts {
     public static final String MOVIE_ID = "movie_id";
 
     public static final String IMAGE_URL = "http://image.tmdb.org/t/p/";
-    public static final String ACTOR_THUMB = "w185";
+    public static final String ACTOR_THUMB = "w500";
     public static final String ACTOR_BACKDROP = "w500";
 
     public static final String TV_EXTRA = "tv_extra";
