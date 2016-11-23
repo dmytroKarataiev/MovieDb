@@ -24,7 +24,6 @@
 
 package com.adkdevelopment.moviesdb.ui.presenters;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.adkdevelopment.moviesdb.App;
@@ -48,12 +47,10 @@ public class PeoplePresenter
     private static final String TAG = PeoplePresenter.class.getSimpleName();
 
     private CompositeSubscription mSubscription;
-    private final Context mContext;
     private boolean isUpdating;
 
-    public PeoplePresenter(Context context) {
+    public PeoplePresenter() {
         mSubscription = new CompositeSubscription();
-        mContext = context;
     }
 
     @Override

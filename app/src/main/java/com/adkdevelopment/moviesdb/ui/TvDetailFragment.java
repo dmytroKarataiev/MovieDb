@@ -100,7 +100,7 @@ public class TvDetailFragment extends BaseFragment
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
-        mPresenter = new TvDetailPresenter(getContext());
+        mPresenter = new TvDetailPresenter();
         mPresenter.attachView(this);
 
         return rootView;

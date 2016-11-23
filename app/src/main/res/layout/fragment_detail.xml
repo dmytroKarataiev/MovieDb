@@ -65,7 +65,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/detail_cast_height"
+            android:layout_height="wrap_content"
             android:layout_below="@id/main_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:ignore="InconsistentLayout" />

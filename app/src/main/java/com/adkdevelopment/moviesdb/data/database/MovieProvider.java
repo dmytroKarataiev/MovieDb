@@ -138,7 +138,9 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        if (getContext() != null) {
+            retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return retCursor;
     }
 
@@ -163,7 +165,9 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return returnUri;
     }
 
@@ -192,7 +196,7 @@ public class MovieProvider extends ContentProvider {
         // the uri listeners (using the content resolver) if the rowsDeleted != 0 or the selection
         // is null.
         // Oh, and you should notify the listeners here.
-        if (rowsDeleted != 0) {
+        if (rowsDeleted != 0 && getContext() != null) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -225,7 +229,7 @@ public class MovieProvider extends ContentProvider {
         // the uri listeners (using the content resolver) if the rowsDeleted != 0 or the selection
         // is null.
         // Oh, and you should notify the listeners here.
-        if (rowsUpdated != 0) {
+        if (rowsUpdated != 0 && getContext() != null) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -253,7 +257,9 @@ public class MovieProvider extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
-                getContext().getContentResolver().notifyChange(uri, null);
+                if (getContext() != null) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
                 return returnCount;
             default:
                 return super.bulkInsert(uri, values);

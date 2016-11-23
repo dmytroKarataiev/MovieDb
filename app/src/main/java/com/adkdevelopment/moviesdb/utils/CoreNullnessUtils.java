@@ -33,6 +33,7 @@ import java.util.List;
  */
 public class CoreNullnessUtils {
 
+    @SafeVarargs
     public static <T> T firstNonNull(T... objs) {
         for (T obj : objs) {
             if (obj != null) {

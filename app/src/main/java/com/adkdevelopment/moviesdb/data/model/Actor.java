@@ -40,7 +40,7 @@ public class Actor {
     private boolean adult;
     @SerializedName("also_known_as")
     @Expose
-    private List<Object> alsoKnownAs = new ArrayList<Object>();
+    private List<Object> alsoKnownAs = new ArrayList<>();
     @SerializedName("biography")
     @Expose
     private String biography;

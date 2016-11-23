@@ -108,7 +108,7 @@ public class PeopleFragment extends BaseFragment
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        mPresenter = new PeoplePresenter(getContext());
+        mPresenter = new PeoplePresenter();
         mPresenter.attachView(this);
 
         // If movies were fetched - re-uses data

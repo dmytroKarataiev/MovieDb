@@ -97,7 +97,7 @@ public class FavoritesFragment extends BaseFragment
         mGridView.setMinimumHeight((int) (posterWidth * 1.5));
 
         // Adapter which adds movies to the grid
-        mFavoritesAdapter = new FavoritesAdapter(getActivity(), null, 0);
+        mFavoritesAdapter = new FavoritesAdapter(getActivity());
 
         // onClick activity which launches detailed view
         mGridView.setOnItemClickListener((parent, view, position, id) -> {

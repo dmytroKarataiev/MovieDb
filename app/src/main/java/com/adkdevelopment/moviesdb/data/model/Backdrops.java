@@ -39,10 +39,10 @@ public class Backdrops {
     private long id;
     @SerializedName("backdrops")
     @Expose
-    private List<Backdrop> backdrops = new ArrayList<Backdrop>();
+    private List<Backdrop> backdrops = new ArrayList<>();
     @SerializedName("posters")
     @Expose
-    private List<Poster> posters = new ArrayList<Poster>();
+    private List<Poster> posters = new ArrayList<>();
 
     /**
      *

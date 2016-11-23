@@ -27,13 +27,12 @@ package com.adkdevelopment.moviesdb.data.model.person;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.adkdevelopment.moviesdb.ui.interfaces.MoviePerson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.adkdevelopment.moviesdb.ui.interfaces.MoviePerson;
 
 /**
  * Created by karataev on 8/3/16.
@@ -187,7 +186,7 @@ public class PersonPopularResult implements Parcelable, MoviePerson {
     protected PersonPopularResult(Parcel in) {
         this.adult = in.readByte() != 0;
         this.id = in.readInt();
-        this.knownFor = new ArrayList<PersonKnown>();
+        this.knownFor = new ArrayList<>();
         in.readList(this.knownFor, PersonKnown.class.getClassLoader());
         this.name = in.readString();
         this.popularity = in.readDouble();

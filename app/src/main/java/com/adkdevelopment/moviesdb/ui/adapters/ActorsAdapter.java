@@ -90,6 +90,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<ActorsAdapter.ViewHolder
 
         Picasso.with(mContext)
                 .load(Consts.IMAGE_URL + Consts.ACTOR_THUMB + movieCast.getProfilePath())
+                .error(R.drawable.ic_people_white)
                 .noFade()
                 .transform(new CircleTransform())
                 .into(holder.mImageActor);

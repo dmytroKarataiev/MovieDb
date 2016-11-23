@@ -25,20 +25,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/fab_margin"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/fab_margin">
 
     <ImageView
         android:id="@+id/actor_photo"
         android:layout_width="@dimen/actor_oval_size"
         android:layout_height="@dimen/actor_oval_size"
+        android:contentDescription="@string/actor_photo_desc"
         android:scaleType="centerCrop" />
 
     <TextView
-        android:gravity="center_horizontal"
         android:id="@+id/actor_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" />
 
 </LinearLayout>

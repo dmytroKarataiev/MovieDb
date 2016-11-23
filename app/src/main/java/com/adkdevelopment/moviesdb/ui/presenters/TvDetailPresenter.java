@@ -24,7 +24,6 @@
 
 package com.adkdevelopment.moviesdb.ui.presenters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -53,15 +52,11 @@ public class TvDetailPresenter
 
     private static final String TAG = TvDetailPresenter.class.getSimpleName();
 
-    private CompositeSubscription mSubscriptions;
-    private final Context mContext;
+    private final CompositeSubscription mSubscriptions;
 
-    public TvDetailPresenter(Context context) {
+    public TvDetailPresenter() {
         mSubscriptions = new CompositeSubscription();
-        mContext = context;
     }
-
-
 
     @Override
     public void detachView() {

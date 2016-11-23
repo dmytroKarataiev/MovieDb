@@ -42,4 +42,5 @@
         android:gravity="center"
         android:paddingBottom="@dimen/tab_layout_padding"
         android:textAppearance="?android:textAppearance" />
+
 </LinearLayout>

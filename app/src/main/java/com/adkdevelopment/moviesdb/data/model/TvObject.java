@@ -47,7 +47,7 @@ public class TvObject implements Comparable<TvObject>, Parcelable {
     private String firstAirDate;
     @SerializedName("genre_ids")
     @Expose
-    private List<Long> genreIds = new ArrayList<Long>();
+    private List<Long> genreIds = new ArrayList<>();
     @SerializedName("id")
     @Expose
     private long id;
@@ -62,7 +62,7 @@ public class TvObject implements Comparable<TvObject>, Parcelable {
     private String overview;
     @SerializedName("origin_country")
     @Expose
-    private List<String> originCountry = new ArrayList<String>();
+    private List<String> originCountry = new ArrayList<>();
     @SerializedName("poster_path")
     @Expose
     private String posterPath;

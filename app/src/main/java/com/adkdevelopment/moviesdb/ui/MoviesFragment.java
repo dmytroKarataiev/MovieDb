@@ -335,7 +335,7 @@ public class MoviesFragment extends BaseFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.pref_sort_key))) {
-            setPosition(0);
+            setZeroPosition();
             updateMovieList();
         }
     }
@@ -435,9 +435,9 @@ public class MoviesFragment extends BaseFragment
     }
 
     // sets a zero position when click on search method from actionbar
-    public void setPosition(int position) {
-        mCurrentPosition = position;
-        mRecyclerView.smoothScrollToPosition(position);
+    public void setZeroPosition() {
+        mCurrentPosition = 0;
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
     @Override

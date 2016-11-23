@@ -36,13 +36,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adkdevelopment.moviesdb.R;
+import com.adkdevelopment.moviesdb.data.database.MoviesContract;
+import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.data.database.MoviesContract;
-import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
 
 /**
  * Adapter to the DB
@@ -63,8 +63,8 @@ public class FavoritesAdapter extends CursorAdapter {
         }
     }
 
-    public FavoritesAdapter(Context context, Cursor c, int flags){
-        super(context, c, flags);
+    public FavoritesAdapter(Context context){
+        super(context, null, 0);
         mContext = context;
     }
 

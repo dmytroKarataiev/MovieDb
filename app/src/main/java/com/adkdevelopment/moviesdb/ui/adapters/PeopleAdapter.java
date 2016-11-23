@@ -56,7 +56,7 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.ViewHolder
 
     private List<PersonPopularResult> mPopularResults;
     private final Context mContext;
-    private ItemClickListener<PersonPopularResult, View> mListener;
+    private final ItemClickListener<PersonPopularResult, View> mListener;
 
     public void setData(List<PersonPopularResult> popularResults) {
         if (mPopularResults != null) {

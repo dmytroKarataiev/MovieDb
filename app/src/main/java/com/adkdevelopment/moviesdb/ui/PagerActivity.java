@@ -311,7 +311,6 @@ public class PagerActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         setTitle();
-        Log.d(TAG, "onResume: ");
     }
 
     /**

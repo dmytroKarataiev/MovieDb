@@ -652,7 +652,7 @@ public class MovieObject implements Parcelable {
         this.backdropPath = in.readString();
         // this.belongsToCollection = in.readParcelable(Object.class.getClassLoader());
         this.budget = in.readLong();
-        this.genres = new ArrayList<Genre>();
+        this.genres = new ArrayList<>();
         in.readList(this.genres, Genre.class.getClassLoader());
         this.homepage = in.readString();
         this.id = in.readLong();
