@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.adkdevelopment.moviesdb.R;
 import com.adkdevelopment.moviesdb.data.database.MoviesContract;
 import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
+import com.adkdevelopment.moviesdb.utils.Utility;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -87,6 +88,10 @@ public class FavoritesAdapter extends CursorAdapter {
 
         //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark_fav);
         Picasso.with(context).load(R.drawable.ic_bookmark_fav).into(viewHolder.mFavImage);
+
+        viewHolder.mPosterImage.getLayoutParams().height = Utility.screenSize(mContext)[5];
+        viewHolder.mProgressSpinner.getLayoutParams().height = Utility.screenSize(mContext)[5];
+        viewHolder.mFavImage.getLayoutParams().height = (int) Math.round(Utility.screenSize(mContext)[5] * 0.2);
 
         // On mImageFavorite icon click
         viewHolder.mFavImage.setOnClickListener(v -> {
