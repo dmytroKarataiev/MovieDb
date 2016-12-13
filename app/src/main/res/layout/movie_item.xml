@@ -38,9 +38,27 @@
         tools:targetApi="lollipop" />
 
     <TextView
+        android:id="@+id/movie_poster_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textSize="18sp"
+        tools:text="@string/movie_poster_empty" />
+
+    <TextView
         android:id="@+id/movie_poster_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:paddingBottom="@dimen/padding_default"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textSize="18sp"
+        tools:text="Harry Potter" />
 
     <ProgressBar
         android:id="@+id/movie_item_spinner"

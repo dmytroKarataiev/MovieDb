@@ -481,7 +481,7 @@ public class Utility {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
-        calendar.add(Calendar.DATE, 14);
+        calendar.add(Calendar.DATE, 30);
         return sdfDate.format(calendar.getTime());
     }
 

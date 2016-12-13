@@ -40,6 +40,7 @@ import com.adkdevelopment.moviesdb.R;
 import com.adkdevelopment.moviesdb.data.database.MoviesContract;
 import com.adkdevelopment.moviesdb.utils.DatabaseTasks;
 import com.adkdevelopment.moviesdb.utils.Utility;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -54,23 +55,29 @@ public class FavoritesAdapter extends CursorAdapter {
     private final Context mContext;
 
     public static class ViewHolder {
-        @BindView(R.id.movie_poster) ImageView mPosterImage;
-        @BindView(R.id.movie_poster_text) TextView mPosterText;
-        @BindView(R.id.movie_item_spinner) ProgressBar mProgressSpinner;
-        @BindView(R.id.movie_poster_favorite) ImageView mFavImage;
+        @BindView(R.id.movie_poster)
+        ImageView mPosterImage;
+        @BindView(R.id.movie_poster_text)
+        TextView mPosterText;
+        @BindView(R.id.movie_poster_empty)
+        TextView mPosterEmpty;
+        @BindView(R.id.movie_item_spinner)
+        ProgressBar mProgressSpinner;
+        @BindView(R.id.movie_poster_favorite)
+        ImageView mFavImage;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
 
-    public FavoritesAdapter(Context context){
+    public FavoritesAdapter(Context context) {
         super(context, null, 0);
         mContext = context;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent){
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.movie_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
@@ -79,14 +86,13 @@ public class FavoritesAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, final Context context, Cursor cursor){
+    public void bindView(View view, final Context context, Cursor cursor) {
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int versionIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
         final String versionName = cursor.getString(versionIndex);
 
-        //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark_fav);
         Picasso.with(context).load(R.drawable.ic_bookmark_fav).into(viewHolder.mFavImage);
 
         viewHolder.mPosterImage.getLayoutParams().height = Utility.screenSize(mContext)[5];
@@ -97,8 +103,6 @@ public class FavoritesAdapter extends CursorAdapter {
         viewHolder.mFavImage.setOnClickListener(v -> {
 
             Toast.makeText(context, "Not Favorite anymore", Toast.LENGTH_LONG).show();
-
-            //viewHolder.mFavImage.setImageResource(R.drawable.ic_bookmark);
             Picasso.with(context).load(R.drawable.ic_bookmark).into(viewHolder.mFavImage);
             // Temp way to delete data from the db
             ContentValues contentValues = new ContentValues();
@@ -113,11 +117,25 @@ public class FavoritesAdapter extends CursorAdapter {
 
         // gets image from Picasso cache, instead of db
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER_PATH);
-        //byte[] image = cursor.getBlob(imageIndex);
         String image = cursor.getString(imageIndex);
+
+        int titleIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+        String title = cursor.getString(titleIndex);
+
         if (image != null) {
-            Picasso.with(context).load(image).into(viewHolder.mPosterImage);
-        //    viewHolder.mPosterImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+            Picasso.with(context).load(image).into(viewHolder.mPosterImage, new Callback() {
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onError() {
+                    viewHolder.mPosterImage.setImageResource(R.drawable.gradient_background);
+                    viewHolder.mPosterText.setText(title);
+                    viewHolder.mPosterEmpty.setText(mContext
+                            .getString(R.string.movie_poster_empty));
+                }
+            });
         }
 
     }
