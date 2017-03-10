@@ -38,7 +38,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "com.adkdevelopment.moviesdb"
@@ -80,7 +80,7 @@ if (project.hasProperty(propertyConfig)
 }
 
 ext {
-    compatLibVersion = '25.0.1'
+    compatLibVersion = '25.2.0'
     butterknife = '8.4.0'
     retrofit = '2.1.0'
 }
