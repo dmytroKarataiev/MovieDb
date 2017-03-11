@@ -124,13 +124,9 @@ public class Utility {
      * @return current sort preference
      */
     public static String getSort(Context context) {
-        if (context != null) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            return prefs.getString(context.getString(R.string.pref_sort_key),
-                    context.getString(R.string.pref_sort_default));
-        } else {
-            return "";
-        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_sort_key),
+                context.getString(R.string.pref_sort_default));
     }
 
     /**

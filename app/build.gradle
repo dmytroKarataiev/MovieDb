@@ -81,12 +81,13 @@ if (project.hasProperty(propertyConfig)
 
 ext {
     compatLibVersion = '25.2.0'
-    butterknife = '8.4.0'
+    butterknife = '8.5.1'
     retrofit = '2.1.0'
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':license-release')
     testCompile 'junit:junit:4.12'
     compile "com.android.support:appcompat-v7:$compatLibVersion"
     compile "com.android.support:design:$compatLibVersion"

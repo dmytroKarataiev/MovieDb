@@ -23,17 +23,26 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.adkdevelopment.moviesdb.ui.MainActivity">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.adkdevelopment.moviesdb.ui.MainActivity">
+
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="200"
+        android:orderInCategory="2"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_about"
+        android:orderInCategory="1"
         android:title="@string/title_activity_about"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_license"
+        android:orderInCategory="3"
+        android:title="@string/title_activity_license"
+        app:showAsAction="never"/>
+
 </menu>

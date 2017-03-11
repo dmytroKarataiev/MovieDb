@@ -110,6 +110,8 @@ public class MoviesFragment extends BaseFragment
     private boolean mAddSearchMovies;
     private boolean mIsClearedSearch;
     private String mSearchParameter = "";
+    private FetchMovies mAsyncFetchMovie;
+    private OkHttpClient mOkhttpClient;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -304,8 +306,8 @@ public class MoviesFragment extends BaseFragment
      * @param sort to fetch data sorted with the parameter
      */
     private void fetchMovies(String sort) {
-        FetchMovies fetchMovie = new FetchMovies(mIsSearch, mCurrentPage);
-        fetchMovie.execute(sort);
+        mAsyncFetchMovie = new FetchMovies(mIsSearch, mCurrentPage);
+        mAsyncFetchMovie.execute(sort);
     }
 
     /**
@@ -340,8 +342,7 @@ public class MoviesFragment extends BaseFragment
         }
     }
 
-    // TODO: 6/2/16 change to Rx 
-
+    // TODO: 6/2/16 change to Rx
     /**
      * Class to retrieve MovieObjects from JSON on background thread
      */
@@ -373,7 +374,7 @@ public class MoviesFragment extends BaseFragment
             }
 
             // Network Client
-            OkHttpClient client = new OkHttpClient();
+            mOkhttpClient = new OkHttpClient();
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = "";
@@ -387,7 +388,8 @@ public class MoviesFragment extends BaseFragment
                     Request request = new Request.Builder()
                             .url(url)
                             .build();
-                    Response responses = client.newCall(request).execute();
+
+                    Response responses = mOkhttpClient.newCall(request).execute();
                     movieJsonStr = responses.body().string();
                     responses.body().close();
                 } catch (IOException e) {
@@ -495,6 +497,12 @@ public class MoviesFragment extends BaseFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mOkhttpClient != null) {
+            mOkhttpClient.dispatcher().cancelAll();
+        }
+        if (mAsyncFetchMovie != null && !mAsyncFetchMovie.isCancelled()) {
+            mAsyncFetchMovie.cancel(true);
+        }
         mUnbinder.unbind();
     }
 }

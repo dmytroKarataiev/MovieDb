@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.adkdevelopment.license.ui.LicenseActivity;
 import com.adkdevelopment.moviesdb.R;
 import com.adkdevelopment.moviesdb.ui.adapters.PagerAdapter;
 import com.adkdevelopment.moviesdb.ui.base.BaseActivity;
@@ -301,6 +302,9 @@ public class PagerActivity extends BaseActivity {
                 return true;
             case R.id.action_about:
                 startActivity(new Intent(this, AboutActivity.class));
+                return true;
+            case R.id.action_license:
+                startActivity(new Intent(this, LicenseActivity.class));
                 return true;
         }
 
