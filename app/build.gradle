@@ -44,7 +44,7 @@ android {
         applicationId "com.adkdevelopment.moviesdb"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
+        versionCode 2
         versionName "0.1"
         multiDexEnabled true
     }
@@ -82,7 +82,7 @@ if (project.hasProperty(propertyConfig)
 ext {
     compatLibVersion = '25.2.0'
     butterknife = '8.5.1'
-    retrofit = '2.1.0'
+    retrofit = '2.2.0'
 }
 
 dependencies {
@@ -104,7 +104,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     // download and parse data
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.0'
 
     // data fetching and converting to objects
     compile "com.squareup.retrofit2:retrofit:$retrofit"
@@ -113,7 +113,7 @@ dependencies {
 
     // RxJava + RxAndroid
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'io.reactivex:rxjava:1.2.7'
 
     // fix memory leaks if they are present
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
