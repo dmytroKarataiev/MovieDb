@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ *  Copyright (c) 2017. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.ui;
+package com.adkdevelopment.moviesdb.feat_series;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,6 +43,7 @@ import com.adkdevelopment.moviesdb.data.model.MovieCast;
 import com.adkdevelopment.moviesdb.data.model.MovieCredits;
 import com.adkdevelopment.moviesdb.data.model.MovieObject;
 import com.adkdevelopment.moviesdb.data.model.TvSeries;
+import com.adkdevelopment.moviesdb.ui.ActorActivity;
 import com.adkdevelopment.moviesdb.ui.adapters.ActorsAdapter;
 import com.adkdevelopment.moviesdb.ui.base.BaseFragment;
 import com.adkdevelopment.moviesdb.ui.contracts.TvDetailContract;

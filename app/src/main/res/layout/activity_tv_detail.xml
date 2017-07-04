@@ -28,7 +28,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.adkdevelopment.moviesdb.ui.TvDetailActivity">
+    tools:context="com.adkdevelopment.moviesdb.feat_series.TvDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -70,7 +70,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment"
-        android:name="com.adkdevelopment.moviesdb.ui.TvDetailFragment"
+        android:name="com.adkdevelopment.moviesdb.feat_series.TvDetailFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

@@ -36,7 +36,7 @@ import com.adkdevelopment.moviesdb.ui.MoviesFragment;
 import com.adkdevelopment.moviesdb.ui.PagerActivity;
 import com.adkdevelopment.moviesdb.ui.PeopleFragment;
 import com.adkdevelopment.moviesdb.R;
-import com.adkdevelopment.moviesdb.ui.SeriesFragment;
+import com.adkdevelopment.moviesdb.feat_series.SeriesFragment;
 
 import java.lang.ref.WeakReference;
 
@@ -62,7 +62,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
             case PagerActivity.FRAGMENT_FAVORITES:
                 return FavoritesFragment.newInstance();
             case PagerActivity.FRAGMENT_SERIES:
-                return SeriesFragment.newInstance();
+                return SeriesFragment.Companion.newInstance();
             case PagerActivity.FRAGMENT_ACTORS:
                 return PeopleFragment.newInstance();
             default:

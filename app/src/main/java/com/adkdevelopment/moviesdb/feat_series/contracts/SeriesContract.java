@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ *  Copyright (c) 2017. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.ui.contracts;
+package com.adkdevelopment.moviesdb.feat_series.contracts;
 
 import com.adkdevelopment.moviesdb.data.model.TvObject;
 import com.adkdevelopment.moviesdb.ui.base.MvpPresenter;

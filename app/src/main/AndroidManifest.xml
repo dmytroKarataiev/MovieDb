@@ -93,7 +93,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.adkdevelopment.moviesdb.ui.TvDetailActivity"
+            android:name="com.adkdevelopment.moviesdb.feat_series.TvDetailActivity"
             android:label="@string/title_activity_tv_detail"
             android:parentActivityName="com.adkdevelopment.moviesdb.ui.PagerActivity"
             android:theme="@style/AppTheme.NoActionBar">
