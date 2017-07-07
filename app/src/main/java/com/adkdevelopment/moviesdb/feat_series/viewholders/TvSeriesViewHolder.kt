@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ *  Copyright (c) 2017. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,33 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.ui.base;
+package com.adkdevelopment.moviesdb.feat_series.viewholders
 
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView
+import android.view.View
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
+import com.adkdevelopment.moviesdb.R
 
 /**
- * Base for every Activity in the App.
- * Created by Dmytro Karataiev on 10/22/16.
+ * A ViewHolder for TV series in the SeriesFragment.
+ * Created by Dmytro Karataiev on 7/6/17.
  */
-public class BaseActivity extends AppCompatActivity {
+class TvSeriesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+    @BindView(R.id.movie_poster)
+    @JvmField var mImageActor: ImageView? = null
+    @BindView(R.id.movie_poster_text)
+    @JvmField var mTextActor: TextView? = null
+    @BindView(R.id.movie_item_spinner)
+    @JvmField var mProgressSpinner: ProgressBar? = null
+    @BindView(R.id.movie_poster_favorite)
+    @JvmField var mImageFavorite: ImageView? = null
+
+    init {
+        ButterKnife.bind(this, view)
+    }
 }

@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2017. Dmytro Karataiev
+ *  Copyright (c) 2016. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,26 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.feat_series.contracts;
+package com.adkdevelopment.moviesdb.ui.base
 
-import com.adkdevelopment.moviesdb.data.model.TvObject;
-import com.adkdevelopment.moviesdb.ui.base.MvpPresenter;
-import com.adkdevelopment.moviesdb.ui.base.MvpView;
-
-import java.util.List;
+import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 
 /**
- * MVP Contract for the SeriesFragment.
+ * Base for every Activity in the App.
  * Created by Dmytro Karataiev on 10/22/16.
  */
+open class BaseActivity : AppCompatActivity() {
 
-public class SeriesContract {
-
-    public interface Presenter extends MvpPresenter<View> {
-        void requestData(int page);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // copy the behavior of the hardware back button
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
-    public interface View extends MvpView {
-        void showData(List<TvObject> series, int page);
-
-        void showEmpty();
-
-        void showError();
-
-        void showProgress();
-    }
 }

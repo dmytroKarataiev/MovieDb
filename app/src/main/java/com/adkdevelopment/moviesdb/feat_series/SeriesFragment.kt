@@ -40,9 +40,9 @@ import butterknife.Unbinder
 import com.adkdevelopment.moviesdb.R
 import com.adkdevelopment.moviesdb.data.model.Consts
 import com.adkdevelopment.moviesdb.data.model.TvObject
+import com.adkdevelopment.moviesdb.feat_series.adapters.TvAdapter
 import com.adkdevelopment.moviesdb.feat_series.contracts.SeriesContract
 import com.adkdevelopment.moviesdb.feat_series.presenters.SeriesPresenter
-import com.adkdevelopment.moviesdb.ui.adapters.TvAdapter
 import com.adkdevelopment.moviesdb.ui.base.BaseFragment
 import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener
 import com.adkdevelopment.moviesdb.ui.interfaces.ScrollableFragment
@@ -109,8 +109,8 @@ class SeriesFragment : BaseFragment(),
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                mCurrentPosition = mGridLayoutManager!!.findFirstVisibleItemPosition()
-                if (mGridLayoutManager!!.findLastVisibleItemPosition() >= mTvAdapter!!.itemCount - 5) {
+                mCurrentPosition = mGridLayoutManager.findFirstVisibleItemPosition()
+                if (mGridLayoutManager.findLastVisibleItemPosition() >= mTvAdapter.itemCount - 5) {
                     mPresenter.requestData(++mCurrentPage)
                 }
             }
@@ -145,7 +145,7 @@ class SeriesFragment : BaseFragment(),
     }
 
     override fun onItemClicked(item: TvObject, view: View) {
-        val intent = Intent(context, TvDetailActivity::class.java)
+        val intent = Intent(context, SeriesDetailedActivity::class.java)
         intent.putExtra(Consts.TV_EXTRA, item)
         startActivity(intent)
     }
@@ -199,7 +199,7 @@ class SeriesFragment : BaseFragment(),
         popupMenu.show()
     }
 
-    override fun showData(series: List<TvObject>, page: Int) {
+    override fun showData(series: MutableList<TvObject>, page: Int) {
         mListEmpty.visibility = View.INVISIBLE
         if (page == 1) {
             mTvAdapter = TvAdapter(context, series, this@SeriesFragment)

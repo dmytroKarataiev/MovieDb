@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ *  Copyright (c) 2017. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,33 @@
  *  SOFTWARE.
  */
 
-package com.adkdevelopment.moviesdb.ui.contracts;
+package com.adkdevelopment.moviesdb.feat_series.contracts
 
-import android.content.Intent;
-
-import com.adkdevelopment.moviesdb.data.model.Backdrops;
-import com.adkdevelopment.moviesdb.data.model.MovieCredits;
-import com.adkdevelopment.moviesdb.data.model.TvSeries;
-import com.adkdevelopment.moviesdb.ui.base.MvpPresenter;
-import com.adkdevelopment.moviesdb.ui.base.MvpView;
+import com.adkdevelopment.moviesdb.data.model.TvObject
+import com.adkdevelopment.moviesdb.ui.base.MvpPresenter
+import com.adkdevelopment.moviesdb.ui.base.MvpView
 
 /**
- * MVP Contract for the SeriesDetailedFragment.
+ * MVP Contract for the SeriesFragment.
  * Created by Dmytro Karataiev on 10/22/16.
  */
 
-public class TvDetailContract {
+class SeriesContract {
 
-    public interface Presenter extends MvpPresenter<View> {
-        void requestData(Intent intent);
+    interface Presenter : MvpPresenter<View> {
+
+        fun requestData(page: Int)
+
     }
 
-    public interface View extends MvpView {
-        void showData(TvSeries tvObject);
+    interface View : MvpView {
 
-        void showActors(MovieCredits movieCredits);
+        fun showData(series: MutableList<TvObject>, page: Int)
 
-        void showPosters(Backdrops backdrops);
+        fun showEmpty()
 
-        void showError();
+        fun showError()
+
+        fun showProgress()
     }
 }
