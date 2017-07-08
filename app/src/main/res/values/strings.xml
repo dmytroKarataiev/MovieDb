@@ -146,5 +146,6 @@
     <string name="tv_overview">Overview</string>
     <string name="tv_genres">Genres</string>
     <string name="movie_poster_empty">Poster \ncoming \nsoon</string>
+    <string name="tv_seasons">Seasons</string>
 
 </resources>

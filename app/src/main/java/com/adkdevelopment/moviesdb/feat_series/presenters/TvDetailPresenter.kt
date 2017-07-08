@@ -62,7 +62,6 @@ class TvDetailPresenter : BaseMvpPresenter<TvDetailContract.View>(), TvDetailCon
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(object : Subscriber<TvSeries>() {
                         override fun onCompleted() {
-
                         }
 
                         override fun onError(e: Throwable) {

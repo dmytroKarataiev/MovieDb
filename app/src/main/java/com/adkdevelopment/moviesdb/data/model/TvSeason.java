@@ -24,13 +24,17 @@
 
 package com.adkdevelopment.moviesdb.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by karataev on 6/14/16.
  */
-public class TvSeason {
+public class TvSeason implements Parcelable {
+
     @SerializedName("air_date")
     @Expose
     private String airDate;
@@ -137,4 +141,40 @@ public class TvSeason {
         this.seasonNumber = seasonNumber;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.airDate);
+        dest.writeLong(this.episodeCount);
+        dest.writeLong(this.id);
+        dest.writeString(this.posterPath);
+        dest.writeLong(this.seasonNumber);
+    }
+
+    public TvSeason() {
+    }
+
+    protected TvSeason(Parcel in) {
+        this.airDate = in.readString();
+        this.episodeCount = in.readLong();
+        this.id = in.readLong();
+        this.posterPath = in.readString();
+        this.seasonNumber = in.readLong();
+    }
+
+    public static final Parcelable.Creator<TvSeason> CREATOR = new Parcelable.Creator<TvSeason>() {
+        @Override
+        public TvSeason createFromParcel(Parcel source) {
+            return new TvSeason(source);
+        }
+
+        @Override
+        public TvSeason[] newArray(int size) {
+            return new TvSeason[size];
+        }
+    };
 }

@@ -155,11 +155,21 @@
             android:textAlignment="center"
             tools:text="Western, Science Fiction"/>
 
+        <TextView
+            android:layout_margin="@dimen/padding_default_half"
+            android:padding="@dimen/padding_default_half"
+            android:id="@+id/tv_seasons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_overview"
+            android:background="@color/colorLighter"
+            android:text="@string/tv_seasons"/>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="@dimen/detail_cast_height"
-            android:layout_below="@id/tv_overview"
+            android:layout_below="@id/tv_seasons"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:ignore="InconsistentLayout"/>
 

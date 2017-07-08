@@ -99,4 +99,8 @@ public interface ApiService {
 
     @GET("tv/{id}/credits" + API_KEY)
     Observable<MovieCredits> getTvCredits(@Path("id") String tvId);
+
+    // TODO(Dmytro Karataiev): 7/7/17 add corect classes 
+    @GET("tv/{tv_id}/season/{season_number}")
+    Observable<String> getTvSeason(@Path("tv_id") String tvId, @Path("season_number") String seasonNumber);
 }

@@ -112,6 +112,8 @@
                 android:value="com.adkdevelopment.moviesdb.ui.PagerActivity"/>
         </activity>
         <activity android:name=".ui.base.BaseActivity"/>
+        <activity android:name=".feat_series.SeriesSeasonsActivity"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="ca849bf6cdd88797c30d095ddef12b71cc2ce64c"/>

@@ -24,13 +24,16 @@
 
 package com.adkdevelopment.moviesdb.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by karataev on 6/14/16.
  */
-public class TvNetwork {
+public class TvNetwork implements Parcelable {
     @SerializedName("id")
     @Expose
     private long id;
@@ -78,4 +81,35 @@ public class TvNetwork {
     public String toString() {
         return name;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.name);
+    }
+
+    public TvNetwork() {
+    }
+
+    protected TvNetwork(Parcel in) {
+        this.id = in.readLong();
+        this.name = in.readString();
+    }
+
+    public static final Parcelable.Creator<TvNetwork> CREATOR = new Parcelable.Creator<TvNetwork>() {
+        @Override
+        public TvNetwork createFromParcel(Parcel source) {
+            return new TvNetwork(source);
+        }
+
+        @Override
+        public TvNetwork[] newArray(int size) {
+            return new TvNetwork[size];
+        }
+    };
 }

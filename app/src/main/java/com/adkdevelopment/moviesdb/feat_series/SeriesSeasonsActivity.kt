@@ -1,7 +1,7 @@
 /*
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016. Dmytro Karataiev
+ *  Copyright (c) 2017. Dmytro Karataiev
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,21 @@
  *  SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.adkdevelopment.moviesdb.feat_series
 
-buildscript {
-    ext.kotlin_version = '1.1.3-2'
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
+import android.os.Bundle
+import android.util.Log
+import com.adkdevelopment.moviesdb.R
+import com.adkdevelopment.moviesdb.data.model.TvSeries
+import com.adkdevelopment.moviesdb.ui.base.BaseActivity
+
+class SeriesSeasonsActivity : BaseActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_tv_season)
+
+        val tvId = intent.getParcelableExtra<TvSeries>("tvId")
+        Log.v("TAG", "TvId: " + tvId)
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha5'
-        classpath 'io.fabric.tools:gradle:1.22.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.jakewharton:butterknife-gradle-plugin:8.6.0"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
-        maven { url "https://maven.google.com" }
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

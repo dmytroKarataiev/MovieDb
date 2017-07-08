@@ -47,6 +47,7 @@ import com.adkdevelopment.moviesdb.ui.contracts.TvDetailContract
 import com.adkdevelopment.moviesdb.ui.interfaces.ItemClickListener
 import com.adkdevelopment.moviesdb.utils.Utility
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_tv_detail.view.*
 import java.util.*
 
 /**
@@ -76,6 +77,7 @@ class SeriesDetailedFragment : BaseFragment(), TvDetailContract.View, ItemClickL
     private var mUnbinder: Unbinder? = null
     private lateinit var mPresenter: TvDetailPresenter
     private var mActorsAdapter: ActorsAdapter? = null
+    private var mTvSeries : TvSeries? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -85,6 +87,12 @@ class SeriesDetailedFragment : BaseFragment(), TvDetailContract.View, ItemClickL
 
         mPresenter = TvDetailPresenter()
         mPresenter.attachView(this)
+
+        rootView.tv_seasons.setOnClickListener {
+            var intent = Intent(context, SeriesSeasonsActivity::class.java)
+            intent.putExtra("tvId", mTvSeries)
+            startActivity(intent)
+        }
 
         return rootView
     }
@@ -111,6 +119,7 @@ class SeriesDetailedFragment : BaseFragment(), TvDetailContract.View, ItemClickL
     }
 
     override fun showData(tvSeries: TvSeries) {
+        mTvSeries = tvSeries
         mTextTitle.text = tvSeries.name
         mTextOverview.text = tvSeries.overview
         mTextLanguage.text = tvSeries.originalLanguage
@@ -148,3 +157,4 @@ class SeriesDetailedFragment : BaseFragment(), TvDetailContract.View, ItemClickL
 
     }
 }
+
